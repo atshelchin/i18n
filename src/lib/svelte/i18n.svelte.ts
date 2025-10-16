@@ -12,7 +12,7 @@ export interface I18nStore {
 
 	// Methods
 	setLocale: (locale: string) => void;
-	register: (packageName: string, packageLocales: PackageLocales) => void;
+	register: (packageName: string, packageLocales: PackageLocales, source?: 'lib' | 'app') => void;
 	t: (key: string, options?: { package?: string }) => string;
 	getMeta: (packageName?: string) => LocaleMeta | undefined;
 	getSupportedLocales: (packageName?: string) => LocaleMeta[];
@@ -97,6 +97,7 @@ export function createI18nStore(options: CreateI18nStoreOptions = {}): I18nStore
 	let locale = $state(i18n.locale);
 	let supportedLocales = $state<LocaleMeta[]>(i18n.getSupportedLocales(defaultPackage));
 	let currentMeta = $state<LocaleMeta | undefined>(i18n.getMeta(defaultPackage));
+	let registryVersion = $state(0); // Track registry changes
 
 	// Update reactive state when locale changes
 	function updateReactiveState() {
@@ -112,24 +113,28 @@ export function createI18nStore(options: CreateI18nStoreOptions = {}): I18nStore
 		updateReactiveState();
 	}
 
-	function register(packageName: string, packageLocales: PackageLocales) {
-		i18n.register(packageName, packageLocales);
+	function register(packageName: string, packageLocales: PackageLocales, source: 'lib' | 'app' = 'lib') {
+		i18n.register(packageName, packageLocales, source);
+		registryVersion++; // Trigger reactivity
 		updateReactiveState();
 	}
 
 	function t(key: string, options?: { package?: string }): string {
-		// Access locale to create reactive dependency
+		// Access locale and registryVersion to create reactive dependency
 		void locale;
+		void registryVersion;
 		return i18n.t(key, options);
 	}
 
 	function getMeta(packageName?: string): LocaleMeta | undefined {
 		void locale;
+		void registryVersion;
 		return i18n.getMeta(packageName);
 	}
 
 	function getSupportedLocales(packageName?: string): LocaleMeta[] {
 		void locale;
+		void registryVersion;
 		return i18n.getSupportedLocales(packageName);
 	}
 
