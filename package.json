@@ -4,8 +4,8 @@
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
-		"preview": "bun run build && wrangler dev --ip 0.0.0.0",
-		"deploy": "bun run build && wrangler deploy",
+		"preview": "pnpm run build && wrangler dev --ip 0.0.0.0",
+		"deploy": "pnpm run build && wrangler deploy",
 		"cf-typegen": "wrangler types src/worker-configuration.d.ts",
 		"build:pack": "vite build && npm run prepack",
 		"prepare": "svelte-kit sync || echo ''",
