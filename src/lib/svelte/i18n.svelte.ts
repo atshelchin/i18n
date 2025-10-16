@@ -113,7 +113,11 @@ export function createI18nStore(options: CreateI18nStoreOptions = {}): I18nStore
 		updateReactiveState();
 	}
 
-	function register(packageName: string, packageLocales: PackageLocales, source: 'lib' | 'app' = 'lib') {
+	function register(
+		packageName: string,
+		packageLocales: PackageLocales,
+		source: 'lib' | 'app' = 'lib'
+	) {
 		i18n.register(packageName, packageLocales, source);
 		registryVersion++; // Trigger reactivity
 		updateReactiveState();

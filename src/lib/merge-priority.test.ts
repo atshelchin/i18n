@@ -6,44 +6,52 @@ describe('I18n merge priority with source parameter', () => {
 		const i18n = new I18n('en');
 
 		// 包内部注册完整翻译
-		i18n.register('my-package', {
-			en: {
-				_meta: {
-					code: 'en',
-					name: 'English',
-					englishName: 'English',
-					direction: 'ltr',
-					flag: '🇬🇧'
+		i18n.register(
+			'my-package',
+			{
+				en: {
+					_meta: {
+						code: 'en',
+						name: 'English',
+						englishName: 'English',
+						direction: 'ltr',
+						flag: '🇬🇧'
+					},
+					key1: 'Lib EN 1',
+					key2: 'Lib EN 2'
 				},
-				key1: 'Lib EN 1',
-				key2: 'Lib EN 2'
+				zh: {
+					_meta: {
+						code: 'zh',
+						name: '中文',
+						englishName: 'Chinese',
+						direction: 'ltr',
+						flag: '🇨🇳'
+					},
+					key1: 'Lib ZH 1',
+					key2: 'Lib ZH 2'
+				}
 			},
-			zh: {
-				_meta: {
-					code: 'zh',
-					name: '中文',
-					englishName: 'Chinese',
-					direction: 'ltr',
-					flag: '🇨🇳'
-				},
-				key1: 'Lib ZH 1',
-				key2: 'Lib ZH 2'
-			}
-		}, 'lib');
+			'lib'
+		);
 
 		// 应用中只补充英文的一个 key
-		i18n.register('my-package', {
-			en: {
-				_meta: {
-					code: 'en',
-					name: 'English',
-					englishName: 'English',
-					direction: 'ltr',
-					flag: '🇬🇧'
-				},
-				key1: 'App EN 1'
-			}
-		}, 'app');
+		i18n.register(
+			'my-package',
+			{
+				en: {
+					_meta: {
+						code: 'en',
+						name: 'English',
+						englishName: 'English',
+						direction: 'ltr',
+						flag: '🇬🇧'
+					},
+					key1: 'App EN 1'
+				}
+			},
+			'app'
+		);
 
 		// 测试英文
 		expect(i18n.t('key1', { package: 'my-package' })).toBe('App EN 1'); // app 覆盖
@@ -59,32 +67,40 @@ describe('I18n merge priority with source parameter', () => {
 		const i18n = new I18n('en');
 
 		// 第一次注册
-		i18n.register('test-pkg', {
-			en: {
-				_meta: {
-					code: 'en',
-					name: 'English',
-					englishName: 'English',
-					direction: 'ltr',
-					flag: '🇬🇧'
-				},
-				key: 'First'
-			}
-		}, 'lib');
+		i18n.register(
+			'test-pkg',
+			{
+				en: {
+					_meta: {
+						code: 'en',
+						name: 'English',
+						englishName: 'English',
+						direction: 'ltr',
+						flag: '🇬🇧'
+					},
+					key: 'First'
+				}
+			},
+			'lib'
+		);
 
 		// 第二次用相同 source 注册（应该被忽略）
-		i18n.register('test-pkg', {
-			en: {
-				_meta: {
-					code: 'en',
-					name: 'English',
-					englishName: 'English',
-					direction: 'ltr',
-					flag: '🇬🇧'
-				},
-				key: 'Second'
-			}
-		}, 'lib');
+		i18n.register(
+			'test-pkg',
+			{
+				en: {
+					_meta: {
+						code: 'en',
+						name: 'English',
+						englishName: 'English',
+						direction: 'ltr',
+						flag: '🇬🇧'
+					},
+					key: 'Second'
+				}
+			},
+			'lib'
+		);
 
 		expect(i18n.t('key', { package: 'test-pkg' })).toBe('First');
 	});
