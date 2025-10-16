@@ -1,5 +1,5 @@
-import type { LocaleMeta, TranslationContent, LocaleData } from './types.ts';
-import { languages } from './constants/languages.js';
+import type { LocaleMeta, TranslationContent, LocaleData } from '../types.ts';
+import { languages } from '../constants/languages.js';
 
 export function getNestedValue(
 	obj: LocaleData | TranslationContent,

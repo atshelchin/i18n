@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useI18n } from '$lib/i18n.svelte.js';
+	import { useI18n } from '$lib/svelte/index.js';
 	import { onMount } from 'svelte';
 
 	const i18n = useI18n();
@@ -129,11 +129,12 @@
 								<div class="step-title">{i18n.t('quickstart.setup')}</div>
 								<pre><code
 										>&lt;script&gt;
-  import &#123; createI18nStore, setI18nContext &#125; from '@shelchin/i18n/svelte';
+import &#123; createI18nStore &#125; from '@shelchin/i18n/svelte';
+import &#123; setI18nContext &#125; from '@shelchin/i18n/svelte';
 
-  const i18n = createI18nStore();
-  i18n.register('__default__', &#123; en: &#123;...&#125;, zh: &#123;...&#125; &#125;);
-  setI18nContext(i18n);
+const i18n = createI18nStore();
+i18n.register('__default__', &#123; en: &#123;...&#125;, zh: &#123;...&#125; &#125;);
+setI18nContext(i18n);
 &lt;/script&gt;</code
 									></pre>
 							</div>
@@ -567,6 +568,7 @@ export const useI18n = () =&gt; &#123;
 		border-radius: 16px;
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 		overflow: hidden;
+		overflow-x: auto;
 	}
 
 	.quickstart-header {

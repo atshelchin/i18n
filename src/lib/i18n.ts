@@ -1,5 +1,5 @@
 import type { PackageRegistry, PackageLocales, LocaleMeta } from './types.js';
-import { deepMerge, getNestedValue } from './utils.js';
+import { deepMerge, getNestedValue } from './utils/utils.js';
 
 export class I18n {
 	private _locale: string;

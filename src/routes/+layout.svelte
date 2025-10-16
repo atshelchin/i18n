@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { LayoutData } from './$types.js';
-	import { createI18nStore, setI18nContext } from '$lib/i18n.svelte.js';
+	import { createI18nStore, setI18nContext } from '$lib/svelte/index.js';
 	let { children, data } = $props<{ children: import('svelte').Snippet; data: LayoutData }>();
 	console.log({ data });
 	const i18nStore = createI18nStore({ initialLocale: data.locale });

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { useI18n } from '$lib/i18n.svelte.js';
+	import { useI18n } from '$lib/svelte/index.js';
 
 	// ✅ 正确：不要解构响应式属性
 	const i18n = useI18n();

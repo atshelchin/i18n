@@ -1,5 +1,5 @@
 import type { LayoutServerLoad } from './$types.js';
-import { extractLocaleFromPathname, extractLocaleFromCookie } from '$lib/index.js';
+import { extractLocaleFromPathname, extractLocaleFromCookie } from '$lib/utils/index.js';
 const supportedLocales = ['en', 'ja', 'zh', 'fr'];
 export const load: LayoutServerLoad = async ({ cookies, url }) => {
 	const locale =

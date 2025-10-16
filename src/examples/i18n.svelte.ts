@@ -1,4 +1,4 @@
-import { useI18n as useI18n_ } from '$lib/i18n.svelte.js';
+import { useI18n as useI18n_ } from '$lib/svelte/i18n.svelte.js';
 import type { PackageLocales } from '$lib/types.js';
 import en from './locales/en.json' with { type: 'json' };
 import zh from './locales/zh.json' with { type: 'json' };
