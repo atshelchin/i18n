@@ -3,8 +3,11 @@
 	"version": "0.0.1",
 	"scripts": {
 		"dev": "vite dev",
-		"build": "vite build && npm run prepack",
-		"preview": "vite preview",
+		"build": "vite build",
+		"preview": "bun run build && wrangler dev --ip 0.0.0.0",
+		"deploy": "bun run build && wrangler deploy",
+		"cf-typegen": "wrangler types src/worker-configuration.d.ts",
+		"build:pack": "vite build && npm run prepack",
 		"prepare": "svelte-kit sync || echo ''",
 		"prepack": "svelte-kit sync && svelte-package && publint",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
