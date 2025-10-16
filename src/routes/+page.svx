@@ -1,0 +1,6 @@
+---
+title: Another i18n library for svelte5
+
+---
+
+# { title }
