@@ -283,6 +283,326 @@ describe('I18n.t', () => {
 		i18n.setLocale('ja');
 		expect(i18n.t('greeting')).toBe('こんにちは');
 	});
+
+	it('should interpolate simple parameters', () => {
+		const i18n = new I18n('en');
+
+		i18n.register('__default__', {
+			en: {
+				_meta: {
+					code: 'en',
+					name: 'English',
+					englishName: 'English',
+					direction: 'ltr',
+					flag: '🇬🇧'
+				},
+				welcome: 'Hello, {name}!',
+				account_count: 'You have {count} accounts'
+			}
+		});
+
+		expect(i18n.t('welcome', { name: 'Alice' })).toBe('Hello, Alice!');
+		expect(i18n.t('account_count', { count: 5 })).toBe('You have 5 accounts');
+	});
+
+	it('should interpolate multiple parameters', () => {
+		const i18n = new I18n('en');
+
+		i18n.register('__default__', {
+			en: {
+				_meta: {
+					code: 'en',
+					name: 'English',
+					englishName: 'English',
+					direction: 'ltr',
+					flag: '🇬🇧'
+				},
+				message: '{user} sent {count} messages to {recipient}'
+			}
+		});
+
+		expect(i18n.t('message', { user: 'Bob', count: 3, recipient: 'Alice' })).toBe(
+			'Bob sent 3 messages to Alice'
+		);
+	});
+
+	it('should keep unreplaced placeholders when parameter is missing', () => {
+		const i18n = new I18n('en');
+
+		i18n.register('__default__', {
+			en: {
+				_meta: {
+					code: 'en',
+					name: 'English',
+					englishName: 'English',
+					direction: 'ltr',
+					flag: '🇬🇧'
+				},
+				message: 'Hello, {name}! You have {count} items.'
+			}
+		});
+
+		expect(i18n.t('message', { name: 'Alice' })).toBe('Hello, Alice! You have {count} items.');
+	});
+
+	it('should work with package option and parameters', () => {
+		const i18n = new I18n('en');
+
+		i18n.register('wallet', {
+			en: {
+				_meta: {
+					code: 'en',
+					name: 'English',
+					englishName: 'English',
+					direction: 'ltr',
+					flag: '🇬🇧'
+				},
+				account_count: 'Wallet has {count} accounts'
+			}
+		});
+
+		expect(i18n.t('account_count', { package: 'wallet', count: 10 })).toBe(
+			'Wallet has 10 accounts'
+		);
+	});
+
+	it('should handle numeric parameters', () => {
+		const i18n = new I18n('en');
+
+		i18n.register('__default__', {
+			en: {
+				_meta: {
+					code: 'en',
+					name: 'English',
+					englishName: 'English',
+					direction: 'ltr',
+					flag: '🇬🇧'
+				},
+				price: 'Price: ${amount}'
+			}
+		});
+
+		expect(i18n.t('price', { amount: 99.99 })).toBe('Price: $99.99');
+	});
+
+	it('should handle plural forms with _one and _other suffixes', () => {
+		const i18n = new I18n('en');
+
+		i18n.register('__default__', {
+			en: {
+				_meta: {
+					code: 'en',
+					name: 'English',
+					englishName: 'English',
+					direction: 'ltr',
+					flag: '🇬🇧'
+				},
+				account_zero: '{count} accounts',
+				account_one: '{count} account',
+				account_two: '{count} accounts',
+				account_other: '{count} accounts'
+			}
+		});
+
+		expect(i18n.t('account', { count: 1 })).toBe('1 account');
+		expect(i18n.t('account', { count: 0 })).toBe('0 accounts');
+		expect(i18n.t('account', { count: 2 })).toBe('2 accounts');
+		expect(i18n.t('account', { count: 10 })).toBe('10 accounts');
+	});
+
+	it('should fallback to base key when plural forms not defined', () => {
+		const i18n = new I18n('en');
+
+		i18n.register('__default__', {
+			en: {
+				_meta: {
+					code: 'en',
+					name: 'English',
+					englishName: 'English',
+					direction: 'ltr',
+					flag: '🇬🇧'
+				},
+				item: '{count} items'
+			}
+		});
+
+		// 没有定义 item_one 和 item_other，应该使用基础的 item
+		expect(i18n.t('item', { count: 1 })).toBe('1 items');
+		expect(i18n.t('item', { count: 5 })).toBe('5 items');
+	});
+
+	it('should work without count parameter', () => {
+		const i18n = new I18n('en');
+
+		i18n.register('__default__', {
+			en: {
+				_meta: {
+					code: 'en',
+					name: 'English',
+					englishName: 'English',
+					direction: 'ltr',
+					flag: '🇬🇧'
+				},
+				message: 'Hello, {name}!',
+				message_one: 'One message',
+				message_other: 'Many messages'
+			}
+		});
+
+		// 不传 count，应该使用基础 key
+		expect(i18n.t('message', { name: 'World' })).toBe('Hello, World!');
+		// 传 count，应该使用复数形式
+		expect(i18n.t('message', { count: 1 })).toBe('One message');
+		expect(i18n.t('message', { count: 5 })).toBe('Many messages');
+	});
+
+	it('should handle zero count with _zero suffix', () => {
+		const i18n = new I18n('en');
+
+		i18n.register('__default__', {
+			en: {
+				_meta: {
+					code: 'en',
+					name: 'English',
+					englishName: 'English',
+					direction: 'ltr',
+					flag: '🇬🇧'
+				},
+				item_zero: 'No items',
+				item_one: 'One item',
+				item_other: '{count} items'
+			}
+		});
+
+		expect(i18n.t('item', { count: 0 })).toBe('No items');
+		expect(i18n.t('item', { count: 1 })).toBe('One item');
+		expect(i18n.t('item', { count: 5 })).toBe('5 items');
+	});
+
+	it('should handle two count with _two suffix', () => {
+		const i18n = new I18n('en');
+
+		i18n.register('__default__', {
+			en: {
+				_meta: {
+					code: 'en',
+					name: 'English',
+					englishName: 'English',
+					direction: 'ltr',
+					flag: '🇬🇧'
+				},
+				person_one: 'One person',
+				person_two: 'A pair of people',
+				person_other: '{count} people'
+			}
+		});
+
+		expect(i18n.t('person', { count: 1 })).toBe('One person');
+		expect(i18n.t('person', { count: 2 })).toBe('A pair of people');
+		expect(i18n.t('person', { count: 3 })).toBe('3 people');
+	});
+
+	it('should format numbers with :number formatter', () => {
+		const i18n = new I18n('en');
+
+		i18n.register('__default__', {
+			en: {
+				_meta: {
+					code: 'en',
+					name: 'English',
+					englishName: 'English',
+					direction: 'ltr',
+					flag: '🇬🇧'
+				},
+				users: '{count:number} users'
+			}
+		});
+
+		expect(i18n.t('users', { count: 1000 })).toBe('1,000 users');
+		expect(i18n.t('users', { count: 1000000 })).toBe('1,000,000 users');
+	});
+
+	it('should format currency with :currency formatter', () => {
+		const i18n = new I18n('en');
+
+		i18n.register('__default__', {
+			en: {
+				_meta: {
+					code: 'en',
+					name: 'English',
+					englishName: 'English',
+					direction: 'ltr',
+					flag: '🇬🇧'
+				},
+				price: 'Total: {amount:currency}'
+			}
+		});
+
+		const result = i18n.t('price', { amount: 99.99 });
+		// Currency formatting may vary, just check it contains the number
+		expect(result).toContain('99.99');
+	});
+
+	it('should format percentage with :percent formatter', () => {
+		const i18n = new I18n('en');
+
+		i18n.register('__default__', {
+			en: {
+				_meta: {
+					code: 'en',
+					name: 'English',
+					englishName: 'English',
+					direction: 'ltr',
+					flag: '🇬🇧'
+				},
+				progress: 'Progress: {value:percent}'
+			}
+		});
+
+		const result = i18n.t('progress', { value: 0.75 });
+		// Percent formatting: 0.75 -> 75%
+		expect(result).toContain('75');
+	});
+
+	it('should handle mixed interpolation and pluralization', () => {
+		const i18n = new I18n('en');
+
+		i18n.register('__default__', {
+			en: {
+				_meta: {
+					code: 'en',
+					name: 'English',
+					englishName: 'English',
+					direction: 'ltr',
+					flag: '🇬🇧'
+				},
+				notification_one: '{user} sent you {count} message',
+				notification_other: '{user} sent you {count} messages'
+			}
+		});
+
+		expect(i18n.t('notification', { user: 'Alice', count: 1 })).toBe('Alice sent you 1 message');
+		expect(i18n.t('notification', { user: 'Bob', count: 5 })).toBe('Bob sent you 5 messages');
+	});
+
+	it('should keep unknown formatters as-is', () => {
+		const i18n = new I18n('en');
+
+		i18n.register('__default__', {
+			en: {
+				_meta: {
+					code: 'en',
+					name: 'English',
+					englishName: 'English',
+					direction: 'ltr',
+					flag: '🇬🇧'
+				},
+				message: 'Value: {amount:unknown}'
+			}
+		});
+
+		expect(i18n.t('message', { amount: 42 })).toBe('Value: 42');
+	});
 });
 
 describe('I18n.getSupportedLocales', () => {

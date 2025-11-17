@@ -13,7 +13,10 @@ export interface I18nStore {
 	// Methods
 	setLocale: (locale: string) => void;
 	register: (packageName: string, packageLocales: PackageLocales, source?: 'lib' | 'app') => void;
-	t: (key: string, options?: { package?: string }) => string;
+	t: {
+		(key: string, params?: Record<string, string | number>): string;
+		(key: string, options?: { package?: string } & Record<string, string | number>): string;
+	};
 	getMeta: (packageName?: string) => LocaleMeta | undefined;
 	getSupportedLocales: (packageName?: string) => LocaleMeta[];
 }
@@ -123,11 +126,16 @@ export function createI18nStore(options: CreateI18nStoreOptions = {}): I18nStore
 		updateReactiveState();
 	}
 
-	function t(key: string, options?: { package?: string }): string {
+	function t(
+		key: string,
+		paramsOrOptions?:
+			| Record<string, string | number>
+			| ({ package?: string } & Record<string, string | number>)
+	): string {
 		// Access locale and registryVersion to create reactive dependency
 		void locale;
 		void registryVersion;
-		return i18n.t(key, options);
+		return i18n.t(key, paramsOrOptions);
 	}
 
 	function getMeta(packageName?: string): LocaleMeta | undefined {
