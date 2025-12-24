@@ -3,8 +3,8 @@ import type { LocaleData, LocaleMeta } from '$lib/types.js';
 import { extractLocaleFromPathname } from '$lib/utils/utils.js';
 
 // Auto-scan all locale files using Vite glob import (works on server too!)
-// Pattern: ./locales/{locale}/{namespace}.json
-const localeModules = import.meta.glob<{ default: LocaleData }>('./locales/**/*.json', {
+// Pattern: ../i18n/locales/{locale}/{namespace}.json
+const localeModules = import.meta.glob<{ default: LocaleData }>('../i18n/locales/**/*.json', {
 	eager: true
 });
 
@@ -19,8 +19,8 @@ function parseLocaleModules(): {
 	const metaMap = new Map<string, LocaleMeta>();
 
 	for (const [path, module] of Object.entries(localeModules)) {
-		// Extract locale and namespace from path: ./locales/en/common.json -> en, common
-		const match = path.match(/\.\/locales\/([^/]+)\/([^/]+)\.json$/);
+		// Extract locale and namespace from path: ../i18n/locales/en/common.json -> en, common
+		const match = path.match(/\/locales\/([^/]+)\/([^/]+)\.json$/);
 		if (match) {
 			const [, locale, namespace] = match;
 			localeSet.add(locale);

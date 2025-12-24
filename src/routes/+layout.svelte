@@ -15,7 +15,7 @@
 	});
 
 	// Register all locale files using Vite glob import (for client-side lazy loading)
-	const modules = import.meta.glob('./locales/**/*.json');
+	const modules = import.meta.glob('../i18n/locales/**/*.json');
 	registerGlobLoaders(modules, i18n);
 
 	// Set context for child components
