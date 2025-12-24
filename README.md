@@ -124,29 +124,66 @@ Each JSON file contains translations for that namespace:
 
 ## SSR Support
 
-For server-side rendering, preload translations in your server load function:
+For server-side rendering, use `createServerLoader` for automatic namespace detection based on URL:
 
 ```typescript
 // +layout.server.ts
 import type { LayoutServerLoad } from './$types';
+import { createServerLoader } from '@shelchin/i18n';
 
-const localeModules = import.meta.glob('./locales/**/*.json', { eager: true });
+const { load: i18nLoad, localeMetas } = createServerLoader(
+	import.meta.glob('./locales/**/*.json', { eager: true }),
+	{
+		defaultLocale: 'en',
+		baseNamespaces: ['common'], // Always preload these
+		homeNamespace: 'home' // Namespace for "/" route
+	}
+);
+
+export const load = (async (event) => {
+	const data = await i18nLoad(event);
+	return { ...data, localeMetas };
+}) satisfies LayoutServerLoad;
+```
+
+### Automatic Namespace Detection
+
+The server loader automatically detects which namespace to preload based on URL:
+
+| URL Path         | Namespaces Loaded    |
+| ---------------- | -------------------- |
+| `/`              | `common` + `home`    |
+| `/about`         | `common` + `about`   |
+| `/products/list` | `common` + `products`|
+| `/en/about`      | `common` + `about`   |
+
+Only namespaces that exist in your locale files are preloaded. Unknown namespaces fall back to client-side lazy loading.
+
+### Manual SSR Setup
+
+For more control, use the individual helper functions:
+
+```typescript
+import { parseLocaleModules, getPreloadedTranslations } from '@shelchin/i18n';
+
+const parsed = parseLocaleModules(
+	import.meta.glob('./locales/**/*.json', { eager: true })
+);
 
 export const load: LayoutServerLoad = async ({ url, cookies }) => {
-	const locale = extractLocaleFromUrl(url) || cookies.get('i18n-locale') || 'en';
+	const locale = cookies.get('i18n-locale') || 'en';
 
-	// Get translations for current locale
-	const translations = {};
-	for (const [path, module] of Object.entries(localeModules)) {
-		const match = path.match(/\.\/locales\/([^/]+)\/([^/]+)\.json$/);
-		if (match && match[1] === locale) {
-			translations[match[2]] = module.default;
-		}
-	}
+	const preloadedTranslations = getPreloadedTranslations(parsed, {
+		locale,
+		pathname: url.pathname,
+		baseNamespaces: ['common']
+	});
 
 	return {
 		locale,
-		preloadedTranslations: { [locale]: translations }
+		supportedLocales: parsed.locales,
+		localeMetas: parsed.localeMetas,
+		preloadedTranslations
 	};
 };
 ```
@@ -216,6 +253,16 @@ Options:
 | `useI18n()`                          | Get i18n instance from context |
 | `registerGlobLoaders(modules, i18n)` | Register locale file loaders   |
 | `t(key, params?)`                    | Translate a key (module-level) |
+
+### Server Functions
+
+| Function                              | Description                           |
+| ------------------------------------- | ------------------------------------- |
+| `createServerLoader(modules, options)`| Create SSR load function              |
+| `parseLocaleModules(modules)`         | Parse glob imports to structured data |
+| `getPreloadedTranslations(data, opts)`| Get filtered translations for SSR     |
+| `getNamespaceFromPath(pathname)`      | Extract namespace from URL path       |
+| `getNamespacesForPath(pathname, ns)`  | Get all namespaces for a path         |
 
 ### InitI18nOptions
 
