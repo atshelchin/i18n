@@ -8,6 +8,11 @@ const parsed = parseLocaleModules(
 
 console.log({ parsed });
 
+interface FAQ {
+	question: string;
+	answer: string;
+}
+
 export const load = async (event) => {
 	const t = createServerT(parsed.translations, {
 		event,
@@ -15,5 +20,7 @@ export const load = async (event) => {
 	});
 	console.log('Server t():', t('home.title')); // "Welcome to @shelchin/i18n"
 	console.log('Server t<string[]>():', t<string[]>('home.features')); // ["...", "...", "..."]
+	console.log('Server t<FAQ[]>():', t<FAQ[]>('home.faqs')); // ["...", "...", "..."]
+
 	return {};
 };
