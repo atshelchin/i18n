@@ -15,9 +15,9 @@
 		// Replace locale prefix or add it
 		const pathWithoutLocale = currentPath.replace(/^\/[a-z]{2}(?=\/|$)/, '');
 		const newPath = `/${locale}${pathWithoutLocale || '/'}`;
+		// eslint-disable-next-line svelte/no-navigation-without-resolve -- dynamic locale URL
 		goto(newPath);
 	}
-	console.log(123, i18n.locales);
 </script>
 
 <div class="demo-page">
@@ -39,7 +39,7 @@
 			<span class="current-locale">{i18n.locale.toUpperCase()}</span>
 		</div>
 		<div class="locale-buttons">
-			{#each i18n.locales as loc}
+			{#each i18n.locales as loc (loc.code)}
 				<button
 					onclick={() => switchLocale(loc.code)}
 					class:active={i18n.locale === loc.code}
@@ -101,20 +101,20 @@
 						class="hl-string">"en"</span
 					>, <span class="hl-key">"name"</span>: <span class="hl-string">"English"</span>, <span
 						class="hl-key">"flag"</span
-					>: <span class="hl-string">"🇬🇧"</span> {'}'},<br />  <span class="hl-key">"hello"</span
+					>: <span class="hl-string">"🇬🇧"</span> },<br />  <span class="hl-key">"hello"</span
 					>: <span class="hl-string">"Hello"</span>,<br />  <span class="hl-key">"greeting"</span
-					>: <span class="hl-string">"Hello, {'{'}<span class="hl-param">name</span>{'}'}!"</span
-					><br />{'}'}
+					>: <span class="hl-string">"Hello, {'{'}<span class="hl-param">name</span>}!"</span><br
+					/>}
 
 <span class="hl-comment">// locales/zh/common.json</span>
 {'{'}<br />  <span class="hl-key">"_meta"</span>: {'{'} <span class="hl-key">"code"</span>: <span
 						class="hl-string">"zh"</span
 					>, <span class="hl-key">"name"</span>: <span class="hl-string">"中文"</span>, <span
 						class="hl-key">"flag"</span
-					>: <span class="hl-string">"🇨🇳"</span> {'}'},<br />  <span class="hl-key">"hello"</span
+					>: <span class="hl-string">"🇨🇳"</span> },<br />  <span class="hl-key">"hello"</span
 					>: <span class="hl-string">"你好"</span>,<br />  <span class="hl-key">"greeting"</span
-					>: <span class="hl-string">"你好，{'{'}<span class="hl-param">name</span>{'}'}！"</span
-					><br />{'}'}</code
+					>: <span class="hl-string">"你好，{'{'}<span class="hl-param">name</span>}！"</span><br
+					/>}</code
 				></pre>
 		</div>
 
@@ -123,15 +123,14 @@
 			<pre class="code-block"><code
 					><span class="hl-comment">// +layout.svelte</span>
 <span class="hl-tag">&lt;script&gt;</span>
-  <span class="hl-keyword">import</span
-					> {'{'} initI18n, setI18nContext, registerGlobLoaders {'}'} <span class="hl-keyword"
-						>from</span
+  <span class="hl-keyword">import</span> {'{'} initI18n, setI18nContext, registerGlobLoaders } <span
+						class="hl-keyword">from</span
 					> <span class="hl-string">'@shelchin/i18n'</span>;
 
   <span class="hl-keyword">const</span> i18n = <span class="hl-func">initI18n</span
 					>({'{'} locale: <span class="hl-string">'en'</span>, defaultLocale: <span
 						class="hl-string">'en'</span
-					> {'}'});
+					> });
 
   <span class="hl-comment">// Auto-scan all locale files</span>
   <span class="hl-func">registerGlobLoaders</span>(<span class="hl-keyword">import</span>.meta.<span
@@ -148,23 +147,24 @@
 			<pre class="code-block"><code
 					><span class="hl-comment">// +page.svelte</span>
 <span class="hl-tag">&lt;script&gt;</span>
-  <span class="hl-keyword">import</span> {'{'} useI18n {'}'} <span class="hl-keyword">from</span
-					> <span class="hl-string">'@shelchin/i18n'</span>;
+  <span class="hl-keyword">import</span> {'{'} useI18n } <span class="hl-keyword">from</span> <span
+						class="hl-string">'@shelchin/i18n'</span
+					>;
   <span class="hl-keyword">const</span> i18n = <span class="hl-func">useI18n</span>();
 <span class="hl-tag">&lt;/script&gt;</span>
 
 <span class="hl-tag">&lt;p&gt;</span>{'{'}i18n.<span class="hl-func">t</span>(<span
 						class="hl-string">'common.hello'</span
-					>){'}'}<span class="hl-tag">&lt;/p&gt;</span>
+					>)}<span class="hl-tag">&lt;/p&gt;</span>
 <span class="hl-tag">&lt;p&gt;</span>{'{'}i18n.<span class="hl-func">t</span>(<span
 						class="hl-string">'common.greeting'</span
-					>, {'{'} name: <span class="hl-string">'World'</span> {'}'}){'}'}<span class="hl-tag"
+					>, {'{'} name: <span class="hl-string">'World'</span> })}<span class="hl-tag"
 						>&lt;/p&gt;</span
 					>
 
 <span class="hl-tag">&lt;button</span> <span class="hl-attr">onclick</span>={'{'}() => i18n.<span
 						class="hl-func">setLocale</span
-					>(<span class="hl-string">'zh'</span>){'}'}<span class="hl-tag">&gt;</span>
+					>(<span class="hl-string">'zh'</span>)}<span class="hl-tag">&gt;</span>
   Switch to Chinese
 <span class="hl-tag">&lt;/button&gt;</span></code
 				></pre>
@@ -213,10 +213,10 @@ i18n.<span class="hl-func">t</span>(<span class="hl-string">'common.ok'</span>)<
 			<div class="usage-code">
 				<pre class="code-block-small"><code
 						><span class="hl-comment"
-							>// JSON: "greeting": "Hello, {'{'}<span class="hl-param">name</span>{'}'}!"</span
+							>// JSON: "greeting": "Hello, {'{'}<span class="hl-param">name</span>}!"</span
 						>
 i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.greeting'</span
-						>, {'{'} name: <span class="hl-string">'{name}'</span> {'}'})</code
+						>, {'{'} name: <span class="hl-string">'{name}'</span> })</code
 					></pre>
 			</div>
 			<div class="usage-demo">
@@ -243,14 +243,14 @@ i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.greeting'</spa
 				<pre class="code-block-small"><code
 						><span class="hl-comment">// JSON: "items_zero": "No items"</span>
 <span class="hl-comment"
-							>//       "items_one": "{'{'}<span class="hl-param">count</span>{'}'} item"</span
+							>//       "items_one": "{'{'}<span class="hl-param">count</span>} item"</span
 						>
 <span class="hl-comment"
-							>//       "items_other": "{'{'}<span class="hl-param">count</span>{'}'} items"</span
+							>//       "items_other": "{'{'}<span class="hl-param">count</span>} items"</span
 						>
 i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.items'</span>, {'{'} count: <span
 							class="hl-number">{count}</span
-						> {'}'})</code
+						> })</code
 					></pre>
 			</div>
 			<div class="usage-demo">
@@ -288,7 +288,7 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 			</div>
 			<div class="usage-demo">
 				<div class="namespace-list">
-					{#each i18n.getLoadedNamespaces() as ns}
+					{#each i18n.getLoadedNamespaces() as ns (ns)}
 						<span class="namespace-tag">{ns}</span>
 					{/each}
 				</div>
@@ -714,61 +714,6 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 		font-size: 0.8125rem;
 		font-weight: 500;
 		border: 1px solid #54aeff66;
-	}
-
-	/* Locales Grid */
-	.locales-card {
-		margin-top: 0.5rem;
-	}
-
-	.locales-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-		gap: 0.75rem;
-	}
-
-	.locale-card {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.5rem 0.75rem;
-		background: #f6f8fa;
-		border-radius: 6px;
-		border: 1px solid #d0d7de;
-		transition: all 0.15s;
-	}
-
-	.locale-card.active {
-		background: #ddf4ff;
-		border-color: #0969da;
-	}
-
-	.locale-card .flag {
-		font-size: 1.25rem;
-	}
-
-	.locale-info {
-		flex: 1;
-		display: flex;
-		flex-direction: column;
-	}
-
-	.native-name {
-		font-weight: 600;
-		color: #1f2328;
-		font-size: 0.875rem;
-	}
-
-	.english-name {
-		font-size: 0.75rem;
-		color: #656d76;
-	}
-
-	.locale-card .code {
-		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
-		font-size: 0.75rem;
-		color: #656d76;
-		text-transform: uppercase;
 	}
 
 	/* Footer CTA - GitHub style */

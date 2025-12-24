@@ -35,6 +35,7 @@
 		const currentPath = page.url.pathname;
 		const pathWithoutLocale = currentPath.replace(/^\/[a-z]{2}(?=\/|$)/, '');
 		const newPath = `/${locale}${pathWithoutLocale || '/'}`;
+		// eslint-disable-next-line svelte/no-navigation-without-resolve -- dynamic locale URL
 		await goto(newPath);
 	};
 </script>

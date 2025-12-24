@@ -351,6 +351,7 @@ class I18nStore implements I18nInstance {
 
 	private _extractLocales(): void {
 		// Build a map of existing locales (preserve meta from preloaded translations)
+		// eslint-disable-next-line svelte/prefer-svelte-reactivity -- not reactive, just a temp helper
 		const existingMeta = new Map<string, LocaleMeta>();
 		for (const loc of this._locales) {
 			existingMeta.set(loc.code, loc);

@@ -113,9 +113,7 @@ export function extractLocaleFromCookie(
 export function extractLocaleFromHeader(acceptLanguage: string | null): string | null {
 	if (!acceptLanguage) return null;
 
-	const langs = acceptLanguage
-		.split(',')
-		.map((lang) => lang.split(';')[0].trim().split('-')[0]);
+	const langs = acceptLanguage.split(',').map((lang) => lang.split(';')[0].trim().split('-')[0]);
 
 	return langs[0] || null;
 }
