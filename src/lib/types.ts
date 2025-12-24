@@ -11,9 +11,9 @@ export interface LocaleMeta {
 	flag?: string;
 }
 
-/** Translation content (nested object) */
+/** Translation content (nested object, supports arrays) */
 export interface TranslationContent {
-	[key: string]: string | TranslationContent;
+	[key: string]: string | TranslationContent | unknown[];
 }
 
 /** Locale data with optional metadata */
@@ -101,8 +101,8 @@ export interface TranslationKeys {}
 /** Translation key type - uses generated keys if available, falls back to string */
 export type TranslationKey = keyof TranslationKeys extends never ? string : keyof TranslationKeys;
 
-/** Translation return type - string by default, or string[] when specified */
-export type TranslationResult<T = string> = T extends string[] ? string[] : string;
+/** Translation return type - string by default, or T when specified */
+export type TranslationResult<T = string> = T extends string ? string : T;
 
 /** I18n store interface */
 export interface I18nInstance {

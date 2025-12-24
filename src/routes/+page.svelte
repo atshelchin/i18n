@@ -4,6 +4,12 @@
 	import { resolve } from '$app/paths';
 	import { useI18n } from '$lib/index.js';
 
+	// Type for FAQ items
+	interface FAQ {
+		question: string;
+		answer: string;
+	}
+
 	const i18n = useI18n();
 
 	let count = $state(1);
@@ -312,6 +318,43 @@ i18n.<span class="hl-func">t</span>&lt;string[]&gt;(<span class="hl-string">'hom
 						<li>{feature}</li>
 					{/each}
 				</ul>
+			</div>
+		</div>
+	</section>
+
+	<!-- Object Array Access (NEW!) -->
+	<section class="card usage-card">
+		<h2>Object Array Access (NEW!)</h2>
+		<div class="usage-content">
+			<div class="usage-code">
+				<pre class="code-block-small"><code
+						><span class="hl-comment">// JSON:</span>
+<span class="hl-comment">// "faqs": [</span>
+<span class="hl-comment">//   {'{'} "question": "...", "answer": "..." },</span>
+<span class="hl-comment">//   {'{'} "question": "...", "answer": "..." }</span>
+<span class="hl-comment">// ]</span>
+
+<span class="hl-comment">// Define your type</span>
+<span class="hl-keyword">interface</span> FAQ {'{'}
+  question: <span class="hl-keyword">string</span>;
+  answer: <span class="hl-keyword">string</span>;
+}
+
+<span class="hl-comment">// Get typed array</span>
+i18n.<span class="hl-func">t</span>&lt;FAQ[]&gt;(<span class="hl-string">'home.faqs'</span
+						>) <span class="hl-comment">// FAQ[]</span></code
+					></pre>
+			</div>
+			<div class="usage-demo">
+				<p class="array-label">i18n.t&lt;FAQ[]&gt;('home.faqs'):</p>
+				<div class="faq-list">
+					{#each i18n.t<FAQ[]>('home.faqs') as faq, i (i)}
+						<div class="faq-item">
+							<div class="faq-question">Q: {faq.question}</div>
+							<div class="faq-answer">A: {faq.answer}</div>
+						</div>
+					{/each}
+				</div>
 			</div>
 		</div>
 	</section>
@@ -992,6 +1035,32 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 	.features-list li {
 		padding: 0.25rem 0;
 		font-size: 0.875rem;
+	}
+
+	/* FAQ List */
+	.faq-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.faq-item {
+		background: #f6f8fa;
+		border: 1px solid #d0d7de;
+		border-radius: 6px;
+		padding: 0.625rem 0.75rem;
+	}
+
+	.faq-question {
+		font-weight: 600;
+		color: #0550ae;
+		font-size: 0.875rem;
+		margin-bottom: 0.25rem;
+	}
+
+	.faq-answer {
+		color: #1f2328;
+		font-size: 0.8125rem;
 	}
 
 	/* Test Navigation */

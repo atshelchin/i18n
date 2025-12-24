@@ -22,7 +22,7 @@ import type {
 } from './types.js';
 import {
 	getNestedValue,
-	getNestedArray,
+	getNestedData,
 	extractNamespace,
 	extractKeyPath,
 	interpolate,
@@ -102,6 +102,7 @@ class I18nStore implements I18nInstance {
 	 * Automatically triggers lazy loading if namespace not loaded
 	 * @example t('home.title') // string
 	 * @example t<string[]>('home.features') // string[]
+	 * @example t<FAQ[]>('page.faqs') // FAQ[] - any array/object type
 	 * @example t('price', { amount: 1234.56 }) // with {amount:number} in template
 	 */
 	t<T = string>(
@@ -128,14 +129,16 @@ class I18nStore implements I18nInstance {
 		const registryKey = `${this._locale}:${namespace}`;
 		const namespaceData = this._registry[registryKey];
 
-		// Try to get as array first
-		const arrayValue = getNestedArray(namespaceData, keyPath);
-		if (arrayValue !== undefined) {
-			return arrayValue as TranslationResult<T>;
+		// Get the raw data first
+		const rawData = getNestedData<unknown>(namespaceData, keyPath);
+
+		// If it's not a string, return directly (array, object, etc.) - no interpolation
+		if (rawData !== undefined && typeof rawData !== 'string') {
+			return rawData as TranslationResult<T>;
 		}
 
-		// Get as string
-		let value = getNestedValue(namespaceData, keyPath);
+		// Get as string for interpolation
+		let value = rawData as string | undefined;
 
 		// Handle pluralization
 		if (params && typeof params['count'] === 'number') {
@@ -151,7 +154,7 @@ class I18nStore implements I18nInstance {
 			return this._getFallback(key, params) as TranslationResult<T>;
 		}
 
-		// Interpolate parameters
+		// Interpolate parameters (only for strings)
 		return interpolate(value, params, this._locale) as TranslationResult<T>;
 	}
 
@@ -362,10 +365,7 @@ class I18nStore implements I18nInstance {
 		return loadPromise;
 	}
 
-	private _getFallback(
-		key: string,
-		params?: Record<string, string | number | Date>
-	): string | string[] {
+	private _getFallback(key: string, params?: Record<string, string | number | Date>): unknown {
 		const namespace = extractNamespace(key);
 		const keyPath = extractKeyPath(key);
 
@@ -377,19 +377,21 @@ class I18nStore implements I18nInstance {
 			if (this._namespaceStates[defaultKey] === 'loaded') {
 				const namespaceData = this._registry[defaultKey];
 
-				// Try array first
-				const arrayValue = getNestedArray(namespaceData, keyPath);
-				if (arrayValue !== undefined) {
+				// Get raw data first
+				const rawData = getNestedData<unknown>(namespaceData, keyPath);
+
+				// If it's not a string, return directly (array, object, etc.)
+				if (rawData !== undefined && typeof rawData !== 'string') {
 					if (this._devMode) {
 						console.warn(
 							`[i18n] Missing translation: "${key}" for locale "${this._locale}", using fallback from "${this._defaultLocale}"`
 						);
 					}
-					return arrayValue;
+					return rawData;
 				}
 
 				// Try string
-				let value = getNestedValue(namespaceData, keyPath);
+				let value = rawData as string | undefined;
 
 				if (params && typeof params['count'] === 'number') {
 					const pluralKey = getPluralKey(keyPath, params['count']);

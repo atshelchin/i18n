@@ -9,5 +9,19 @@
 		"Auto-scan locale files using Vite glob imports",
 		"Lazy loading by namespace - load translations on-demand",
 		"Full SSR support with preloaded translations"
+	],
+	"faqs": [
+		{
+			"question": "What is @shelchin/i18n?",
+			"answer": "A lightweight i18n library for Svelte 5 with SSR support."
+		},
+		{
+			"question": "Does it support TypeScript?",
+			"answer": "Yes! Full type safety with auto-generated types."
+		},
+		{
+			"question": "How to switch languages?",
+			"answer": "Use i18n.setLocale('zh') or navigate to /zh/..."
+		}
 	]
 }

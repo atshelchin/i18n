@@ -10,6 +10,19 @@ import {
 	getNamespacesForPath
 } from './server.js';
 
+// Type for FAQ items
+interface FAQ {
+	question: string;
+	answer: string;
+}
+
+// Type for Step items
+interface Step {
+	title: string;
+	description: string;
+	icon?: string;
+}
+
 // Mock translations data (uses any to bypass TranslationKeys type checking)
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mockTranslations: any = {
@@ -26,6 +39,16 @@ const mockTranslations: any = {
 		common: {
 			ok: 'OK',
 			cancel: 'Cancel'
+		},
+		page: {
+			faqs: [
+				{ question: 'What is this?', answer: 'This is a test.' },
+				{ question: 'How to use?', answer: 'Just call t().' }
+			],
+			steps: [
+				{ title: 'Step 1', description: 'First step', icon: 'icon-1' },
+				{ title: 'Step 2', description: 'Second step' }
+			]
 		}
 	},
 	zh: {
@@ -35,6 +58,12 @@ const mockTranslations: any = {
 		},
 		common: {
 			ok: '确定'
+		},
+		page: {
+			faqs: [
+				{ question: '这是什么？', answer: '这是一个测试。' },
+				{ question: '如何使用？', answer: '调用 t() 即可。' }
+			]
 		}
 	}
 };
@@ -110,6 +139,50 @@ describe('createServerT', () => {
 		it('should fallback array from default locale', () => {
 			const t = createServerT(mockTranslations, { locale: 'zh', defaultLocale: 'en' });
 			expect(t<string[]>('home.features')).toEqual(['Feature 1', 'Feature 2', 'Feature 3']);
+		});
+	});
+
+	describe('t<T[]>() - object arrays', () => {
+		it('should return array of FAQ objects', () => {
+			const t = createServerT(mockTranslations, { locale: 'en' });
+			const faqs = t<FAQ[]>('page.faqs' as never);
+
+			expect(faqs).toHaveLength(2);
+			expect(faqs[0].question).toBe('What is this?');
+			expect(faqs[0].answer).toBe('This is a test.');
+			expect(faqs[1].question).toBe('How to use?');
+		});
+
+		it('should return array of Step objects', () => {
+			const t = createServerT(mockTranslations, { locale: 'en' });
+			const steps = t<Step[]>('page.steps' as never);
+
+			expect(steps).toHaveLength(2);
+			expect(steps[0].title).toBe('Step 1');
+			expect(steps[0].icon).toBe('icon-1');
+			expect(steps[1].icon).toBeUndefined();
+		});
+
+		it('should return localized FAQ objects', () => {
+			const t = createServerT(mockTranslations, { locale: 'zh' });
+			const faqs = t<FAQ[]>('page.faqs' as never);
+
+			expect(faqs).toHaveLength(2);
+			expect(faqs[0].question).toBe('这是什么？');
+			expect(faqs[0].answer).toBe('这是一个测试。');
+		});
+
+		it('should fallback object array from default locale', () => {
+			const t = createServerT(mockTranslations, { locale: 'zh', defaultLocale: 'en' });
+			const steps = t<Step[]>('page.steps' as never);
+
+			expect(steps).toHaveLength(2);
+			expect(steps[0].title).toBe('Step 1');
+		});
+
+		it('should return key if object array not found', () => {
+			const t = createServerT(mockTranslations, { locale: 'en' });
+			expect(t<FAQ[]>('page.missing' as never)).toBe('page.missing');
 		});
 	});
 });

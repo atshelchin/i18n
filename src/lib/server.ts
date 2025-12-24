@@ -13,7 +13,7 @@ import type {
 } from './types.js';
 import {
 	getNestedValue,
-	getNestedArray,
+	getNestedData,
 	extractNamespace,
 	extractKeyPath,
 	interpolate,
@@ -246,8 +246,8 @@ export function getPreloadedTranslations(
 	return result;
 }
 
-/** Translation return type - string by default, or string[] when specified */
-export type ServerTranslationResult<T = string> = T extends string[] ? string[] : string;
+/** Translation return type - string by default, or T when specified */
+export type ServerTranslationResult<T = string> = T extends string ? string : T;
 
 /** Server-side translation function interface */
 export interface ServerTranslator {
@@ -256,6 +256,7 @@ export interface ServerTranslator {
 	 * Supports formatting in params: {key:number}, {key:currency:USD}, {key:date}, etc.
 	 * @example t('home.title') // string
 	 * @example t<string[]>('home.features') // string[]
+	 * @example t<FAQ[]>('page.faqs') // FAQ[] - any array/object type
 	 * @example t('common.greeting', { name: 'World' }) // "Hello, World!"
 	 * @example t('price', { amount: 1234.56 }) // with {amount:number} in template
 	 */
@@ -376,14 +377,16 @@ export function createServerT(
 		// Try current locale first
 		const localeTranslations = translations[locale]?.[namespace];
 
-		// Try to get as array first
-		const arrayValue = getNestedArray(localeTranslations, keyPath);
-		if (arrayValue !== undefined) {
-			return arrayValue as ServerTranslationResult<T>;
+		// Get raw data first
+		const rawData = getNestedData<unknown>(localeTranslations, keyPath);
+
+		// If it's not a string, return directly (array, object, etc.) - no interpolation
+		if (rawData !== undefined && typeof rawData !== 'string') {
+			return rawData as ServerTranslationResult<T>;
 		}
 
-		// Get as string
-		let value = getNestedValue(localeTranslations, keyPath);
+		// Get as string for interpolation
+		let value = rawData as string | undefined;
 
 		// Handle pluralization
 		if (params && typeof params['count'] === 'number') {
@@ -398,13 +401,15 @@ export function createServerT(
 		if (value === undefined && locale !== defaultLocale) {
 			const defaultTranslations = translations[defaultLocale]?.[namespace];
 
-			// Try array fallback
-			const defaultArrayValue = getNestedArray(defaultTranslations, keyPath);
-			if (defaultArrayValue !== undefined) {
-				return defaultArrayValue as ServerTranslationResult<T>;
+			// Get raw data from fallback
+			const defaultRawData = getNestedData<unknown>(defaultTranslations, keyPath);
+
+			// If it's not a string, return directly
+			if (defaultRawData !== undefined && typeof defaultRawData !== 'string') {
+				return defaultRawData as ServerTranslationResult<T>;
 			}
 
-			value = getNestedValue(defaultTranslations, keyPath);
+			value = defaultRawData as string | undefined;
 
 			// Handle pluralization for fallback
 			if (params && typeof params['count'] === 'number') {

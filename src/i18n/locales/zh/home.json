@@ -9,5 +9,19 @@
 		"使用 Vite glob 导入自动扫描语言文件",
 		"按命名空间懒加载 - 按需加载翻译",
 		"完整的 SSR 支持，预加载翻译"
+	],
+	"faqs": [
+		{
+			"question": "@shelchin/i18n 是什么？",
+			"answer": "一个轻量级的 Svelte 5 国际化库，支持 SSR。"
+		},
+		{
+			"question": "支持 TypeScript 吗？",
+			"answer": "支持！完整的类型安全，自动生成类型定义。"
+		},
+		{
+			"question": "如何切换语言？",
+			"answer": "使用 i18n.setLocale('en') 或导航到 /en/..."
+		}
 	]
 }
