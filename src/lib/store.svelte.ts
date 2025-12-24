@@ -15,7 +15,8 @@ import type {
 	NamespaceRegistry,
 	NamespaceStates,
 	TranslationContent,
-	PreloadedTranslations
+	PreloadedTranslations,
+	TranslationKey
 } from './types.js';
 import {
 	getNestedValue,
@@ -50,6 +51,11 @@ class I18nStore implements I18nInstance {
 		this._locale = options.locale;
 		this._defaultLocale = options.defaultLocale ?? 'en';
 		this._devMode = options.devMode ?? (typeof import.meta !== 'undefined' && import.meta.env?.DEV) ?? false;
+
+		// Initialize locales from SSR-provided metadata first
+		if (options.localeMetas) {
+			this._locales = options.localeMetas;
+		}
 
 		if (options.loaders) {
 			this._loaders = options.loaders;
@@ -347,14 +353,17 @@ class I18nStore implements I18nInstance {
 	}
 
 	private _extractLocales(): void {
-		const localeSet = new Set<string>();
-		const metaMap = new Map<string, LocaleMeta>();
+		// Build a map of existing locales (preserve meta from preloaded translations)
+		const existingMeta = new Map<string, LocaleMeta>();
+		for (const loc of this._locales) {
+			existingMeta.set(loc.code, loc);
+		}
 
+		// Add any new locales from loaders
 		for (const locale of Object.keys(this._loaders)) {
-			localeSet.add(locale);
-			// Default meta
-			if (!metaMap.has(locale)) {
-				metaMap.set(locale, {
+			if (!existingMeta.has(locale)) {
+				// Only add default meta if not already present
+				existingMeta.set(locale, {
 					code: locale,
 					name: locale,
 					englishName: locale
@@ -362,7 +371,7 @@ class I18nStore implements I18nInstance {
 			}
 		}
 
-		this._locales = Array.from(metaMap.values());
+		this._locales = Array.from(existingMeta.values());
 	}
 
 	private _updateLocaleMeta(locale: string, meta: LocaleMeta): void {
@@ -473,7 +482,7 @@ export function getInstance(): I18nInstance {
  * Translate function - direct import version
  * @example import { t } from '@shelchin/i18n'
  */
-export function t(key: string, params?: Record<string, string | number>): string {
+export function t(key: TranslationKey, params?: Record<string, string | number>): string {
 	return getInstance().t(key, params);
 }
 

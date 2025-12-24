@@ -65,6 +65,9 @@ export interface InitI18nOptions {
 	/** Preloaded translations for SSR (synchronous) */
 	preloadedTranslations?: PreloadedTranslations;
 
+	/** All supported locales with metadata (for SSR) */
+	localeMetas?: LocaleMeta[];
+
 	/** Custom loaders (if not using auto-scan) */
 	loaders?: LocaleLoaders;
 
@@ -80,6 +83,22 @@ export interface InitI18nOptions {
 	};
 }
 
+/**
+ * Translation keys interface - augmented by generated types
+ * @example
+ * declare module '@shelchin/i18n' {
+ *   interface TranslationKeys {
+ *     'home.title': string;
+ *     'common.ok': string;
+ *   }
+ * }
+ */
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
+export interface TranslationKeys {}
+
+/** Translation key type - uses generated keys if available, falls back to string */
+export type TranslationKey = keyof TranslationKeys extends never ? string : keyof TranslationKeys;
+
 /** I18n store interface */
 export interface I18nInstance {
 	/** Current locale (reactive) */
@@ -89,7 +108,7 @@ export interface I18nInstance {
 	readonly locales: LocaleMeta[];
 
 	/** Translation function */
-	t(key: string, params?: Record<string, string | number>): string;
+	t(key: TranslationKey, params?: Record<string, string | number>): string;
 
 	/** Switch locale (async, loads translations) */
 	setLocale(locale: string): Promise<void>;

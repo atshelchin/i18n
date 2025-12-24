@@ -10,7 +10,8 @@
 		locale: data.locale,
 		defaultLocale: 'en',
 		devMode: true,
-		preloadedTranslations: data.preloadedTranslations
+		preloadedTranslations: data.preloadedTranslations,
+		localeMetas: data.localeMetas
 	});
 
 	// Register all locale files using Vite glob import (for client-side lazy loading)

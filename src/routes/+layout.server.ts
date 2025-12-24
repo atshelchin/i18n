@@ -1,5 +1,5 @@
 import type { LayoutServerLoad } from './$types.js';
-import type { LocaleData } from '$lib/types.js';
+import type { LocaleData, LocaleMeta } from '$lib/types.js';
 import { extractLocaleFromPathname } from '$lib/utils/utils.js';
 
 // Auto-scan all locale files using Vite glob import (works on server too!)
@@ -11,10 +11,12 @@ const localeModules = import.meta.glob<{ default: LocaleData }>('./locales/**/*.
 // Parse glob results into structured format: { locale: { namespace: data } }
 function parseLocaleModules(): {
 	locales: string[];
+	localeMetas: LocaleMeta[];
 	translations: Record<string, Record<string, LocaleData>>;
 } {
 	const translations: Record<string, Record<string, LocaleData>> = {};
 	const localeSet = new Set<string>();
+	const metaMap = new Map<string, LocaleMeta>();
 
 	for (const [path, module] of Object.entries(localeModules)) {
 		// Extract locale and namespace from path: ./locales/en/common.json -> en, common
@@ -27,16 +29,28 @@ function parseLocaleModules(): {
 				translations[locale] = {};
 			}
 			translations[locale][namespace] = module.default;
+
+			// Extract _meta from common.json (or any file that has it)
+			if (module.default._meta && !metaMap.has(locale)) {
+				metaMap.set(locale, module.default._meta);
+			}
 		}
 	}
 
+	// Build localeMetas array with all locales
+	const localeMetas: LocaleMeta[] = Array.from(localeSet)
+		.sort()
+		.map((locale) => metaMap.get(locale) || { code: locale, name: locale, englishName: locale });
+
 	return {
 		locales: Array.from(localeSet).sort(),
+		localeMetas,
 		translations
 	};
 }
 
-const { locales: SUPPORTED_LOCALES, translations: ALL_TRANSLATIONS } = parseLocaleModules();
+const { locales: SUPPORTED_LOCALES, localeMetas: LOCALE_METAS, translations: ALL_TRANSLATIONS } =
+	parseLocaleModules();
 
 export const load = (async ({ url, cookies }) => {
 	// Extract locale from URL pathname
@@ -57,6 +71,7 @@ export const load = (async ({ url, cookies }) => {
 	return {
 		locale,
 		supportedLocales: SUPPORTED_LOCALES,
+		localeMetas: LOCALE_METAS,
 		preloadedTranslations
 	};
 }) satisfies LayoutServerLoad;

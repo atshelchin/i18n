@@ -61,7 +61,11 @@ export type {
 	// Loader types
 	LocaleLoader,
 	LocaleLoaders,
-	NamespaceLoaders
+	NamespaceLoaders,
+
+	// Type-safe keys (augmentable)
+	TranslationKeys,
+	TranslationKey
 } from './types.js';
 
 // ========================================
