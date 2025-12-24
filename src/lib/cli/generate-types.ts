@@ -16,7 +16,7 @@
 import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { fileURLToPath } from 'node:url';
-
+import { realpathSync } from 'node:fs';
 export interface GenerateTypesOptions {
 	/** Locales directory path */
 	dir: string;
@@ -217,7 +217,7 @@ Options:
 }
 
 // Run if executed directly (ESM compatible)
-const isMainModule = process.argv[1] === fileURLToPath(import.meta.url);
+const isMainModule = realpathSync(process.argv[1]) === fileURLToPath(import.meta.url);
 if (isMainModule) {
 	main();
 }
