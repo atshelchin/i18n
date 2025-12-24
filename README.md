@@ -44,30 +44,30 @@ Each JSON file contains translations for that namespace:
 ```json
 // locales/en/common.json
 {
-  "_meta": {
-    "code": "en",
-    "name": "English",
-    "englishName": "English",
-    "flag": "🇬🇧"
-  },
-  "greeting": "Hello, {name}!",
-  "ok": "OK",
-  "cancel": "Cancel"
+	"_meta": {
+		"code": "en",
+		"name": "English",
+		"englishName": "English",
+		"flag": "🇬🇧"
+	},
+	"greeting": "Hello, {name}!",
+	"ok": "OK",
+	"cancel": "Cancel"
 }
 ```
 
 ```json
 // locales/zh/common.json
 {
-  "_meta": {
-    "code": "zh",
-    "name": "中文",
-    "englishName": "Chinese",
-    "flag": "🇨🇳"
-  },
-  "greeting": "你好，{name}！",
-  "ok": "确定",
-  "cancel": "取消"
+	"_meta": {
+		"code": "zh",
+		"name": "中文",
+		"englishName": "Chinese",
+		"flag": "🇨🇳"
+	},
+	"greeting": "你好，{name}！",
+	"ok": "确定",
+	"cancel": "取消"
 }
 ```
 
@@ -76,23 +76,23 @@ Each JSON file contains translations for that namespace:
 ```svelte
 <!-- +layout.svelte -->
 <script lang="ts">
-  import { initI18n, setI18nContext, registerGlobLoaders } from '@shelchin/i18n';
+	import { initI18n, setI18nContext, registerGlobLoaders } from '@shelchin/i18n';
 
-  let { data, children } = $props();
+	let { data, children } = $props();
 
-  // Initialize i18n
-  const i18n = initI18n({
-    locale: data.locale ?? 'en',
-    defaultLocale: 'en',
-    devMode: true,
-    preloadedTranslations: data.preloadedTranslations
-  });
+	// Initialize i18n
+	const i18n = initI18n({
+		locale: data.locale ?? 'en',
+		defaultLocale: 'en',
+		devMode: true,
+		preloadedTranslations: data.preloadedTranslations
+	});
 
-  // Auto-scan locale files (lazy loading on client)
-  registerGlobLoaders(import.meta.glob('./locales/**/*.json'), i18n);
+	// Auto-scan locale files (lazy loading on client)
+	registerGlobLoaders(import.meta.glob('./locales/**/*.json'), i18n);
 
-  // Set context for child components
-  setI18nContext(i18n);
+	// Set context for child components
+	setI18nContext(i18n);
 </script>
 
 {@render children()}
@@ -103,9 +103,9 @@ Each JSON file contains translations for that namespace:
 ```svelte
 <!-- +page.svelte -->
 <script lang="ts">
-  import { useI18n } from '@shelchin/i18n';
+	import { useI18n } from '@shelchin/i18n';
 
-  const i18n = useI18n();
+	const i18n = useI18n();
 </script>
 
 <h1>{i18n.t('common.greeting', { name: 'World' })}</h1>
@@ -113,11 +113,12 @@ Each JSON file contains translations for that namespace:
 
 <!-- Language switcher -->
 <select onchange={(e) => i18n.setLocale(e.target.value)}>
-  {#each i18n.locales as loc}
-    <option value={loc.code} selected={i18n.locale === loc.code}>
-      {loc.flag} {loc.name}
-    </option>
-  {/each}
+	{#each i18n.locales as loc}
+		<option value={loc.code} selected={i18n.locale === loc.code}>
+			{loc.flag}
+			{loc.name}
+		</option>
+	{/each}
 </select>
 ```
 
@@ -132,21 +133,21 @@ import type { LayoutServerLoad } from './$types';
 const localeModules = import.meta.glob('./locales/**/*.json', { eager: true });
 
 export const load: LayoutServerLoad = async ({ url, cookies }) => {
-  const locale = extractLocaleFromUrl(url) || cookies.get('i18n-locale') || 'en';
+	const locale = extractLocaleFromUrl(url) || cookies.get('i18n-locale') || 'en';
 
-  // Get translations for current locale
-  const translations = {};
-  for (const [path, module] of Object.entries(localeModules)) {
-    const match = path.match(/\.\/locales\/([^/]+)\/([^/]+)\.json$/);
-    if (match && match[1] === locale) {
-      translations[match[2]] = module.default;
-    }
-  }
+	// Get translations for current locale
+	const translations = {};
+	for (const [path, module] of Object.entries(localeModules)) {
+		const match = path.match(/\.\/locales\/([^/]+)\/([^/]+)\.json$/);
+		if (match && match[1] === locale) {
+			translations[match[2]] = module.default;
+		}
+	}
 
-  return {
-    locale,
-    preloadedTranslations: { [locale]: translations }
-  };
+	return {
+		locale,
+		preloadedTranslations: { [locale]: translations }
+	};
 };
 ```
 
@@ -156,16 +157,19 @@ Use `_zero`, `_one`, `_other` suffixes:
 
 ```json
 {
-  "items_zero": "No items",
-  "items_one": "{count} item",
-  "items_other": "{count} items"
+	"items_zero": "No items",
+	"items_one": "{count} item",
+	"items_other": "{count} items"
 }
 ```
 
 ```svelte
-{i18n.t('common.items', { count: 0 })}  <!-- "No items" -->
-{i18n.t('common.items', { count: 1 })}  <!-- "1 item" -->
-{i18n.t('common.items', { count: 5 })}  <!-- "5 items" -->
+{i18n.t('common.items', { count: 0 })}
+<!-- "No items" -->
+{i18n.t('common.items', { count: 1 })}
+<!-- "1 item" -->
+{i18n.t('common.items', { count: 5 })}
+<!-- "5 items" -->
 ```
 
 ## Interpolation
@@ -174,9 +178,9 @@ Use `{key}` syntax with optional formatting:
 
 ```json
 {
-  "greeting": "Hello, {name}!",
-  "price": "Price: {amount:currency}",
-  "progress": "Progress: {value:percent}"
+	"greeting": "Hello, {name}!",
+	"price": "Price: {amount:currency}",
+	"progress": "Progress: {value:percent}"
 }
 ```
 
@@ -195,6 +199,7 @@ npx @shelchin/i18n generate-types --dir src/routes/locales --output src/routes/l
 ```
 
 Options:
+
 - `--dir` - Locales directory (default: `src/locales`)
 - `--output` - Output file path (default: `src/locales/i18n.d.ts`)
 - `--watch` - Watch for changes
@@ -204,35 +209,35 @@ Options:
 
 ### Core Functions
 
-| Function | Description |
-|----------|-------------|
-| `initI18n(options)` | Initialize i18n store |
-| `setI18nContext(i18n)` | Set Svelte context |
-| `useI18n()` | Get i18n instance from context |
-| `registerGlobLoaders(modules, i18n)` | Register locale file loaders |
-| `t(key, params?)` | Translate a key (module-level) |
+| Function                             | Description                    |
+| ------------------------------------ | ------------------------------ |
+| `initI18n(options)`                  | Initialize i18n store          |
+| `setI18nContext(i18n)`               | Set Svelte context             |
+| `useI18n()`                          | Get i18n instance from context |
+| `registerGlobLoaders(modules, i18n)` | Register locale file loaders   |
+| `t(key, params?)`                    | Translate a key (module-level) |
 
 ### InitI18nOptions
 
-| Option | Type | Default | Description |
-|--------|------|---------|-------------|
-| `locale` | `string` | required | Initial locale |
-| `defaultLocale` | `string` | `'en'` | Fallback locale |
-| `preloadedTranslations` | `object` | - | SSR preloaded data |
-| `localeMetas` | `LocaleMeta[]` | - | All locale metadata |
-| `devMode` | `boolean` | `false` | Show missing keys |
-| `persist` | `boolean \| object` | - | Persist to storage |
+| Option                  | Type                | Default  | Description         |
+| ----------------------- | ------------------- | -------- | ------------------- |
+| `locale`                | `string`            | required | Initial locale      |
+| `defaultLocale`         | `string`            | `'en'`   | Fallback locale     |
+| `preloadedTranslations` | `object`            | -        | SSR preloaded data  |
+| `localeMetas`           | `LocaleMeta[]`      | -        | All locale metadata |
+| `devMode`               | `boolean`           | `false`  | Show missing keys   |
+| `persist`               | `boolean \| object` | -        | Persist to storage  |
 
 ### I18nInstance
 
-| Property/Method | Type | Description |
-|----------------|------|-------------|
-| `locale` | `string` | Current locale (reactive) |
-| `locales` | `LocaleMeta[]` | Available locales (reactive) |
-| `t(key, params?)` | `function` | Translate a key |
-| `setLocale(locale)` | `Promise<void>` | Switch locale |
-| `isLoaded(namespace)` | `boolean` | Check if loaded |
-| `preload(namespaces)` | `Promise<void>` | Preload namespaces |
+| Property/Method       | Type            | Description                  |
+| --------------------- | --------------- | ---------------------------- |
+| `locale`              | `string`        | Current locale (reactive)    |
+| `locales`             | `LocaleMeta[]`  | Available locales (reactive) |
+| `t(key, params?)`     | `function`      | Translate a key              |
+| `setLocale(locale)`   | `Promise<void>` | Switch locale                |
+| `isLoaded(namespace)` | `boolean`       | Check if loaded              |
+| `preload(namespaces)` | `Promise<void>` | Preload namespaces           |
 
 ## URL-Based Locale (SvelteKit)
 
@@ -248,11 +253,11 @@ export const reroute = ({ url }) => deLocalizeUrl(url).pathname;
 ```svelte
 <!-- Override setLocale to use navigation -->
 <script>
-  import { goto } from '$app/navigation';
+	import { goto } from '$app/navigation';
 
-  i18n.setLocale = async (locale) => {
-    await goto(`/${locale}${currentPath}`);
-  };
+	i18n.setLocale = async (locale) => {
+		await goto(`/${locale}${currentPath}`);
+	};
 </script>
 ```
 
