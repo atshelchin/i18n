@@ -1,0 +1,6 @@
+{
+	"title": "Über uns",
+	"description": "Dies ist die About-Seite zum Testen des Lazy Loading.",
+	"content": "Beim Navigieren von der Startseite zu dieser Seite sollte der 'about' Namespace lazy geladen werden.",
+	"backHome": "Zurück zur Startseite"
+}

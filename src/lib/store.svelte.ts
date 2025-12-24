@@ -4,7 +4,7 @@
  * Svelte 5 reactive i18n store with automatic lazy loading
  */
 
-import { getContext, setContext } from 'svelte';
+import { getContext, setContext, untrack } from 'svelte';
 import type {
 	InitI18nOptions,
 	I18nInstance,
@@ -46,8 +46,6 @@ class I18nStore implements I18nInstance {
 	private _defaultLocale: string;
 	private _devMode: boolean;
 	private _pendingLoads = new Map<string, Promise<void>>();
-	// Non-reactive set to track queued loads (prevents duplicate queueMicrotask calls)
-	private _queuedLoads = new Set<string>();
 
 	constructor(options: InitI18nOptions) {
 		this._locale = options.locale;
@@ -242,28 +240,22 @@ class I18nStore implements I18nInstance {
 	private _triggerLazyLoad(namespace: string): void {
 		const key = `${this._locale}:${namespace}`;
 
-		// Already loading, loaded, or queued
+		// Already loading or loaded
 		if (
 			this._namespaceStates[key] === 'loading' ||
 			this._namespaceStates[key] === 'loaded' ||
-			this._queuedLoads.has(key)
+			this._pendingLoads.has(key)
 		) {
 			return;
 		}
 
-		// Mark as queued immediately (non-reactive to prevent duplicate triggers during render)
-		this._queuedLoads.add(key);
-
 		// Capture locale to avoid closure issues
 		const locale = this._locale;
 
-		// Use queueMicrotask to defer ALL state mutations outside the render context
-		// This prevents Svelte 5's state_unsafe_mutation error when t() is called during render
-		queueMicrotask(() => {
-			this._queuedLoads.delete(key);
-			this._loadNamespace(locale, namespace).catch((err) => {
-				console.error(`[i18n] Failed to load namespace "${namespace}":`, err);
-			});
+		// Start loading immediately - the async nature means state updates
+		// will happen after the current render cycle anyway
+		this._loadNamespace(locale, namespace).catch((err) => {
+			console.error(`[i18n] Failed to load namespace "${namespace}":`, err);
 		});
 	}
 
@@ -288,8 +280,10 @@ class I18nStore implements I18nInstance {
 			return;
 		}
 
-		// Mark as loading
-		this._namespaceStates[key] = 'loading';
+		// Mark as loading - use untrack to avoid state_unsafe_mutation during render
+		untrack(() => {
+			this._namespaceStates[key] = 'loading';
+		});
 
 		const loadPromise = (async () => {
 			try {
@@ -314,6 +308,7 @@ class I18nStore implements I18nInstance {
 				console.log(`[i18n] Loaded ${registryKey}:`, Object.keys(data));
 
 				// Mark as loaded and bump version to trigger reactivity
+				// No need for untrack here - this runs after await, outside render context
 				this._namespaceStates[key] = 'loaded';
 				this._version++;
 			} catch (error) {

@@ -296,6 +296,13 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 		</div>
 	</section>
 
+	<!-- Test Lazy Loading Navigation -->
+	<section class="card test-nav">
+		<h2>Test Lazy Loading</h2>
+		<p>Click the link below to navigate to the About page. The 'about' namespace will be lazy loaded.</p>
+		<a href="/about" class="test-link">Go to About Page →</a>
+	</section>
+
 	<!-- Footer CTA -->
 	<footer class="footer-cta">
 		<p>{i18n.t('common.github.description')}</p>
@@ -700,6 +707,30 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 		font-size: 0.8125rem;
 		font-weight: 500;
 		border: 1px solid #54aeff66;
+	}
+
+	/* Test Navigation */
+	.test-nav {
+		text-align: center;
+	}
+
+	.test-nav p {
+		color: #57606a;
+		margin: 0.5rem 0 1rem;
+	}
+
+	.test-link {
+		display: inline-block;
+		padding: 0.5rem 1rem;
+		background: #1f883d;
+		color: white;
+		text-decoration: none;
+		border-radius: 6px;
+		font-weight: 500;
+	}
+
+	.test-link:hover {
+		background: #1a7f37;
 	}
 
 	/* Footer CTA - GitHub style */

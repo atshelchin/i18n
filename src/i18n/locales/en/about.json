@@ -1,0 +1,6 @@
+{
+	"title": "About Us",
+	"description": "This is the about page to test lazy loading.",
+	"content": "When navigating from home to this page, the 'about' namespace should be loaded lazily.",
+	"backHome": "Back to Home"
+}

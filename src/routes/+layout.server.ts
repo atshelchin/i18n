@@ -55,6 +55,27 @@ const {
 	translations: ALL_TRANSLATIONS
 } = parseLocaleModules();
 
+// Base namespaces to always preload
+const BASE_NAMESPACES = ['common'];
+
+// Map URL paths to additional namespaces needed
+function getNamespacesForPath(pathname: string): string[] {
+	const namespaces = [...BASE_NAMESPACES];
+
+	// Remove locale prefix if present
+	const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
+
+	// Add page-specific namespaces based on path
+	if (pathWithoutLocale === '/' || pathWithoutLocale === '') {
+		namespaces.push('home');
+	} else if (pathWithoutLocale.startsWith('/about')) {
+		namespaces.push('about');
+	}
+	// Add more mappings as needed
+
+	return namespaces;
+}
+
 export const load = (async ({ url, cookies }) => {
 	// Extract locale from URL pathname
 	let locale = extractLocaleFromPathname(url.pathname);
@@ -64,8 +85,19 @@ export const load = (async ({ url, cookies }) => {
 		locale = cookies.get('i18n-locale') || 'en';
 	}
 
-	// Get translations for current locale (already loaded via eager import)
-	const localeTranslations = ALL_TRANSLATIONS[locale] || ALL_TRANSLATIONS['en'] || {};
+	// Get translations for current locale
+	const allLocaleTranslations = ALL_TRANSLATIONS[locale] || ALL_TRANSLATIONS['en'] || {};
+
+	// Determine which namespaces to preload based on the current path
+	const namespacesToPreload = getNamespacesForPath(url.pathname);
+
+	// Filter to only include namespaces needed for this page
+	const localeTranslations: Record<string, LocaleData> = {};
+	for (const ns of namespacesToPreload) {
+		if (allLocaleTranslations[ns]) {
+			localeTranslations[ns] = allLocaleTranslations[ns];
+		}
+	}
 
 	const preloadedTranslations: Record<string, Record<string, LocaleData>> = {
 		[locale]: localeTranslations
