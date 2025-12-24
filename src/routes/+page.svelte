@@ -341,8 +341,9 @@ i18n.<span class="hl-func">t</span>&lt;string[]&gt;(<span class="hl-string">'hom
 }
 
 <span class="hl-comment">// Get typed array</span>
-i18n.<span class="hl-func">t</span>&lt;FAQ[]&gt;(<span class="hl-string">'home.faqs'</span
-						>) <span class="hl-comment">// FAQ[]</span></code
+i18n.<span class="hl-func">t</span>&lt;FAQ[]&gt;(<span class="hl-string">'home.faqs'</span>) <span
+							class="hl-comment">// FAQ[]</span
+						></code
 					></pre>
 			</div>
 			<div class="usage-demo">
