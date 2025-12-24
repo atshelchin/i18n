@@ -10,6 +10,7 @@
  * Options:
  *   --dir <path>     Locales directory (default: src/locales)
  *   --output <path>  Output file path (default: src/locales/i18n.d.ts)
+ *   --locale <code>  Reference locale for keys (default: en)
  *   --watch          Watch for changes
  */
 
@@ -26,6 +27,8 @@ export interface GenerateTypesOptions {
 	watch?: boolean;
 	/** Module name to augment (default: '@shelchin/i18n') */
 	module?: string;
+	/** Default locale to use as reference for keys (default: 'en') */
+	locale?: string;
 }
 
 /** Plural suffixes that indicate a pluralized key */
@@ -36,6 +39,21 @@ const PLURAL_SUFFIXES = ['_zero', '_one', '_two', '_few', '_many', '_other'];
  */
 function extractKeys(obj: Record<string, unknown>, prefix = ''): string[] {
 	const keys: string[] = [];
+
+	// Handle arrays - generate index-based keys
+	if (Array.isArray(obj)) {
+		for (let i = 0; i < obj.length; i++) {
+			const fullKey = prefix ? `${prefix}.${i}` : String(i);
+			const value = obj[i];
+
+			if (typeof value === 'string') {
+				keys.push(fullKey);
+			} else if (typeof value === 'object' && value !== null) {
+				keys.push(...extractKeys(value as Record<string, unknown>, fullKey));
+			}
+		}
+		return keys;
+	}
 
 	for (const [key, value] of Object.entries(obj)) {
 		// Skip metadata
@@ -54,6 +72,9 @@ function extractKeys(obj: Record<string, unknown>, prefix = ''): string[] {
 					break;
 				}
 			}
+		} else if (Array.isArray(value)) {
+			// Handle arrays
+			keys.push(...extractKeys(value as unknown as Record<string, unknown>, fullKey));
 		} else if (typeof value === 'object' && value !== null) {
 			keys.push(...extractKeys(value as Record<string, unknown>, fullKey));
 		}
@@ -139,12 +160,13 @@ export function generateTypes(options: GenerateTypesOptions): void {
 		return;
 	}
 
-	// Use first locale as reference for keys
-	const referenceLocale = localeDirs[0];
+	// Use specified locale as reference, fallback to 'en' or first available
+	const defaultLocale = options.locale ?? 'en';
+	const referenceLocale = localeDirs.includes(defaultLocale) ? defaultLocale : localeDirs[0];
 	const referenceDir = path.join(dir, referenceLocale);
 	const namespaceKeys = extractKeysFromLocale(referenceDir);
 
-	// Collect all keys
+	// Collect all keys from reference locale
 	const allKeys = new Set<string>();
 	for (const keys of namespaceKeys.values()) {
 		keys.forEach((k) => allKeys.add(k));
@@ -203,7 +225,8 @@ function main(): void {
 		dir: 'src/locales',
 		output: 'src/locales/i18n.d.ts',
 		watch: false,
-		module: '@shelchin/i18n'
+		module: '@shelchin/i18n',
+		locale: 'en'
 	};
 
 	// Parse arguments
@@ -216,6 +239,8 @@ function main(): void {
 			options.output = args[++i];
 		} else if (arg === '--module' && args[i + 1]) {
 			options.module = args[++i];
+		} else if (arg === '--locale' && args[i + 1]) {
+			options.locale = args[++i];
 		} else if (arg === '--watch') {
 			options.watch = true;
 		} else if (arg === 'generate-types') {
@@ -230,6 +255,7 @@ Usage:
 Options:
   --dir <path>      Locales directory (default: src/locales)
   --output <path>   Output file path (default: src/locales/i18n.d.ts)
+  --locale <code>   Reference locale for keys (default: en)
   --module <name>   Module to augment (default: @shelchin/i18n)
   --watch           Watch for changes
   --help, -h        Show this help message

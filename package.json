@@ -1,6 +1,6 @@
 {
 	"name": "@shelchin/i18n",
-	"version": "2.1.0",
+	"version": "2.1.5",
 	"description": "Modern i18n library for Svelte 5 with automatic lazy loading and SSR support",
 	"scripts": {
 		"dev": "vite dev",
