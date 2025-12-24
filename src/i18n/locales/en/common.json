@@ -42,6 +42,8 @@
 		"ssr": "SSR support",
 		"typeSafe": "Type-safe keys",
 		"minimal": "Minimal core API",
-		"svelte5": "Svelte 5 runes"
+		"svelte5": "Svelte 5 runes",
+		"formatting": "Locale-aware number/date formatting",
+		"zeroDeps": "Zero dependencies, ultra-light"
 	}
 }

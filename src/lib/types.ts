@@ -112,14 +112,19 @@ export interface I18nInstance {
 	/** Supported locales with metadata */
 	readonly locales: LocaleMeta[];
 
+	/** Formatter bound to current locale */
+	readonly format: I18nFormatter;
+
 	/**
 	 * Translation function with optional generic type
+	 * Supports formatting in params: {key:number}, {key:currency:USD}, {key:date}, etc.
 	 * @example t('home.title') // string
 	 * @example t<string[]>('home.features') // string[]
+	 * @example t('price', { amount: 1234.56 }) // with {amount:number} in template
 	 */
 	t<T = string>(
 		key: TranslationKey,
-		params?: Record<string, string | number>
+		params?: Record<string, string | number | Date>
 	): TranslationResult<T>;
 
 	/** Switch locale (async, loads translations) */
@@ -146,4 +151,89 @@ export interface I18nModule {
 	setLocale: I18nInstance['setLocale'];
 	locale: string;
 	locales: LocaleMeta[];
+}
+
+// ========================================
+// Formatting Types
+// ========================================
+
+/** Number format notation types */
+export type NumberNotation = 'standard' | 'scientific' | 'engineering' | 'compact' | 'subscript';
+
+/** Number format options */
+export interface FormatNumberOptions {
+	/** Number of decimal places (exact) */
+	decimals?: number;
+	/** Minimum decimal places */
+	minDecimals?: number;
+	/** Maximum decimal places */
+	maxDecimals?: number;
+	/** Display notation */
+	notation?: NumberNotation;
+	/** Use grouping separators (thousands) */
+	useGrouping?: boolean;
+}
+
+/** Currency format options */
+export interface FormatCurrencyOptions {
+	/** Currency code (e.g., 'USD', 'EUR', 'CNY') */
+	currency: string;
+	/** Number of decimal places */
+	decimals?: number;
+}
+
+/** Date/time format style */
+export type DateTimeStyle = 'short' | 'medium' | 'long' | 'full';
+
+/** Date format options */
+export interface FormatDateOptions {
+	/** Date style */
+	style?: DateTimeStyle;
+}
+
+/** Time format options */
+export interface FormatTimeOptions {
+	/** Time style */
+	style?: DateTimeStyle;
+}
+
+/** DateTime format options */
+export interface FormatDateTimeOptions {
+	/** Date style */
+	dateStyle?: DateTimeStyle;
+	/** Time style */
+	timeStyle?: DateTimeStyle;
+}
+
+/** Combined format options for interpolation */
+export interface FormatOptions {
+	number?: FormatNumberOptions;
+	currency?: FormatCurrencyOptions;
+	date?: FormatDateOptions;
+	time?: FormatTimeOptions;
+	datetime?: FormatDateTimeOptions;
+}
+
+/** Formatter interface for i18n instance */
+export interface I18nFormatter {
+	/** Format a number according to locale */
+	number(value: number, options?: FormatNumberOptions): string;
+	/** Format a currency value (currency defaults to locale's default currency) */
+	currency(
+		value: number,
+		currency?: string,
+		options?: Omit<FormatCurrencyOptions, 'currency'>
+	): string;
+	/** Format a percentage */
+	percent(value: number, options?: FormatNumberOptions): string;
+	/** Format a date */
+	date(value: Date | number, options?: FormatDateOptions): string;
+	/** Format a time */
+	time(value: Date | number, options?: FormatTimeOptions): string;
+	/** Format a date and time */
+	datetime(value: Date | number, options?: FormatDateTimeOptions): string;
+	/** Format a number in scientific notation */
+	scientific(value: number, options?: FormatNumberOptions): string;
+	/** Format a small number with subscript notation (e.g., 0.0₁₂33) */
+	subscript(value: number, options?: FormatNumberOptions): string;
 }

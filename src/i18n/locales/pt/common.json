@@ -42,6 +42,8 @@
 		"ssr": "Suporte a SSR",
 		"typeSafe": "Chaves com tipagem segura",
 		"minimal": "API mínima",
-		"svelte5": "Svelte 5 runes"
+		"svelte5": "Svelte 5 runes",
+		"formatting": "Formatação local de números/datas",
+		"zeroDeps": "Zero dependências, ultraleve"
 	}
 }

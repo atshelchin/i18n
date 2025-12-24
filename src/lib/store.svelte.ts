@@ -17,7 +17,8 @@ import type {
 	TranslationContent,
 	PreloadedTranslations,
 	TranslationKey,
-	TranslationResult
+	TranslationResult,
+	I18nFormatter
 } from './types.js';
 import {
 	getNestedValue,
@@ -26,7 +27,8 @@ import {
 	extractKeyPath,
 	interpolate,
 	getPluralKey,
-	deepMerge
+	deepMerge,
+	createFormatter
 } from './utils.js';
 
 const I18N_CONTEXT_KEY = Symbol('i18n-v2');
@@ -88,12 +90,24 @@ class I18nStore implements I18nInstance {
 	}
 
 	/**
+	 * Get formatter bound to current locale
+	 * Automatically updates when locale changes
+	 */
+	get format(): I18nFormatter {
+		return createFormatter(this._locale);
+	}
+
+	/**
 	 * Translate a key with optional parameters
 	 * Automatically triggers lazy loading if namespace not loaded
 	 * @example t('home.title') // string
 	 * @example t<string[]>('home.features') // string[]
+	 * @example t('price', { amount: 1234.56 }) // with {amount:number} in template
 	 */
-	t<T = string>(key: string, params?: Record<string, string | number>): TranslationResult<T> {
+	t<T = string>(
+		key: string,
+		params?: Record<string, string | number | Date>
+	): TranslationResult<T> {
 		// Access reactive state to create dependency for Svelte reactivity
 		void this._version;
 		void this._locale;
@@ -348,7 +362,10 @@ class I18nStore implements I18nInstance {
 		return loadPromise;
 	}
 
-	private _getFallback(key: string, params?: Record<string, string | number>): string | string[] {
+	private _getFallback(
+		key: string,
+		params?: Record<string, string | number | Date>
+	): string | string[] {
 		const namespace = extractNamespace(key);
 		const keyPath = extractKeyPath(key);
 
@@ -569,10 +586,11 @@ export function getInstance(): I18nInstance {
  * @example import { t } from '@shelchin/i18n'
  * @example t('home.title') // string
  * @example t<string[]>('home.features') // string[]
+ * @example t('price', { amount: 1234.56 }) // with {amount:number} in template
  */
 export function t<T = string>(
 	key: TranslationKey,
-	params?: Record<string, string | number>
+	params?: Record<string, string | number | Date>
 ): TranslationResult<T> {
 	return getInstance().t<T>(key, params);
 }

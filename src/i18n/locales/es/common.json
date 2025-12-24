@@ -42,6 +42,8 @@
 		"ssr": "Soporte SSR",
 		"typeSafe": "Claves type-safe",
 		"minimal": "API mínima",
-		"svelte5": "Svelte 5 runes"
+		"svelte5": "Svelte 5 runes",
+		"formatting": "Formato local de números/fechas",
+		"zeroDeps": "Sin dependencias, ultraligero"
 	}
 }

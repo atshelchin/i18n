@@ -1,0 +1,49 @@
+{
+	"_meta": {
+		"code": "it",
+		"name": "Italiano",
+		"englishName": "Italian",
+		"direction": "ltr",
+		"flag": "🇮🇹"
+	},
+	"ok": "OK",
+	"cancel": "Annulla",
+	"loading": "Caricamento...",
+	"currentLocale": "Lingua corrente",
+	"sections": {
+		"basic": "Traduzione base",
+		"interpolation": "Interpolazione",
+		"pluralization": "Pluralizzazione",
+		"namespaces": "Namespace caricati",
+		"locales": "Lingue supportate",
+		"quickStart": "Guida rapida",
+		"features": "Funzionalità"
+	},
+	"labels": {
+		"name": "Nome",
+		"count": "Conteggio"
+	},
+	"github": {
+		"star": "Metti una stella su GitHub",
+		"description": "Se ti piace questo progetto, metti una stella!"
+	},
+	"quickStart": {
+		"install": "Installa",
+		"setup": "Configurazione in +layout.svelte",
+		"usage": "Utilizzo nei componenti",
+		"step1": "1. Installa il pacchetto",
+		"step2": "2. Crea i file delle traduzioni",
+		"step3": "3. Inizializza nel layout",
+		"step4": "4. Usa nei componenti"
+	},
+	"features": {
+		"autoScan": "Scansione automatica dei file",
+		"lazyLoad": "Caricamento lazy per namespace",
+		"ssr": "Supporto SSR",
+		"typeSafe": "Chiavi type-safe",
+		"minimal": "API core minimale",
+		"svelte5": "Svelte 5 runes",
+		"formatting": "Formattazione locale numeri/date",
+		"zeroDeps": "Zero dipendenze, ultra-leggero"
+	}
+}

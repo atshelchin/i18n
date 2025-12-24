@@ -42,6 +42,8 @@
 		"ssr": "SSR サポート",
 		"typeSafe": "型安全なキー",
 		"minimal": "最小限のコア API",
-		"svelte5": "Svelte 5 runes"
+		"svelte5": "Svelte 5 runes",
+		"formatting": "ロケール対応の数値/日付フォーマット",
+		"zeroDeps": "依存関係ゼロ、超軽量"
 	}
 }

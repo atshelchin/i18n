@@ -1,0 +1,13 @@
+{
+	"title": "Benvenuto alla v2",
+	"description": "Questa è la demo della nuova API i18n v2",
+	"greeting": "Ciao, {name}!",
+	"items_zero": "Nessun elemento",
+	"items_one": "{count} elemento",
+	"items_other": "{count} elementi",
+	"features": [
+		"Scansione automatica dei file con Vite glob imports",
+		"Caricamento lazy per namespace - carica le traduzioni su richiesta",
+		"Supporto SSR completo con traduzioni precaricate"
+	]
+}

@@ -1,0 +1,6 @@
+{
+	"title": "Chi siamo",
+	"description": "Questa è la pagina about per testare il caricamento lazy.",
+	"content": "Navigando dalla home a questa pagina, il namespace 'about' dovrebbe essere caricato in modo lazy.",
+	"backHome": "Torna alla Home"
+}

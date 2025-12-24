@@ -4,14 +4,21 @@
  * Helper functions for SSR preloading with automatic namespace detection
  */
 
-import type { LocaleData, LocaleMeta, PreloadedTranslations, TranslationKey } from './types.js';
+import type {
+	LocaleData,
+	LocaleMeta,
+	PreloadedTranslations,
+	TranslationKey,
+	I18nFormatter
+} from './types.js';
 import {
 	getNestedValue,
 	getNestedArray,
 	extractNamespace,
 	extractKeyPath,
 	interpolate,
-	getPluralKey
+	getPluralKey,
+	createFormatter
 } from './utils.js';
 
 /** Parsed locale data from glob imports */
@@ -246,14 +253,19 @@ export type ServerTranslationResult<T = string> = T extends string[] ? string[] 
 export interface ServerTranslator {
 	/**
 	 * Translate a key with optional parameters
+	 * Supports formatting in params: {key:number}, {key:currency:USD}, {key:date}, etc.
 	 * @example t('home.title') // string
 	 * @example t<string[]>('home.features') // string[]
 	 * @example t('common.greeting', { name: 'World' }) // "Hello, World!"
+	 * @example t('price', { amount: 1234.56 }) // with {amount:number} in template
 	 */
 	<T = string>(
 		key: TranslationKey,
-		params?: Record<string, string | number>
+		params?: Record<string, string | number | Date>
 	): ServerTranslationResult<T>;
+
+	/** Formatter bound to the current locale */
+	format: I18nFormatter;
 }
 
 /** SvelteKit event-like object for locale detection */
@@ -356,7 +368,7 @@ export function createServerT(
 
 	const translate = <T = string>(
 		key: TranslationKey,
-		params?: Record<string, string | number>
+		params?: Record<string, string | number | Date>
 	): ServerTranslationResult<T> => {
 		const namespace = extractNamespace(key as string);
 		const keyPath = extractKeyPath(key as string);
@@ -412,7 +424,11 @@ export function createServerT(
 		return interpolate(value, params, locale) as ServerTranslationResult<T>;
 	};
 
-	return translate as ServerTranslator;
+	// Create the translator with format property
+	const translator = translate as ServerTranslator;
+	translator.format = createFormatter(locale);
+
+	return translator;
 }
 
 /**

@@ -81,6 +81,14 @@
 				<span class="feature-icon">🔮</span>
 				<span>{i18n.t('common.features.svelte5')}</span>
 			</div>
+			<div class="feature-item">
+				<span class="feature-icon">🌐</span>
+				<span>{i18n.t('common.features.formatting')}</span>
+			</div>
+			<div class="feature-item">
+				<span class="feature-icon">🪶</span>
+				<span>{i18n.t('common.features.zeroDeps')}</span>
+			</div>
 		</div>
 	</section>
 
@@ -304,6 +312,58 @@ i18n.<span class="hl-func">t</span>&lt;string[]&gt;(<span class="hl-string">'hom
 						<li>{feature}</li>
 					{/each}
 				</ul>
+			</div>
+		</div>
+	</section>
+
+	<!-- Number & Date Formatting -->
+	<section class="card usage-card">
+		<h2>Number & Date Formatting</h2>
+		<div class="usage-content">
+			<div class="usage-code">
+				<pre class="code-block-small"><code
+						><span class="hl-comment">// Template interpolation</span>
+{'{'}amount:number{'}'} <span class="hl-comment">// locale number</span>
+{'{'}price:currency:USD{'}'} <span class="hl-comment">// currency</span>
+{'{'}val:percent{'}'} <span class="hl-comment">// percentage</span>
+{'{'}d:date{'}'} <span class="hl-comment">// short date</span>
+{'{'}d:date:long{'}'} <span class="hl-comment">// long date</span>
+{'{'}num:scientific{'}'} <span class="hl-comment">// 1.23E9</span>
+{'{'}num:subscript{'}'} <span class="hl-comment">// 0.0₁₂33</span>
+
+<span class="hl-comment">// Direct format API</span>
+i18n.format.<span class="hl-func">number</span>(1234.56)
+i18n.format.<span class="hl-func">currency</span>(99.99, <span class="hl-string">'USD'</span>)
+i18n.format.<span class="hl-func">date</span>(<span class="hl-keyword">new</span> Date())</code
+					></pre>
+			</div>
+			<div class="usage-demo">
+				<div class="format-demo">
+					<div class="format-item">
+						<span class="format-label">number:</span>
+						<span class="format-value">{i18n.format.number(1234567.89)}</span>
+					</div>
+					<div class="format-item">
+						<span class="format-label">currency:</span>
+						<span class="format-value">{i18n.format.currency(99.99)}</span>
+					</div>
+					<div class="format-item">
+						<span class="format-label">percent:</span>
+						<span class="format-value">{i18n.format.percent(0.75)}</span>
+					</div>
+					<div class="format-item">
+						<span class="format-label">date:</span>
+						<span class="format-value">{i18n.format.date(new Date())}</span>
+					</div>
+					<div class="format-item">
+						<span class="format-label">scientific:</span>
+						<span class="format-value">{i18n.format.scientific(0.0000000033)}</span>
+					</div>
+					<div class="format-item">
+						<span class="format-label">subscript:</span>
+						<span class="format-value">{i18n.format.subscript(0.0000000000033)}</span>
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -881,6 +941,38 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 	.ssr-desc {
 		font-size: 0.875rem;
 		color: #656d76;
+	}
+
+	/* Format Demo */
+	.format-demo {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.format-item {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.375rem 0.75rem;
+		background: #f6f8fa;
+		border: 1px solid #d0d7de;
+		border-radius: 6px;
+	}
+
+	.format-label {
+		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: #0969da;
+		min-width: 70px;
+	}
+
+	.format-value {
+		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+		font-size: 0.8125rem;
+		color: #1a7f37;
+		font-weight: 500;
 	}
 
 	/* Features List */

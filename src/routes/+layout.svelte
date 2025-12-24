@@ -43,6 +43,7 @@
 <div class="demo-container">
 	<header class="demo-header">
 		<h1>@shelchin/i18n v{data.version}</h1>
+		<p class="tagline">Modern i18n library for Svelte 5 & SvelteKit</p>
 	</header>
 	{@render children()}
 </div>
@@ -60,7 +61,7 @@
 
 	/* GitHub-style Design System */
 	.demo-container {
-		max-width: 820px;
+		max-width: 930px;
 		margin: 0 auto;
 		padding: 1.5rem;
 		font-family:
@@ -88,8 +89,15 @@
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
 		background-clip: text;
-		margin: 0 0 0.375rem 0;
+		margin: 0 0 0.25rem 0;
 		letter-spacing: -0.02em;
+	}
+
+	.demo-header .tagline {
+		margin: 0;
+		font-size: 0.9rem;
+		color: #656d76;
+		font-weight: 400;
 	}
 
 	/* Mobile Responsive */
@@ -106,6 +114,10 @@
 		.demo-header h1 {
 			font-size: 1.125rem;
 		}
+
+		.demo-header .tagline {
+			font-size: 0.8rem;
+		}
 	}
 
 	@media (max-width: 380px) {
@@ -115,6 +127,10 @@
 
 		.demo-header h1 {
 			font-size: 1rem;
+		}
+
+		.demo-header .tagline {
+			font-size: 0.75rem;
 		}
 	}
 </style>

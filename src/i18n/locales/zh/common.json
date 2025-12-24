@@ -42,6 +42,8 @@
 		"ssr": "支持 SSR",
 		"typeSafe": "类型安全的键",
 		"minimal": "极简核心 API",
-		"svelte5": "Svelte 5 runes"
+		"svelte5": "Svelte 5 runes",
+		"formatting": "数字/日期本地化格式",
+		"zeroDeps": "零依赖，超轻量"
 	}
 }

@@ -11,6 +11,8 @@ Modern i18n library for Svelte 5 with automatic lazy loading and SSR support.
 - **Type-safe keys** - Generate TypeScript definitions
 - **Minimal core API** - Simple and intuitive
 - **Svelte 5 runes** - Full `$state` reactivity
+- **Locale-aware formatting** - Number, currency, date/time formatting with Intl API
+- **Zero dependencies** - Ultra-lightweight bundle
 
 ## Installation
 
@@ -224,7 +226,7 @@ Use `{key}` syntax with optional formatting:
 ```json
 {
 	"greeting": "Hello, {name}!",
-	"price": "Price: {amount:currency}",
+	"price": "Price: {amount:currency:USD}",
 	"progress": "Progress: {value:percent}"
 }
 ```
@@ -233,6 +235,86 @@ Use `{key}` syntax with optional formatting:
 {i18n.t('common.greeting', { name: 'Alice' })}
 {i18n.t('common.price', { amount: 99.99 })}
 {i18n.t('common.progress', { value: 0.75 })}
+```
+
+### Format Specifiers
+
+| Format            | Syntax               | Example                | Output                |
+| ----------------- | -------------------- | ---------------------- | --------------------- |
+| Number            | `{key:number}`       | `{amount:number}`      | `1,234.56`            |
+| Number (decimals) | `{key:number:2}`     | `{price:number:2}`     | `99.90`               |
+| Currency          | `{key:currency:USD}` | `{price:currency:USD}` | `$99.99`              |
+| Percent           | `{key:percent}`      | `{rate:percent}`       | `75%`                 |
+| Date              | `{key:date}`         | `{d:date}`             | `12/24/2025`          |
+| Date (style)      | `{key:date:long}`    | `{d:date:long}`        | `December 24, 2025`   |
+| Time              | `{key:time}`         | `{t:time}`             | `2:30 PM`             |
+| DateTime          | `{key:datetime}`     | `{dt:datetime}`        | `12/24/2025, 2:30 PM` |
+| Scientific        | `{key:scientific}`   | `{num:scientific}`     | `1.23E9`              |
+| Subscript         | `{key:subscript}`    | `{tiny:subscript}`     | `0.0₁₂33`             |
+
+## Number & Date Formatting
+
+The `i18n.format` API provides locale-aware formatting:
+
+```svelte
+<!-- Numbers -->
+{i18n.format.number(1234567.89)}
+<!-- 1,234,567.89 (en) / 1.234.567,89 (de) -->
+{i18n.format.number(1234.5, { decimals: 2 })}
+<!-- 1,234.50 -->
+
+<!-- Currency (auto-detects from locale) -->
+{i18n.format.currency(99.99)}
+<!-- $99.99 (en) / ¥99.99 (zh) / €99.99 (de) -->
+{i18n.format.currency(99.99, 'EUR')}
+<!-- €99.99 (explicit currency) -->
+
+<!-- Percentage -->
+{i18n.format.percent(0.75)}
+<!-- 75% -->
+
+<!-- Date/Time -->
+{i18n.format.date(new Date())}
+<!-- 12/24/2025 -->
+{i18n.format.date(new Date(), { style: 'long' })}
+<!-- December 24, 2025 -->
+{i18n.format.time(new Date())}
+<!-- 2:30 PM -->
+{i18n.format.datetime(new Date())}
+<!-- 12/24/2025, 2:30 PM -->
+
+<!-- Scientific notation -->
+{i18n.format.scientific(0.0000000033)}
+<!-- 3.3E-9 -->
+
+<!-- Subscript notation (for very small numbers) -->
+{i18n.format.subscript(0.0000000000033)}
+<!-- 0.0₁₂33 -->
+```
+
+### Auto Currency Detection
+
+When currency is not specified, it's automatically detected from the current locale:
+
+| Locale                 | Default Currency |
+| ---------------------- | ---------------- |
+| `en`                   | USD ($)          |
+| `en-GB`                | GBP (£)          |
+| `zh`                   | CNY (¥)          |
+| `de`, `fr`, `es`, `it` | EUR (€)          |
+| `ja`                   | JPY (¥)          |
+| `pt-BR`                | BRL (R$)         |
+
+### Server-Side Formatting
+
+The `createServerT` also provides formatting:
+
+```typescript
+const t = createServerT(translations, { locale: 'de' });
+
+t.format.number(1234.56); // "1.234,56"
+t.format.currency(99.99); // "99,99 €"
+t.format.date(new Date()); // "24.12.2025"
 ```
 
 ## Array Access
@@ -312,10 +394,10 @@ const t = createServerT(translations, {
 
 ### ServerTranslator API
 
-| Method                    | Return Type         | Description                                    |
-| ------------------------- | ------------------- | ---------------------------------------------- |
-| `t(key, params?)`         | `string`            | Translate a key                                |
-| `t<string[]>(key)`        | `string[]`          | Get array of translations (generic type)       |
+| Method             | Return Type | Description                              |
+| ------------------ | ----------- | ---------------------------------------- |
+| `t(key, params?)`  | `string`    | Translate a key                          |
+| `t<string[]>(key)` | `string[]`  | Get array of translations (generic type) |
 
 ### ServerTOptions
 
@@ -408,10 +490,24 @@ Options:
 | --------------------- | --------------- | ---------------------------- |
 | `locale`              | `string`        | Current locale (reactive)    |
 | `locales`             | `LocaleMeta[]`  | Available locales (reactive) |
+| `format`              | `I18nFormatter` | Locale-aware formatter       |
 | `t(key, params?)`     | `function`      | Translate a key              |
 | `setLocale(locale)`   | `Promise<void>` | Switch locale                |
 | `isLoaded(namespace)` | `boolean`       | Check if loaded              |
 | `preload(namespaces)` | `Promise<void>` | Preload namespaces           |
+
+### I18nFormatter
+
+| Method       | Signature                                | Description                               |
+| ------------ | ---------------------------------------- | ----------------------------------------- |
+| `number`     | `(value, options?) => string`            | Format number with locale separators      |
+| `currency`   | `(value, currency?, options?) => string` | Format currency (auto-detects if omitted) |
+| `percent`    | `(value, options?) => string`            | Format percentage                         |
+| `date`       | `(value, options?) => string`            | Format date                               |
+| `time`       | `(value, options?) => string`            | Format time                               |
+| `datetime`   | `(value, options?) => string`            | Format date and time                      |
+| `scientific` | `(value, options?) => string`            | Format in scientific notation             |
+| `subscript`  | `(value, options?) => string`            | Format small numbers with subscript       |
 
 ## URL-Based Locale (SvelteKit)
 
@@ -440,6 +536,7 @@ export const reroute = ({ url }) => deLocalizeUrl(url).pathname;
 - **From v0.x to v2.0:** See [MIGRATION.md](./MIGRATION.md)
 - **From v2.0.x to v2.1.0:** See [v2.0 to v2.1 Migration](#v20x-to-v210-migration) below
 - **From v2.1.x to v2.2.0:** See [v2.1 to v2.2 Migration](#v21x-to-v220-migration) below
+- **From v2.2.x to v2.3.0:** See [v2.2 to v2.3 Migration](#v22x-to-v230-migration) below
 
 ### v2.0.x to v2.1.0 Migration
 
@@ -527,9 +624,54 @@ t<string[]>('home.features');
 ```
 
 Benefits:
+
 - **Unified API** - Same syntax on client and server
 - **Type-safe** - TypeScript infers return type from generic parameter
 - **Simpler** - One function instead of two
+
+### v2.2.x to v2.3.0 Migration
+
+v2.3.0 adds locale-aware formatting with full backward compatibility:
+
+#### New: `i18n.format` API
+
+Format numbers, currencies, and dates according to the current locale:
+
+```svelte
+{i18n.format.number(1234.56)}
+<!-- Locale-aware number formatting -->
+{i18n.format.currency(99.99)}
+<!-- Auto-detects currency from locale -->
+{i18n.format.date(new Date())}
+<!-- Locale-aware date formatting -->
+```
+
+#### New: Interpolation Format Specifiers
+
+Use format specifiers directly in translation strings:
+
+```json
+{
+	"price": "Price: {amount:currency:USD}",
+	"date": "Date: {d:date:long}"
+}
+```
+
+#### New: Auto Currency Detection
+
+Currency is automatically detected from locale when not specified:
+
+```svelte
+<!-- In 'en' locale -->
+{i18n.format.currency(99.99)}
+<!-- $99.99 -->
+
+<!-- In 'zh' locale -->
+{i18n.format.currency(99.99)}
+<!-- ¥99.99 -->
+```
+
+No code changes required - all new features are additive.
 
 ## License
 
