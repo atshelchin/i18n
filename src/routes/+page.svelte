@@ -1,680 +1,967 @@
 <script lang="ts">
-	import { useI18n } from '$lib/svelte/index.js';
-	import { onMount } from 'svelte';
+	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
+	import { useI18n } from '$lib/index.js';
 
 	const i18n = useI18n();
-	const { setLocale } = i18n;
 
-	let currentTime = $state(new Date().toLocaleTimeString());
+	let count = $state(1);
+	let name = $state('World');
 
-	onMount(() => {
-		const interval = setInterval(() => {
-			currentTime = new Date().toLocaleTimeString();
-		}, 1000);
+	const GITHUB_URL = 'https://github.com/atshelchin/i18n';
 
-		return () => clearInterval(interval);
-	});
+	function switchLocale(locale: string) {
+		const currentPath = page.url.pathname;
+		// Replace locale prefix or add it
+		const pathWithoutLocale = currentPath.replace(/^\/[a-z]{2}(?=\/|$)/, '');
+		const newPath = `/${locale}${pathWithoutLocale || '/'}`;
+		goto(newPath);
+	}
+	console.log(123,i18n.locales)
 </script>
 
-<div class="container">
-	<!-- Header -->
-	<header class="header">
-		<div class="header-content">
-			<h1 class="title">{i18n.t('title')}</h1>
-			<p class="subtitle">{i18n.t('subtitle')}</p>
+<div class="demo-page">
+	<!-- GitHub Banner -->
+	<a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" class="github-banner">
+		<svg class="github-icon" viewBox="0 0 16 16" fill="currentColor">
+			<path
+				d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+			/>
+		</svg>
+		<span>{i18n.t('common.github.star')}</span>
+		<span class="star-icon">⭐</span>
+	</a>
 
-			<!-- Language Switcher -->
-			<div class="language-switcher">
-				{#each i18n.supportedLocales as locale (locale.code)}
-					<button
-						class="lang-button"
-						class:active={i18n.locale === locale.code}
-						onclick={() => setLocale(locale.code)}
-					>
-						<span class="flag">{locale.flag}</span>
-						<span class="lang-name">{locale.name}</span>
-					</button>
-				{/each}
+	<!-- Language Switcher -->
+	<section class="card locale-switcher">
+		<div class="locale-header">
+			<span class="label">{i18n.t('common.currentLocale')}:</span>
+			<span class="current-locale">{i18n.locale.toUpperCase()}</span>
+		</div>
+		<div class="locale-buttons">
+			{#each i18n.locales as loc}
+				<button
+					onclick={() => switchLocale(loc.code)}
+					class:active={i18n.locale === loc.code}
+					disabled={i18n.locale === loc.code}
+				>
+					<span class="flag">{loc.flag}</span>
+					<span class="name">{loc.name}</span>
+				</button>
+			{/each}
+		</div>
+	</section>
+
+	<!-- Features -->
+	<section class="card features-card">
+		<h2>{i18n.t('common.sections.features')}</h2>
+		<div class="features-grid">
+			<div class="feature-item">
+				<span class="feature-icon">📁</span>
+				<span>{i18n.t('common.features.autoScan')}</span>
+			</div>
+			<div class="feature-item">
+				<span class="feature-icon">⚡</span>
+				<span>{i18n.t('common.features.lazyLoad')}</span>
+			</div>
+			<div class="feature-item">
+				<span class="feature-icon">🖥️</span>
+				<span>{i18n.t('common.features.ssr')}</span>
+			</div>
+			<div class="feature-item">
+				<span class="feature-icon">🔒</span>
+				<span>{i18n.t('common.features.typeSafe')}</span>
+			</div>
+			<div class="feature-item">
+				<span class="feature-icon">✨</span>
+				<span>{i18n.t('common.features.minimal')}</span>
+			</div>
+			<div class="feature-item">
+				<span class="feature-icon">🔮</span>
+				<span>{i18n.t('common.features.svelte5')}</span>
 			</div>
 		</div>
-	</header>
+	</section>
 
-	<!-- Main Content -->
-	<main class="main">
-		<!-- Greeting Card -->
-		<div class="card greeting-card">
-			<div class="greeting-emoji">👋</div>
-			<h2 class="greeting">{i18n.t('greeting')}</h2>
-			<p class="welcome">{i18n.t('welcome')}</p>
+	<!-- Quick Start -->
+	<section class="card quickstart-card">
+		<h2>{i18n.t('common.sections.quickStart')}</h2>
+
+		<div class="step">
+			<h3>{i18n.t('common.quickStart.step1')}</h3>
+			<pre class="code-block"><code><span class="hl-cmd">npm</span> install @shelchin/i18n</code></pre>
 		</div>
 
-		<!-- Description -->
-		<div class="card description-card">
-			<p class="description">{i18n.t('description')}</p>
+		<div class="step">
+			<h3>{i18n.t('common.quickStart.step2')}</h3>
+			<pre class="code-block"><code><span class="hl-comment">// locales/en/common.json</span>
+{'{'}<br />  <span class="hl-key">"_meta"</span>: {'{'} <span class="hl-key">"code"</span>: <span class="hl-string">"en"</span>, <span class="hl-key">"name"</span>: <span class="hl-string">"English"</span>, <span class="hl-key">"flag"</span>: <span class="hl-string">"🇬🇧"</span> {'}'},<br />  <span class="hl-key">"hello"</span>: <span class="hl-string">"Hello"</span>,<br />  <span class="hl-key">"greeting"</span>: <span class="hl-string">"Hello, {'{'}<span class="hl-param">name</span>{'}'}!"</span><br />{'}'}
+
+<span class="hl-comment">// locales/zh/common.json</span>
+{'{'}<br />  <span class="hl-key">"_meta"</span>: {'{'} <span class="hl-key">"code"</span>: <span class="hl-string">"zh"</span>, <span class="hl-key">"name"</span>: <span class="hl-string">"中文"</span>, <span class="hl-key">"flag"</span>: <span class="hl-string">"🇨🇳"</span> {'}'},<br />  <span class="hl-key">"hello"</span>: <span class="hl-string">"你好"</span>,<br />  <span class="hl-key">"greeting"</span>: <span class="hl-string">"你好，{'{'}<span class="hl-param">name</span>{'}'}！"</span><br />{'}'}</code></pre>
 		</div>
 
-		<!-- Features Grid -->
-		<div class="features-section">
-			<h3 class="section-title">{i18n.t('features.title')}</h3>
-			<div class="features-grid">
-				<div class="feature-card">
-					<div class="feature-icon">⚡</div>
-					<h4 class="feature-title">{i18n.t('features.reactive')}</h4>
-					<p class="feature-desc">{i18n.t('features.reactiveDesc')}</p>
-				</div>
+		<div class="step">
+			<h3>{i18n.t('common.quickStart.step3')}</h3>
+			<pre class="code-block"><code><span class="hl-comment">// +layout.svelte</span>
+<span class="hl-tag">&lt;script&gt;</span>
+  <span class="hl-keyword">import</span> {'{'} initI18n, setI18nContext, registerGlobLoaders {'}'} <span class="hl-keyword">from</span> <span class="hl-string">'@shelchin/i18n'</span>;
 
-				<div class="feature-card">
-					<div class="feature-icon">💾</div>
-					<h4 class="feature-title">{i18n.t('features.persist')}</h4>
-					<p class="feature-desc">{i18n.t('features.persistDesc')}</p>
-				</div>
+  <span class="hl-keyword">const</span> i18n = <span class="hl-func">initI18n</span>({'{'} locale: <span class="hl-string">'en'</span>, defaultLocale: <span class="hl-string">'en'</span> {'}'});
 
-				<div class="feature-card">
-					<div class="feature-icon">📦</div>
-					<h4 class="feature-title">{i18n.t('features.packages')}</h4>
-					<p class="feature-desc">{i18n.t('features.packagesDesc')}</p>
-				</div>
+  <span class="hl-comment">// Auto-scan all locale files</span>
+  <span class="hl-func">registerGlobLoaders</span>(<span class="hl-keyword">import</span>.meta.<span class="hl-func">glob</span>(<span class="hl-string">'./locales/**/*.json'</span>), i18n);
+
+  <span class="hl-func">setI18nContext</span>(i18n);
+<span class="hl-tag">&lt;/script&gt;</span></code></pre>
+		</div>
+
+		<div class="step">
+			<h3>{i18n.t('common.quickStart.step4')}</h3>
+			<pre class="code-block"><code><span class="hl-comment">// +page.svelte</span>
+<span class="hl-tag">&lt;script&gt;</span>
+  <span class="hl-keyword">import</span> {'{'} useI18n {'}'} <span class="hl-keyword">from</span> <span class="hl-string">'@shelchin/i18n'</span>;
+  <span class="hl-keyword">const</span> i18n = <span class="hl-func">useI18n</span>();
+<span class="hl-tag">&lt;/script&gt;</span>
+
+<span class="hl-tag">&lt;p&gt;</span>{'{'}i18n.<span class="hl-func">t</span>(<span class="hl-string">'common.hello'</span>){'}'}<span class="hl-tag">&lt;/p&gt;</span>
+<span class="hl-tag">&lt;p&gt;</span>{'{'}i18n.<span class="hl-func">t</span>(<span class="hl-string">'common.greeting'</span>, {'{'} name: <span class="hl-string">'World'</span> {'}'}){'}'}<span class="hl-tag">&lt;/p&gt;</span>
+
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">onclick</span>={'{'}() => i18n.<span class="hl-func">setLocale</span>(<span class="hl-string">'zh'</span>){'}'}<span class="hl-tag">&gt;</span>
+  Switch to Chinese
+<span class="hl-tag">&lt;/button&gt;</span></code></pre>
+		</div>
+	</section>
+
+	<!-- Basic Translation -->
+	<section class="card usage-card">
+		<h2>{i18n.t('common.sections.basic')}</h2>
+		<div class="usage-content">
+			<div class="usage-code">
+				<pre class="code-block-small"><code>i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.title'</span>)
+i18n.<span class="hl-func">t</span>(<span class="hl-string">'common.ok'</span>)</code></pre>
 			</div>
-		</div>
-
-		<!-- Live Demo Section -->
-		<div class="demo-section">
-			<h3 class="section-title">{i18n.t('demo.title')}</h3>
-			<div class="demo-cards">
-				<div class="demo-card">
-					<div class="demo-label">{i18n.t('demo.currentLocale')}</div>
-					<div class="demo-value">
-						{i18n.currentMeta?.flag}
-						{i18n.currentMeta?.name}
-						<code>({i18n.locale})</code>
-					</div>
+			<div class="usage-demo">
+				<div class="translation-item">
+					<code>home.title</code>
+					<span class="arrow">→</span>
+					<span class="value">{i18n.t('home.title')}</span>
 				</div>
-
-				<div class="demo-card">
-					<div class="demo-label">{i18n.t('demo.nestedKeys')}</div>
-					<div class="demo-value">
-						<code>features.reactive</code> → {i18n.t('features.reactive')}
-					</div>
+				<div class="translation-item">
+					<code>home.description</code>
+					<span class="arrow">→</span>
+					<span class="value">{i18n.t('home.description')}</span>
 				</div>
-
-				<div class="demo-card">
-					<div class="demo-label">{i18n.t('demo.dynamicContent')}</div>
-					<div class="demo-value">
-						{i18n.t('demo.timeNow')}: <strong>{currentTime}</strong>
-					</div>
+				<div class="translation-item">
+					<code>common.ok</code>
+					<span class="arrow">→</span>
+					<span class="value">{i18n.t('common.ok')}</span>
 				</div>
-			</div>
-		</div>
-
-		<!-- Quick Start Guide -->
-		<div class="quickstart-section">
-			<h3 class="section-title">{i18n.t('quickstart.title')}</h3>
-			<div class="quickstart-tabs">
-				<div class="quickstart-card app-dev">
-					<div class="quickstart-header">
-						<div class="quickstart-icon">🚀</div>
-						<h4 class="quickstart-title">{i18n.t('quickstart.app')}</h4>
-					</div>
-					<div class="quickstart-steps">
-						<div class="step">
-							<div class="step-number">1</div>
-							<div class="step-content">
-								<div class="step-title">{i18n.t('quickstart.install')}</div>
-								<pre><code>pnpm add @shelchin/i18n</code></pre>
-							</div>
-						</div>
-						<div class="step">
-							<div class="step-number">2</div>
-							<div class="step-content">
-								<div class="step-title">{i18n.t('quickstart.setup')}</div>
-								<pre><code
-										>&lt;script&gt;
-import &#123; createI18nStore &#125; from '@shelchin/i18n/svelte';
-import &#123; setI18nContext &#125; from '@shelchin/i18n/svelte';
-
-const i18n = createI18nStore();
-i18n.register('__default__', &#123; en: &#123;...&#125;, zh: &#123;...&#125; &#125;);
-setI18nContext(i18n);
-&lt;/script&gt;</code
-									></pre>
-							</div>
-						</div>
-						<div class="step">
-							<div class="step-number">3</div>
-							<div class="step-content">
-								<div class="step-title">{i18n.t('quickstart.use')}</div>
-								<pre><code
-										>&lt;script&gt;
-  import &#123; useI18n &#125; from '@shelchin/i18n/svelte';
-  const i18n = useI18n();
-&lt;/script&gt;
-
-&#123;i18n.t('greeting')&#125;</code
-									></pre>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<div class="quickstart-card lib-dev">
-					<div class="quickstart-header">
-						<div class="quickstart-icon">📦</div>
-						<h4 class="quickstart-title">{i18n.t('quickstart.lib')}</h4>
-					</div>
-					<div class="quickstart-steps">
-						<div class="step">
-							<div class="step-number">1</div>
-							<div class="step-content">
-								<div class="step-title">{i18n.t('quickstart.createHook')}</div>
-								<pre><code
-										>// lib/i18n/index.ts
-import &#123; useI18n as base &#125; from '@shelchin/i18n/svelte';
-import en from './en.json';
-
-export const useI18n = () =&gt; &#123;
-  const i18n = base();
-  i18n.register('my-lib', &#123; en &#125;);
-  return i18n;
-&#125;;</code
-									></pre>
-							</div>
-						</div>
-						<div class="step">
-							<div class="step-number">2</div>
-							<div class="step-content">
-								<div class="step-title">{i18n.t('quickstart.useInComponent')}</div>
-								<pre><code
-										>&lt;script&gt;
-  import &#123; useI18n &#125; from './i18n';
-  const i18n = useI18n();
-&lt;/script&gt;
-
-&#123;i18n.t('button', &#123; package: 'my-lib' &#125;)&#125;</code
-									></pre>
-							</div>
-						</div>
-					</div>
+				<div class="translation-item">
+					<code>common.cancel</code>
+					<span class="arrow">→</span>
+					<span class="value">{i18n.t('common.cancel')}</span>
 				</div>
 			</div>
 		</div>
-	</main>
+	</section>
 
-	<!-- Footer -->
-	<footer class="footer">
-		<p>
-			<a
-				href="https://github.com/atshelchin/i18n"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="footer-link"
-			>
-				GitHub
-			</a>
-			·
-			<a
-				href="https://www.npmjs.com/package/@shelchin/i18n"
-				target="_blank"
-				rel="noopener noreferrer"
-				class="footer-link"
-			>
-				npm
-			</a>
-		</p>
+	<!-- Interpolation -->
+	<section class="card usage-card">
+		<h2>{i18n.t('common.sections.interpolation')}</h2>
+		<div class="usage-content">
+			<div class="usage-code">
+				<pre class="code-block-small"><code><span class="hl-comment">// JSON: "greeting": "Hello, {'{'}<span class="hl-param">name</span>{'}'}!"</span>
+i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.greeting'</span>, {'{'} name: <span class="hl-string">'{name}'</span> {'}'})</code></pre>
+			</div>
+			<div class="usage-demo">
+				<div class="input-group">
+					<label>
+						<span>{i18n.t('common.labels.name')}:</span>
+						<input type="text" bind:value={name} placeholder="Enter name..." />
+					</label>
+				</div>
+				<div class="result">
+					<code>home.greeting</code>
+					<span class="arrow">→</span>
+					<span class="value highlight">{i18n.t('home.greeting', { name })}</span>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Pluralization -->
+	<section class="card usage-card">
+		<h2>{i18n.t('common.sections.pluralization')}</h2>
+		<div class="usage-content">
+			<div class="usage-code">
+				<pre class="code-block-small"><code><span class="hl-comment">// JSON: "items_zero": "No items"</span>
+<span class="hl-comment">//       "items_one": "{'{'}<span class="hl-param">count</span>{'}'} item"</span>
+<span class="hl-comment">//       "items_other": "{'{'}<span class="hl-param">count</span>{'}'} items"</span>
+i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.items'</span>, {'{'} count: <span class="hl-number">{count}</span> {'}'})</code></pre>
+			</div>
+			<div class="usage-demo">
+				<div class="input-group">
+					<label>
+						<span>{i18n.t('common.labels.count')}:</span>
+						<input type="number" bind:value={count} min="0" max="999" />
+					</label>
+				</div>
+				<div class="count-buttons">
+					<button onclick={() => (count = 0)}>0</button>
+					<button onclick={() => (count = 1)}>1</button>
+					<button onclick={() => (count = 2)}>2</button>
+					<button onclick={() => (count = 5)}>5</button>
+					<button onclick={() => (count = 100)}>100</button>
+				</div>
+				<div class="result">
+					<code>home.items</code>
+					<span class="arrow">→</span>
+					<span class="value highlight">{i18n.t('home.items', { count })}</span>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Loaded Namespaces -->
+	<section class="card usage-card">
+		<h2>{i18n.t('common.sections.namespaces')}</h2>
+		<div class="usage-content">
+			<div class="usage-code">
+				<pre class="code-block-small"><code>i18n.<span class="hl-func">getLoadedNamespaces</span>()
+i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</span>)</code></pre>
+			</div>
+			<div class="usage-demo">
+				<div class="namespace-list">
+					{#each i18n.getLoadedNamespaces() as ns}
+						<span class="namespace-tag">{ns}</span>
+					{/each}
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Footer CTA -->
+	<footer class="footer-cta">
+		<p>{i18n.t('common.github.description')}</p>
+		<a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" class="github-btn">
+			<svg class="github-icon" viewBox="0 0 16 16" fill="currentColor">
+				<path
+					d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"
+				/>
+			</svg>
+			{i18n.t('common.github.star')}
+		</a>
 	</footer>
 </div>
 
 <style>
-	.container {
-		max-width: 1200px;
-		margin: 0 auto;
-	}
-
-	/* Header */
-	.header {
-		text-align: center;
-		margin-bottom: 3rem;
-		animation: fadeInDown 0.6s ease-out;
-	}
-
-	.header-content {
-		background: rgba(255, 255, 255, 0.95);
-		backdrop-filter: blur(10px);
-		padding: 3rem 2rem;
-		border-radius: 20px;
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
-	}
-
-	.title {
-		font-size: 3rem;
-		font-weight: 700;
-		margin: 0 0 1rem 0;
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
-	}
-
-	.subtitle {
-		font-size: 1.25rem;
-		color: #666;
-		margin: 0 0 2rem 0;
-	}
-
-	/* Language Switcher */
-	.language-switcher {
-		display: flex;
-		gap: 1rem;
-		justify-content: center;
-		flex-wrap: wrap;
-	}
-
-	.lang-button {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 1.5rem;
-		border: 2px solid #e0e0e0;
-		border-radius: 50px;
-		background: white;
-		cursor: pointer;
-		transition: all 0.3s ease;
-		font-size: 1rem;
-	}
-
-	.lang-button:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-		border-color: #667eea;
-	}
-
-	.lang-button.active {
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		color: white;
-		border-color: transparent;
-		box-shadow: 0 4px 20px rgba(102, 126, 234, 0.4);
-	}
-
-	.flag {
-		font-size: 1.5rem;
-	}
-
-	/* Main Content */
-	.main {
+	/* GitHub-style Design System */
+	.demo-page {
 		display: flex;
 		flex-direction: column;
-		gap: 2rem;
-		animation: fadeInUp 0.6s ease-out;
+		gap: 1rem;
 	}
 
 	.card {
-		background: rgba(255, 255, 255, 0.95);
-		backdrop-filter: blur(10px);
-		padding: 2rem;
-		border-radius: 16px;
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+		background: #ffffff;
+		border-radius: 6px;
+		padding: 1.25rem;
+		border: 1px solid #d0d7de;
 	}
 
-	/* Greeting Card */
-	.greeting-card {
-		text-align: center;
-		padding: 3rem 2rem;
-	}
-
-	.greeting-emoji {
-		font-size: 4rem;
-		margin-bottom: 1rem;
-		animation: wave 1s ease-in-out infinite;
-	}
-
-	.greeting {
-		font-size: 2.5rem;
-		font-weight: 700;
+	.card h2 {
 		margin: 0 0 1rem 0;
-		color: #333;
-	}
-
-	.welcome {
-		font-size: 1.25rem;
-		color: #666;
-		margin: 0;
-	}
-
-	/* Description */
-	.description-card {
-		text-align: center;
-	}
-
-	.description {
-		font-size: 1.125rem;
-		line-height: 1.7;
-		color: #555;
-		margin: 0;
-	}
-
-	/* Features Section */
-	.features-section {
-		margin: 2rem 0;
-	}
-
-	.section-title {
-		font-size: 2rem;
-		font-weight: 700;
-		margin: 0 0 2rem 0;
-		text-align: center;
-		color: white;
-		text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-	}
-
-	.features-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-		gap: 1.5rem;
-	}
-
-	.feature-card {
-		background: rgba(255, 255, 255, 0.95);
-		backdrop-filter: blur(10px);
-		padding: 2rem;
-		border-radius: 16px;
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-		transition: all 0.3s ease;
-	}
-
-	.feature-card:hover {
-		transform: translateY(-5px);
-		box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
-	}
-
-	.feature-icon {
-		font-size: 3rem;
-		margin-bottom: 1rem;
-	}
-
-	.feature-title {
-		font-size: 1.25rem;
+		font-size: 1rem;
 		font-weight: 600;
-		margin: 0 0 0.5rem 0;
-		color: #333;
+		color: #1f2328;
+		padding-bottom: 0.5rem;
+		border-bottom: 1px solid #d0d7de;
 	}
 
-	.feature-desc {
-		font-size: 0.95rem;
-		line-height: 1.6;
-		color: #666;
-		margin: 0;
-	}
-
-	/* Demo Section */
-	.demo-section {
-		margin: 2rem 0;
-	}
-
-	.demo-cards {
-		display: grid;
-		gap: 1rem;
-	}
-
-	.demo-card {
-		background: rgba(255, 255, 255, 0.95);
-		backdrop-filter: blur(10px);
-		padding: 1.5rem;
-		border-radius: 12px;
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-		border-left: 4px solid #667eea;
-	}
-
-	.demo-label {
+	/* GitHub Banner */
+	.github-banner {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 0.625rem 1rem;
+		background: #f6f8fa;
+		color: #1f2328;
+		border-radius: 6px;
+		border: 1px solid #d0d7de;
+		text-decoration: none;
+		font-weight: 600;
 		font-size: 0.875rem;
-		font-weight: 600;
-		color: #667eea;
-		margin-bottom: 0.5rem;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
+		transition: background-color 0.2s;
 	}
 
-	.demo-value {
-		font-size: 1.125rem;
-		color: #333;
+	.github-banner:hover {
+		background: #f3f4f6;
+		border-color: #1f2328;
+	}
+
+	.github-icon {
+		width: 18px;
+		height: 18px;
+	}
+
+	.star-icon {
+		font-size: 1rem;
+	}
+
+	/* Locale Switcher - GitHub style */
+	.locale-switcher {
+		background: #f6f8fa;
+		border: 1px solid #d0d7de;
+	}
+
+	.locale-header {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		flex-wrap: wrap;
+		margin-bottom: 0.75rem;
 	}
 
-	.demo-value code {
-		background: #f5f5f5;
-		padding: 0.25rem 0.5rem;
-		border-radius: 4px;
-		font-family: 'Courier New', monospace;
-		font-size: 0.9rem;
-		color: #764ba2;
+	.locale-header .label {
+		font-size: 0.875rem;
+		color: #656d76;
 	}
 
-	/* Stats Section */
-	.stats-section {
-		margin: 2rem 0;
-	}
-
-	.stats-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-		gap: 1.5rem;
-	}
-
-	.stat-card {
-		background: rgba(255, 255, 255, 0.95);
-		backdrop-filter: blur(10px);
-		padding: 2rem;
-		border-radius: 16px;
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-		text-align: center;
-	}
-
-	.stat-number {
-		font-size: 3rem;
-		font-weight: 700;
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
-		margin-bottom: 0.5rem;
-	}
-
-	.stat-label {
-		font-size: 1rem;
-		color: #666;
-	}
-
-	/* Footer */
-	.footer {
-		text-align: center;
-		margin-top: 4rem;
-		padding: 2rem;
-		color: white;
-		animation: fadeIn 1s ease-out;
-	}
-
-	.footer-link {
-		color: white;
-		text-decoration: none;
-		font-weight: 500;
-		transition: all 0.3s ease;
-		padding: 0 0.5rem;
-	}
-
-	.footer-link:hover {
-		text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-	}
-
-	/* Animations */
-	@keyframes fadeInDown {
-		from {
-			opacity: 0;
-			transform: translateY(-30px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	@keyframes fadeInUp {
-		from {
-			opacity: 0;
-			transform: translateY(30px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
-	}
-
-	@keyframes fadeIn {
-		from {
-			opacity: 0;
-		}
-		to {
-			opacity: 1;
-		}
-	}
-
-	@keyframes wave {
-		0%,
-		100% {
-			transform: rotate(0deg);
-		}
-		25% {
-			transform: rotate(-10deg);
-		}
-		75% {
-			transform: rotate(10deg);
-		}
-	}
-
-	/* Quick Start Section */
-	.quickstart-section {
-		margin: 2rem 0;
-	}
-
-	.quickstart-tabs {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-		gap: 2rem;
-	}
-
-	.quickstart-card {
-		background: rgba(255, 255, 255, 0.95);
-		backdrop-filter: blur(10px);
-		border-radius: 16px;
-		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-		overflow: hidden;
-		overflow-x: auto;
-	}
-
-	.quickstart-header {
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		padding: 2rem;
-		text-align: center;
-		color: white;
-	}
-
-	.lib-dev .quickstart-header {
-		background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-	}
-
-	.quickstart-icon {
-		font-size: 3rem;
-		margin-bottom: 1rem;
-	}
-
-	.quickstart-title {
-		font-size: 1.5rem;
+	.locale-header .current-locale {
 		font-weight: 600;
-		margin: 0;
+		font-size: 0.875rem;
+		color: #1f2328;
+		background: #ffffff;
+		padding: 0.25rem 0.5rem;
+		border-radius: 6px;
+		border: 1px solid #d0d7de;
 	}
 
-	.quickstart-steps {
-		padding: 2rem;
+	.locale-buttons {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.locale-buttons button {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.375rem 0.75rem;
+		border: 1px solid #d0d7de;
+		border-radius: 6px;
+		background: #ffffff;
+		color: #1f2328;
+		font-size: 0.875rem;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.locale-buttons button:hover:not(:disabled) {
+		background: #f3f4f6;
+		border-color: #1f2328;
+	}
+
+	.locale-buttons button.active {
+		background: #0969da;
+		color: white;
+		border-color: #0969da;
+		cursor: default;
+	}
+
+	.locale-buttons button .flag {
+		font-size: 1.1rem;
+	}
+
+	/* Features - GitHub style */
+	.features-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+		gap: 0.75rem;
+	}
+
+	.feature-item {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 0.75rem;
+		background: #f6f8fa;
+		border: 1px solid #d0d7de;
+		border-radius: 6px;
+		font-size: 0.875rem;
+		color: #1f2328;
+	}
+
+	.feature-icon {
+		font-size: 1.1rem;
+	}
+
+	/* Quick Start - GitHub code block style */
+	.quickstart-card {
+		background: #ffffff;
+		border: 1px solid #d0d7de;
+	}
+
+	.quickstart-card h2 {
+		color: #1f2328;
+		font-size: 1rem;
+		border-bottom: 1px solid #d0d7de;
 	}
 
 	.step {
-		display: flex;
-		gap: 1rem;
-		margin-bottom: 2rem;
+		margin-bottom: 1.25rem;
 	}
 
 	.step:last-child {
 		margin-bottom: 0;
 	}
 
-	.step-number {
-		flex-shrink: 0;
-		width: 2rem;
-		height: 2rem;
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		color: white;
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-weight: 600;
-		font-size: 0.9rem;
+	.step h3 {
+		color: #656d76;
+		font-size: 0.875rem;
+		font-weight: 500;
+		margin: 0 0 0.5rem 0;
 	}
 
-	.lib-dev .step-number {
-		background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-	}
-
-	.step-content {
-		flex: 1;
-	}
-
-	.step-title {
-		font-weight: 600;
-		color: #333;
-		margin-bottom: 0.5rem;
-		font-size: 0.95rem;
-	}
-
-	.step-content pre {
-		background: #f5f5f5;
+	.code-block {
+		background: #f6f8fa;
+		border-radius: 6px;
 		padding: 1rem;
-		border-radius: 8px;
 		overflow-x: auto;
 		margin: 0;
+		border: 1px solid #d0d7de;
 	}
 
-	.step-content code {
-		font-family: 'Courier New', Monaco, monospace;
-		font-size: 0.85rem;
-		line-height: 1.6;
-		color: #333;
+	.code-block code {
+		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+		font-size: 0.8125rem;
+		color: #1f2328;
+		white-space: pre-wrap;
+		word-break: break-word;
 	}
 
-	/* Responsive */
+	/* Syntax Highlighting - GitHub style */
+	.hl-comment {
+		color: #6e7781;
+		font-style: italic;
+	}
+
+	.hl-keyword {
+		color: #cf222e;
+		font-weight: 500;
+	}
+
+	.hl-string {
+		color: #0a3069;
+	}
+
+	.hl-func {
+		color: #8250df;
+	}
+
+	.hl-tag {
+		color: #116329;
+	}
+
+	.hl-attr {
+		color: #0550ae;
+	}
+
+	.hl-key {
+		color: #0550ae;
+	}
+
+	.hl-param {
+		color: #953800;
+	}
+
+	.hl-cmd {
+		color: #0550ae;
+		font-weight: 600;
+	}
+
+	.hl-number {
+		color: #0550ae;
+	}
+
+	/* Usage Cards - Full Width with Code + Demo Layout */
+	.usage-card {
+		width: 100%;
+	}
+
+	.usage-content {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+		align-items: start;
+	}
+
+	.usage-code {
+		background: #f6f8fa;
+		border-radius: 6px;
+		padding: 0.75rem;
+		border: 1px solid #d0d7de;
+		height: 100%;
+		display: flex;
+		align-items: center;
+	}
+
+	.code-block-small {
+		margin: 0;
+		background: transparent;
+		overflow-x: auto;
+	}
+
+	.code-block-small code {
+		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+		font-size: 0.8125rem;
+		color: #1f2328;
+		white-space: pre;
+	}
+
+	.usage-demo {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	/* Grid Layout */
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+		gap: 1rem;
+	}
+
+	/* Translation List */
+	.translation-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.translation-item {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.375rem 0.5rem;
+		background: #f6f8fa;
+		border: 1px solid #d0d7de;
+		border-radius: 6px;
+		font-size: 0.875rem;
+	}
+
+	.translation-item code {
+		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+		font-size: 0.75rem;
+		color: #0550ae;
+		background: #ddf4ff;
+		padding: 0.125rem 0.375rem;
+		border-radius: 4px;
+	}
+
+	.arrow {
+		color: #656d76;
+		font-size: 0.875rem;
+	}
+
+	.value {
+		color: #1f2328;
+		font-weight: 500;
+	}
+
+	.value.highlight {
+		color: #1a7f37;
+		font-size: 1rem;
+	}
+
+	/* Input Groups - GitHub form style */
+	.input-group {
+		margin-bottom: 0.75rem;
+	}
+
+	.input-group label {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.input-group span {
+		font-size: 0.875rem;
+		color: #656d76;
+		min-width: 50px;
+	}
+
+	.input-group input {
+		flex: 1;
+		padding: 0.375rem 0.75rem;
+		border: 1px solid #d0d7de;
+		border-radius: 6px;
+		font-size: 0.875rem;
+		background: #ffffff;
+		color: #1f2328;
+		transition: border-color 0.15s, box-shadow 0.15s;
+	}
+
+	.input-group input:focus {
+		outline: none;
+		border-color: #0969da;
+		box-shadow: 0 0 0 3px rgba(9, 105, 218, 0.15);
+	}
+
+	.result {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 0.75rem;
+		background: #dafbe1;
+		border-radius: 6px;
+		border: 1px solid #aceebb;
+	}
+
+	/* Count Buttons - GitHub button group style */
+	.count-buttons {
+		display: flex;
+		gap: 0.25rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.count-buttons button {
+		padding: 0.25rem 0.625rem;
+		border: 1px solid #d0d7de;
+		border-radius: 6px;
+		background: #f6f8fa;
+		font-size: 0.8125rem;
+		color: #1f2328;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.count-buttons button:hover {
+		background: #f3f4f6;
+		border-color: #1f2328;
+	}
+
+	/* Namespace Tags - GitHub label style */
+	.namespace-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.375rem;
+	}
+
+	.namespace-tag {
+		padding: 0.25rem 0.625rem;
+		background: #ddf4ff;
+		color: #0550ae;
+		border-radius: 20px;
+		font-size: 0.8125rem;
+		font-weight: 500;
+		border: 1px solid #54aeff66;
+	}
+
+	/* Locales Grid */
+	.locales-card {
+		margin-top: 0.5rem;
+	}
+
+	.locales-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+		gap: 0.75rem;
+	}
+
+	.locale-card {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 0.75rem;
+		background: #f6f8fa;
+		border-radius: 6px;
+		border: 1px solid #d0d7de;
+		transition: all 0.15s;
+	}
+
+	.locale-card.active {
+		background: #ddf4ff;
+		border-color: #0969da;
+	}
+
+	.locale-card .flag {
+		font-size: 1.25rem;
+	}
+
+	.locale-info {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+
+	.native-name {
+		font-weight: 600;
+		color: #1f2328;
+		font-size: 0.875rem;
+	}
+
+	.english-name {
+		font-size: 0.75rem;
+		color: #656d76;
+	}
+
+	.locale-card .code {
+		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+		font-size: 0.75rem;
+		color: #656d76;
+		text-transform: uppercase;
+	}
+
+	/* Footer CTA - GitHub style */
+	.footer-cta {
+		text-align: center;
+		padding: 1.5rem;
+		background: #f6f8fa;
+		border-radius: 6px;
+		border: 1px solid #d0d7de;
+	}
+
+	.footer-cta p {
+		margin: 0 0 0.75rem 0;
+		color: #656d76;
+		font-size: 0.875rem;
+	}
+
+	.github-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.5rem 1rem;
+		background: #1f2328;
+		color: white;
+		border-radius: 6px;
+		text-decoration: none;
+		font-weight: 600;
+		font-size: 0.875rem;
+		transition: background-color 0.15s;
+	}
+
+	.github-btn:hover {
+		background: #32383f;
+	}
+
+	.github-btn .github-icon {
+		width: 16px;
+		height: 16px;
+	}
+
+	/* Responsive - Tablet */
 	@media (max-width: 768px) {
-		.title {
-			font-size: 2rem;
+		.usage-content {
+			grid-template-columns: 1fr;
 		}
 
-		.subtitle {
+		.usage-code {
+			order: 2;
+		}
+
+		.usage-demo {
+			order: 1;
+		}
+
+		.features-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	/* Responsive - Mobile */
+	@media (max-width: 640px) {
+		.demo-page {
+			gap: 0.5rem;
+		}
+
+		.card {
+			padding: 0.75rem;
+			border-radius: 4px;
+		}
+
+		.card h2 {
+			font-size: 0.875rem;
+			margin-bottom: 0.5rem;
+			padding-bottom: 0.375rem;
+		}
+
+		.grid {
+			grid-template-columns: 1fr;
+		}
+
+		.locales-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.locale-switcher {
+			padding: 0.625rem;
+		}
+
+		.locale-header {
+			margin-bottom: 0.5rem;
+		}
+
+		.locale-buttons {
+			display: grid;
+			grid-template-columns: repeat(3, 1fr);
+			gap: 0.375rem;
+		}
+
+		.locale-buttons button {
+			justify-content: center;
+			padding: 0.25rem 0.5rem;
+			font-size: 0.8125rem;
+		}
+
+		.locale-buttons button .flag {
 			font-size: 1rem;
 		}
 
-		.greeting {
-			font-size: 2rem;
+		.features-grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 0.375rem;
+		}
+
+		.feature-item {
+			font-size: 0.75rem;
+			padding: 0.375rem 0.5rem;
+		}
+
+		.feature-icon {
+			font-size: 0.9rem;
+		}
+
+		.github-banner {
+			font-size: 0.75rem;
+			padding: 0.375rem 0.5rem;
+		}
+
+		.step {
+			margin-bottom: 0.75rem;
+		}
+
+		.step h3 {
+			font-size: 0.75rem;
+		}
+
+		.code-block {
+			padding: 0.5rem;
+		}
+
+		.code-block code {
+			font-size: 0.6875rem;
+		}
+
+		.usage-content {
+			gap: 0.5rem;
+		}
+
+		.usage-code {
+			padding: 0.375rem;
+		}
+
+		.code-block-small code {
+			font-size: 0.6875rem;
+		}
+
+		.translation-item {
+			flex-wrap: wrap;
+			gap: 0.25rem;
+			padding: 0.25rem 0.375rem;
+		}
+
+		.translation-item code {
+			font-size: 0.625rem;
+		}
+
+		.input-group {
+			margin-bottom: 0.5rem;
+		}
+
+		.input-group label {
+			flex-wrap: wrap;
+		}
+
+		.input-group span {
+			min-width: auto;
+			width: 100%;
+			margin-bottom: 0.125rem;
+			font-size: 0.75rem;
+		}
+
+		.input-group input {
+			padding: 0.25rem 0.5rem;
+			font-size: 0.8125rem;
+		}
+
+		.count-buttons {
+			flex-wrap: wrap;
+			gap: 0.25rem;
+			margin-bottom: 0.5rem;
+		}
+
+		.count-buttons button {
+			flex: 1;
+			min-width: 36px;
+			padding: 0.1875rem 0.375rem;
+			font-size: 0.75rem;
+		}
+
+		.result {
+			flex-wrap: wrap;
+			padding: 0.375rem 0.5rem;
+		}
+
+		.result code {
+			font-size: 0.625rem;
+		}
+
+		.value.highlight {
+			font-size: 0.875rem;
+		}
+
+		.namespace-tag {
+			font-size: 0.75rem;
+			padding: 0.1875rem 0.5rem;
+		}
+
+		.footer-cta {
+			padding: 0.75rem;
+		}
+
+		.footer-cta p {
+			font-size: 0.75rem;
+			margin-bottom: 0.5rem;
+		}
+
+		.github-btn {
+			font-size: 0.8125rem;
+			padding: 0.375rem 0.75rem;
+		}
+	}
+
+	/* Responsive - Small Mobile */
+	@media (max-width: 380px) {
+		.locale-buttons {
+			grid-template-columns: repeat(2, 1fr);
 		}
 
 		.features-grid {
 			grid-template-columns: 1fr;
+			gap: 0.25rem;
 		}
 
-		.stats-grid {
-			grid-template-columns: 1fr;
+		.feature-item {
+			padding: 0.25rem 0.375rem;
+			font-size: 0.6875rem;
 		}
 
-		.quickstart-tabs {
-			grid-template-columns: 1fr;
+		.code-block code,
+		.code-block-small code {
+			font-size: 0.625rem;
 		}
 	}
 </style>

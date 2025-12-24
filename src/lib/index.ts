@@ -1,29 +1,74 @@
-// Core i18n class
-export { I18n } from './i18n.js';
+/**
+ * @shelchin/i18n v2.0
+ *
+ * Modern i18n library for Svelte 5 with automatic lazy loading
+ *
+ * @example
+ * // Initialize (once in +layout.svelte)
+ * import { initI18n, setI18nContext, registerGlobLoaders } from '@shelchin/i18n';
+ *
+ * const i18n = initI18n({ locale: data.locale });
+ * registerGlobLoaders(import.meta.glob('./locales/** /*.json'));
+ * setI18nContext(i18n);
+ *
+ * @example
+ * // Use in any component
+ * import { t, setLocale, useI18n } from '@shelchin/i18n';
+ *
+ * // Direct function call
+ * t('home.title')
+ * await setLocale('zh')
+ *
+ * // Or via hook for reactive access
+ * const i18n = useI18n();
+ * i18n.locale // reactive
+ * i18n.locales // reactive
+ */
 
-// Type definitions (users need these for type hints)
-export type { LocaleMeta, LocaleData, PackageLocales, TranslationContent } from './types.js';
-
-// Svelte-specific reactive store and context
-export { createI18nStore, setI18nContext, useI18n } from './svelte/i18n.svelte.js';
-
-// Type definitions for Svelte store
-export type { I18nStore, CreateI18nStoreOptions } from './svelte/i18n.svelte.js';
-
-// Optional utilities for advanced use cases
-
-// URL localization utilities (for SvelteKit routing)
+// ========================================
+// Core Store & Functions
+// ========================================
 export {
-	deLocalizeUrl,
-	extractLocaleFromPathname,
-	extractLocaleFromCookie,
-	extractLocaleFromHeader
-} from './utils/utils.js';
+	// Initialization
+	initI18n,
+	setI18nContext,
+	useI18n,
+	getInstance,
 
-// Language search and validation utilities
+	// Direct module exports
+	t,
+	setLocale,
+	getLocale,
+	getLocales,
+
+	// Auto-scan helper
+	registerGlobLoaders
+} from './store.svelte.js';
+
+// ========================================
+// Types
+// ========================================
+export type {
+	// Configuration
+	InitI18nOptions,
+	I18nInstance,
+
+	// Data types
+	LocaleMeta,
+	LocaleData,
+	TranslationContent,
+
+	// Loader types
+	LocaleLoader,
+	LocaleLoaders,
+	NamespaceLoaders
+} from './types.js';
+
+// ========================================
+// Utilities
+// ========================================
 export {
-	getLanguageInfo,
-	fuzzySearchLanguages,
-	getAllLanguages,
-	isValidLanguageCode
-} from './utils/utils.js';
+	extractNamespace,
+	extractKeyPath,
+	parseGlobImports
+} from './utils.js';

@@ -1,4 +1,4 @@
-import type { LocaleMeta, TranslationContent, LocaleData } from '../types.ts';
+import type { LocaleMeta, TranslationContent, LocaleData } from '../types.js';
 import { languages } from '../constants/languages.js';
 
 export function getNestedValue(
@@ -71,7 +71,7 @@ export function fuzzySearchLanguages(query: string): LocaleMeta[] {
 		(lang) =>
 			lang.code.toLowerCase().includes(lowerQuery) ||
 			lang.name.toLowerCase().includes(lowerQuery) ||
-			lang.englishName.toLowerCase().includes(lowerQuery)
+			(lang.englishName && lang.englishName.toLowerCase().includes(lowerQuery))
 	);
 }
 
