@@ -17,6 +17,8 @@ declare module '@shelchin/i18n' {
 		'common.features.ssr': string;
 		'common.features.svelte5': string;
 		'common.features.typeSafe': string;
+		'common.features.formatting': string;
+		'common.features.zeroDeps': string;
 		'common.github.description': string;
 		'common.github.star': string;
 		'common.labels.count': string;

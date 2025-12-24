@@ -308,7 +308,7 @@ i18n.<span class="hl-func">t</span>&lt;string[]&gt;(<span class="hl-string">'hom
 			<div class="usage-demo">
 				<p class="array-label">i18n.t&lt;string[]&gt;('home.features'):</p>
 				<ul class="features-list">
-					{#each i18n.t<string[]>('home.features') as feature}
+					{#each i18n.t<string[]>('home.features') as feature, i (i)}
 						<li>{feature}</li>
 					{/each}
 				</ul>
@@ -323,13 +323,13 @@ i18n.<span class="hl-func">t</span>&lt;string[]&gt;(<span class="hl-string">'hom
 			<div class="usage-code">
 				<pre class="code-block-small"><code
 						><span class="hl-comment">// Template interpolation</span>
-{'{'}amount:number{'}'} <span class="hl-comment">// locale number</span>
-{'{'}price:currency:USD{'}'} <span class="hl-comment">// currency</span>
-{'{'}val:percent{'}'} <span class="hl-comment">// percentage</span>
-{'{'}d:date{'}'} <span class="hl-comment">// short date</span>
-{'{'}d:date:long{'}'} <span class="hl-comment">// long date</span>
-{'{'}num:scientific{'}'} <span class="hl-comment">// 1.23E9</span>
-{'{'}num:subscript{'}'} <span class="hl-comment">// 0.0₁₂33</span>
+&#123;amount:number&#125; <span class="hl-comment">// locale number</span>
+&#123;price:currency:USD&#125; <span class="hl-comment">// currency</span>
+&#123;val:percent&#125; <span class="hl-comment">// percentage</span>
+&#123;d:date&#125; <span class="hl-comment">// short date</span>
+&#123;d:date:long&#125; <span class="hl-comment">// long date</span>
+&#123;num:scientific&#125; <span class="hl-comment">// 1.23E9</span>
+&#123;num:subscript&#125; <span class="hl-comment">// 0.0₁₂33</span>
 
 <span class="hl-comment">// Direct format API</span>
 i18n.format.<span class="hl-func">number</span>(1234.56)
