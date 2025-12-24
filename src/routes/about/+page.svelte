@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { resolve } from '$app/paths';
 	import { useI18n } from '$lib/index.js';
 
 	const i18n = useI18n();
@@ -18,7 +19,7 @@
 		</div>
 	</div>
 
-	<a href="/" class="back-link">{i18n.t('about.backHome')}</a>
+	<a href={resolve('/')} class="back-link">{i18n.t('about.backHome')}</a>
 </div>
 
 <style>

@@ -7,6 +7,7 @@ Modern i18n library for Svelte 5 with automatic lazy loading and SSR support.
 - **Auto-scan locale files** - Use Vite glob imports
 - **Lazy loading by namespace** - Load translations on-demand
 - **SSR support** - Preload translations on server
+- **Automatic fallback** - Missing translations fall back to default locale
 - **Type-safe keys** - Generate TypeScript definitions
 - **Minimal core API** - Simple and intuitive
 - **Svelte 5 runes** - Full `$state` reactivity
@@ -232,6 +233,40 @@ Use `{key}` syntax with optional formatting:
 {i18n.t('common.greeting', { name: 'Alice' })}
 {i18n.t('common.price', { amount: 99.99 })}
 {i18n.t('common.progress', { value: 0.75 })}
+```
+
+## Array Access
+
+You can define arrays in your translation files and access elements by index:
+
+```json
+{
+	"features": ["Auto-scan locale files", "Lazy loading by namespace", "Full SSR support"]
+}
+```
+
+```svelte
+{i18n.t('home.features.0')}
+<!-- "Auto-scan locale files" -->
+{i18n.t('home.features.1')}
+<!-- "Lazy loading by namespace" -->
+```
+
+## Fallback Behavior
+
+When a translation key is missing for the current locale, the library automatically falls back to the default locale:
+
+- **SSR**: Both current locale and default locale translations are preloaded
+- **Client**: Missing namespace triggers automatic loading of default locale
+- **Dev mode**: Console warnings show which keys are using fallback
+
+```typescript
+// Configure default locale for fallback
+const i18n = initI18n({
+	locale: 'zh',
+	defaultLocale: 'en', // Fallback to English if Chinese translation missing
+	devMode: true // Show console warnings for missing translations
+});
 ```
 
 ## Type-Safe Keys

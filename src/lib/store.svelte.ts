@@ -267,15 +267,25 @@ class I18nStore implements I18nInstance {
 			return this._pendingLoads.get(key);
 		}
 
-		// Already loaded
-		if (this._namespaceStates[key] === 'loaded') {
+		// Already loaded or missing
+		if (this._namespaceStates[key] === 'loaded' || this._namespaceStates[key] === 'missing') {
 			return;
 		}
 
 		const loader = this._loaders[locale]?.[namespace];
 		if (!loader) {
+			// Mark as missing so we don't keep trying
+			untrack(() => {
+				this._namespaceStates[key] = 'missing';
+			});
+
 			if (this._devMode) {
 				console.warn(`[i18n] No loader found for ${locale}/${namespace}`);
+			}
+
+			// In production, try to load the default locale as fallback
+			if (!this._devMode && locale !== this._defaultLocale) {
+				this._triggerDefaultLocaleLoad(namespace);
 			}
 			return;
 		}
@@ -324,19 +334,14 @@ class I18nStore implements I18nInstance {
 	}
 
 	private _getFallback(key: string, params?: Record<string, string | number>): string {
-		// In dev mode, return key to help identify missing translations
-		if (this._devMode) {
-			console.warn(`[i18n] Missing translation: "${key}" for locale "${this._locale}"`);
-			return key;
-		}
+		const namespace = extractNamespace(key);
+		const keyPath = extractKeyPath(key);
 
-		// In production, try default locale
+		// Try default locale fallback (both dev and production)
 		if (this._locale !== this._defaultLocale) {
-			const namespace = extractNamespace(key);
-			const keyPath = extractKeyPath(key);
-
-			// Check if we have the default locale loaded
 			const defaultKey = `${this._defaultLocale}:${namespace}`;
+
+			// If default locale namespace is loaded, try to get translation
 			if (this._namespaceStates[defaultKey] === 'loaded') {
 				const namespaceData = this._registry[defaultKey];
 				let value = getNestedValue(namespaceData, keyPath);
@@ -350,13 +355,51 @@ class I18nStore implements I18nInstance {
 				}
 
 				if (value !== undefined) {
+					// In dev mode, warn about fallback usage
+					if (this._devMode) {
+						console.warn(
+							`[i18n] Missing translation: "${key}" for locale "${this._locale}", using fallback from "${this._defaultLocale}"`
+						);
+					}
 					return interpolate(value, params, this._defaultLocale);
 				}
+			} else if (!this._namespaceStates[defaultKey]) {
+				// Default locale namespace not loaded yet - trigger lazy load for future fallbacks
+				this._triggerDefaultLocaleLoad(namespace);
 			}
 		}
 
 		// Final fallback: return key
+		if (this._devMode) {
+			console.warn(
+				`[i18n] Missing translation: "${key}" for locale "${this._locale}" (no fallback available)`
+			);
+		}
 		return key;
+	}
+
+	/**
+	 * Trigger lazy load for default locale namespace (for production fallback)
+	 */
+	private _triggerDefaultLocaleLoad(namespace: string): void {
+		const key = `${this._defaultLocale}:${namespace}`;
+
+		// Already loading or loaded
+		if (
+			this._namespaceStates[key] === 'loading' ||
+			this._namespaceStates[key] === 'loaded' ||
+			this._pendingLoads.has(key)
+		) {
+			return;
+		}
+
+		// Start loading default locale namespace in background
+		this._loadNamespace(this._defaultLocale, namespace).catch((err) => {
+			console.error(
+				`[i18n] Failed to load default locale fallback "${this._defaultLocale}/${namespace}":`,
+				err
+			);
+		});
 	}
 
 	private _extractLocales(): void {

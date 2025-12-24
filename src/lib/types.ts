@@ -40,7 +40,7 @@ export interface LocaleLoaders {
 }
 
 /** Namespace loading state */
-export type NamespaceState = 'idle' | 'loading' | 'loaded' | 'error';
+export type NamespaceState = 'idle' | 'loading' | 'loaded' | 'error' | 'missing';
 
 /** Namespace states: namespace -> state */
 export interface NamespaceStates {

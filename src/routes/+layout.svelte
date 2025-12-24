@@ -9,7 +9,7 @@
 	const i18n = initI18n({
 		locale: data.locale,
 		defaultLocale: 'en',
-		devMode: true,
+		devMode: false,
 		preloadedTranslations: data.preloadedTranslations,
 		localeMetas: data.localeMetas
 	});

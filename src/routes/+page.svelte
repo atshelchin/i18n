@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
+	import { resolve } from '$app/paths';
 	import { useI18n } from '$lib/index.js';
 
 	const i18n = useI18n();
@@ -276,6 +277,31 @@ i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.items'</span>,
 		</div>
 	</section>
 
+	<!-- Array Access -->
+	<section class="card usage-card">
+		<h2>Array Access</h2>
+		<div class="usage-content">
+			<div class="usage-code">
+				<pre class="code-block-small"><code
+						><span class="hl-comment">// JSON: "features": ["Feature 1", "Feature 2", ...]</span>
+i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.features.0'</span>) <span
+							class="hl-comment">// First item</span
+						>
+i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.features.1'</span>) <span
+							class="hl-comment">// Second item</span
+						></code
+					></pre>
+			</div>
+			<div class="usage-demo">
+				<ul class="features-list">
+					<li>{i18n.t('home.features.0')}</li>
+					<li>{i18n.t('home.features.1')}</li>
+					<li>{i18n.t('home.features.2')}</li>
+				</ul>
+			</div>
+		</div>
+	</section>
+
 	<!-- Loaded Namespaces -->
 	<section class="card usage-card">
 		<h2>{i18n.t('common.sections.namespaces')}</h2>
@@ -302,7 +328,7 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 		<p>
 			Click the link below to navigate to the About page. The 'about' namespace will be lazy loaded.
 		</p>
-		<a href="/about" class="test-link">Go to About Page →</a>
+		<a href={resolve('/about')} class="test-link">Go to About Page →</a>
 	</section>
 
 	<!-- Footer CTA -->

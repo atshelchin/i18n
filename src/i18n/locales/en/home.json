@@ -4,5 +4,10 @@
 	"greeting": "Hello, {name}!",
 	"items_zero": "No items",
 	"items_one": "{count} item",
-	"items_other": "{count} items"
+	"items_other": "{count} items",
+	"features": [
+		"Auto-scan locale files using Vite glob imports",
+		"Lazy loading by namespace - load translations on-demand",
+		"Full SSR support with preloaded translations"
+	]
 }

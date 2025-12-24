@@ -4,5 +4,10 @@
 	"greeting": "你好，{name}！",
 	"items_zero": "没有项目",
 	"items_one": "{count} 个项目",
-	"items_other": "{count} 个项目"
+	"items_other": "{count} 个项目",
+	"features": [
+		"使用 Vite glob 导入自动扫描语言文件",
+		"按命名空间懒加载 - 按需加载翻译",
+		"完整的 SSR 支持，预加载翻译"
+	]
 }

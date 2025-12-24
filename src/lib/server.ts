@@ -148,6 +148,7 @@ export function getNamespacesForPath(
  * Get preloaded translations for SSR
  *
  * Automatically detects which namespace to load based on URL pathname.
+ * Also preloads default locale translations for fallback support.
  *
  * @example
  * // In +layout.server.ts
@@ -157,19 +158,17 @@ export function getNamespacesForPath(
  *   const locale = extractLocaleFromPathname(url.pathname) || 'en';
  *   const preloadedTranslations = getPreloadedTranslations(parsed, {
  *     locale,
- *     pathname: url.pathname
+ *     pathname: url.pathname,
+ *     defaultLocale: 'en'
  *   });
  *   return { locale, preloadedTranslations, ... };
  * };
  */
 export function getPreloadedTranslations(
 	data: ParsedLocaleData,
-	options: PreloadOptions
+	options: PreloadOptions & { defaultLocale?: string }
 ): PreloadedTranslations {
-	const { locale, pathname, baseNamespaces, homeNamespace } = options;
-
-	// Get translations for locale (fallback to first available)
-	const localeTranslations = data.translations[locale] || data.translations[data.locales[0]] || {};
+	const { locale, pathname, baseNamespaces, homeNamespace, defaultLocale = 'en' } = options;
 
 	// Get namespaces to preload
 	const namespacesToPreload = getNamespacesForPath(pathname, data.namespaces, {
@@ -177,17 +176,35 @@ export function getPreloadedTranslations(
 		homeNamespace
 	});
 
-	// Filter translations
+	const result: PreloadedTranslations = {};
+
+	// Get translations for current locale
+	const localeTranslations = data.translations[locale] || {};
 	const filteredTranslations: Record<string, LocaleData> = {};
 	for (const ns of namespacesToPreload) {
 		if (localeTranslations[ns]) {
 			filteredTranslations[ns] = localeTranslations[ns];
 		}
 	}
+	if (Object.keys(filteredTranslations).length > 0) {
+		result[locale] = filteredTranslations;
+	}
 
-	return {
-		[locale]: filteredTranslations
-	};
+	// Also preload default locale for fallback (if different from current locale)
+	if (locale !== defaultLocale && data.translations[defaultLocale]) {
+		const defaultTranslations = data.translations[defaultLocale];
+		const defaultFiltered: Record<string, LocaleData> = {};
+		for (const ns of namespacesToPreload) {
+			if (defaultTranslations[ns]) {
+				defaultFiltered[ns] = defaultTranslations[ns];
+			}
+		}
+		if (Object.keys(defaultFiltered).length > 0) {
+			result[defaultLocale] = defaultFiltered;
+		}
+	}
+
+	return result;
 }
 
 /**
@@ -242,12 +259,13 @@ export function createServerLoader(
 				locale = cookies.get(cookieName) || defaultLocale;
 			}
 
-			// Get preloaded translations
+			// Get preloaded translations (includes default locale for fallback)
 			const preloadedTranslations = getPreloadedTranslations(parsed, {
 				locale,
 				pathname: url.pathname,
 				baseNamespaces: options?.baseNamespaces,
-				homeNamespace: options?.homeNamespace
+				homeNamespace: options?.homeNamespace,
+				defaultLocale
 			});
 
 			return {
