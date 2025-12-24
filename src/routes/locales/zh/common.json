@@ -40,9 +40,8 @@
 		"autoScan": "自动扫描语言文件",
 		"lazyLoad": "按命名空间懒加载",
 		"ssr": "支持 SSR",
-		"ssr2":"啥",
 		"typeSafe": "类型安全的键",
-		"minimal": "极简 API（5 个函数）",
+		"minimal": "极简核心 API",
 		"svelte5": "Svelte 5 runes"
 	}
 }

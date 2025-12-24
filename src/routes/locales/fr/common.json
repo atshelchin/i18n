@@ -41,7 +41,7 @@
 		"lazyLoad": "Chargement différé par namespace",
 		"ssr": "Support SSR",
 		"typeSafe": "Clés type-safe",
-		"minimal": "API minimale (5 fonctions)",
+		"minimal": "API minimale",
 		"svelte5": "Svelte 5 runes"
 	}
 }

@@ -41,7 +41,7 @@
 		"lazyLoad": "Lazy loading by namespace",
 		"ssr": "SSR support",
 		"typeSafe": "Type-safe keys",
-		"minimal": "Minimal API (5 functions)",
+		"minimal": "Minimal core API",
 		"svelte5": "Svelte 5 runes"
 	}
 }

@@ -41,7 +41,7 @@
 		"lazyLoad": "名前空間による遅延読み込み",
 		"ssr": "SSR サポート",
 		"typeSafe": "型安全なキー",
-		"minimal": "最小限の API（5 関数）",
+		"minimal": "最小限のコア API",
 		"svelte5": "Svelte 5 runes"
 	}
 }
