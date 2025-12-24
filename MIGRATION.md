@@ -1,4 +1,95 @@
-# Migration Guide: v0.x to v2.0
+# Migration Guide
+
+- [v0.x to v2.0](#migration-from-v0x-to-v20)
+- [v2.0.x to v2.1.0](#migration-from-v20x-to-v210)
+
+---
+
+# Migration from v2.0.x to v2.1.0
+
+v2.1.0 is fully backward compatible with v2.0.x. No breaking changes.
+
+## New Features
+
+### 1. Nested Directory Support
+
+You can now organize locale files in subdirectories for better file management:
+
+```
+locales/
+├── en/
+│   ├── common.json        # namespace: "common"
+│   ├── home.json          # namespace: "home"
+│   └── routes/            # subdirectory (ignored in namespace)
+│       ├── about.json     # namespace: "about"
+│       └── products.json  # namespace: "products"
+└── zh/
+    ├── common.json
+    └── routes/
+        └── about.json
+```
+
+**Key points:**
+
+- Subdirectories are for organization only
+- Namespace = filename (without `.json`)
+- `zh/routes/about.json` → namespace: `about`, keys: `about.title`, `about.description`
+- No code changes required
+
+### 2. `createServerLoader` Helper
+
+New one-line SSR setup:
+
+```typescript
+// +layout.server.ts
+import { createServerLoader } from '@shelchin/i18n';
+
+const { load: i18nLoad, localeMetas } = createServerLoader(
+	import.meta.glob('./locales/**/*.json', { eager: true }),
+	{
+		defaultLocale: 'en',
+		baseNamespaces: ['common'],
+		homeNamespace: 'home'
+	}
+);
+
+export const load = async (event) => {
+	const data = await i18nLoad(event);
+	return { ...data, localeMetas };
+};
+```
+
+### 3. Automatic Namespace Detection
+
+Server loader automatically detects which namespace to preload based on URL:
+
+| URL Path         | Namespaces Loaded     |
+| ---------------- | --------------------- |
+| `/`              | `common` + `home`     |
+| `/about`         | `common` + `about`    |
+| `/products/list` | `common` + `products` |
+| `/en/about`      | `common` + `about`    |
+
+### 4. New Server Utility Functions
+
+| Function                     | Description                   |
+| ---------------------------- | ----------------------------- |
+| `createServerLoader()`       | One-line SSR setup            |
+| `parseLocaleModules()`       | Parse glob imports            |
+| `getPreloadedTranslations()` | Filter translations for SSR   |
+| `getNamespaceFromPath()`     | Extract namespace from URL    |
+| `getNamespacesForPath()`     | Get all namespaces for a path |
+
+## Upgrade Steps
+
+1. Update package: `pnpm update @shelchin/i18n`
+2. (Optional) Reorganize locale files into subdirectories
+3. (Optional) Simplify `+layout.server.ts` using `createServerLoader`
+4. Regenerate types: `npx @shelchin/i18n generate-types --dir src/locales`
+
+---
+
+# Migration from v0.x to v2.0
 
 This guide helps you migrate from `@shelchin/i18n` v0.x to v2.0.
 

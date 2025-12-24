@@ -31,13 +31,22 @@ src/
 │   ├── locales/          # Can be anywhere
 │   │   ├── en/
 │   │   │   ├── common.json
-│   │   │   └── home.json
+│   │   │   ├── home.json
+│   │   │   └── routes/        # Subdirectories for organization
+│   │   │       └── about.json
 │   │   └── zh/
 │   │       ├── common.json
-│   │       └── home.json
+│   │       ├── home.json
+│   │       └── routes/
+│   │           └── about.json
 │   ├── +layout.svelte
 │   └── +page.svelte
 ```
+
+> **Note:** Subdirectories are for organization only. The namespace is derived from the filename:
+>
+> - `en/common.json` → namespace: `common`
+> - `en/routes/about.json` → namespace: `about` (not `routes/about`)
 
 Each JSON file contains translations for that namespace:
 
@@ -306,9 +315,67 @@ export const reroute = ({ url }) => deLocalizeUrl(url).pathname;
 </script>
 ```
 
-## Migration from v0.x
+## Migration
 
-See [MIGRATION.md](./MIGRATION.md) for detailed migration guide.
+- **From v0.x to v2.0:** See [MIGRATION.md](./MIGRATION.md)
+- **From v2.0.x to v2.1.0:** See [v2.0 to v2.1 Migration](#v20x-to-v210-migration) below
+
+### v2.0.x to v2.1.0 Migration
+
+v2.1.0 adds new features with full backward compatibility:
+
+#### New: Nested Directory Support
+
+You can now organize locale files in subdirectories:
+
+```
+locales/
+├── en/
+│   ├── common.json        # namespace: "common"
+│   ├── home.json          # namespace: "home"
+│   └── routes/            # subdirectory for organization
+│       ├── about.json     # namespace: "about"
+│       └── products.json  # namespace: "products"
+```
+
+No code changes required - subdirectories are for organization only.
+
+#### New: `createServerLoader` Helper
+
+Simplify your SSR setup:
+
+**Before (v2.0.x):**
+
+```typescript
+const localeModules = import.meta.glob('./locales/**/*.json', { eager: true });
+
+function parseLocaleModules() {
+	/* ... manual parsing ... */
+}
+function getNamespacesForPath(pathname) {
+	/* ... manual mapping ... */
+}
+
+export const load = async ({ url, cookies }) => {
+	// ... manual locale detection and translation filtering
+};
+```
+
+**After (v2.1.0):**
+
+```typescript
+import { createServerLoader } from '@shelchin/i18n';
+
+const { load: i18nLoad, localeMetas } = createServerLoader(
+	import.meta.glob('./locales/**/*.json', { eager: true }),
+	{ defaultLocale: 'en' }
+);
+
+export const load = async (event) => {
+	const data = await i18nLoad(event);
+	return { ...data, localeMetas };
+};
+```
 
 ## License
 
