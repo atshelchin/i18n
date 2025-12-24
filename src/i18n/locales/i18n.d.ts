@@ -4,41 +4,41 @@
 import '@shelchin/i18n';
 
 declare module '@shelchin/i18n' {
-  interface TranslationKeys {
-    'common.cancel': string;
-    'common.currentLocale': string;
-    'common.features.autoScan': string;
-    'common.features.lazyLoad': string;
-    'common.features.minimal': string;
-    'common.features.ssr': string;
-    'common.features.svelte5': string;
-    'common.features.typeSafe': string;
-    'common.github.description': string;
-    'common.github.star': string;
-    'common.labels.count': string;
-    'common.labels.name': string;
-    'common.loading': string;
-    'common.ok': string;
-    'common.quickStart.install': string;
-    'common.quickStart.setup': string;
-    'common.quickStart.step1': string;
-    'common.quickStart.step2': string;
-    'common.quickStart.step3': string;
-    'common.quickStart.step4': string;
-    'common.quickStart.usage': string;
-    'common.sections.basic': string;
-    'common.sections.features': string;
-    'common.sections.interpolation': string;
-    'common.sections.locales': string;
-    'common.sections.namespaces': string;
-    'common.sections.pluralization': string;
-    'common.sections.quickStart': string;
-    'home.description': string;
-    'home.greeting': string;
-    'home.items': string;
-    'home.items_one': string;
-    'home.items_other': string;
-    'home.items_zero': string;
-    'home.title': string;
-  }
+	interface TranslationKeys {
+		'common.cancel': string;
+		'common.currentLocale': string;
+		'common.features.autoScan': string;
+		'common.features.lazyLoad': string;
+		'common.features.minimal': string;
+		'common.features.ssr': string;
+		'common.features.svelte5': string;
+		'common.features.typeSafe': string;
+		'common.github.description': string;
+		'common.github.star': string;
+		'common.labels.count': string;
+		'common.labels.name': string;
+		'common.loading': string;
+		'common.ok': string;
+		'common.quickStart.install': string;
+		'common.quickStart.setup': string;
+		'common.quickStart.step1': string;
+		'common.quickStart.step2': string;
+		'common.quickStart.step3': string;
+		'common.quickStart.step4': string;
+		'common.quickStart.usage': string;
+		'common.sections.basic': string;
+		'common.sections.features': string;
+		'common.sections.interpolation': string;
+		'common.sections.locales': string;
+		'common.sections.namespaces': string;
+		'common.sections.pluralization': string;
+		'common.sections.quickStart': string;
+		'home.description': string;
+		'home.greeting': string;
+		'home.items': string;
+		'home.items_one': string;
+		'home.items_other': string;
+		'home.items_zero': string;
+		'home.title': string;
+	}
 }
