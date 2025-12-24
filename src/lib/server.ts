@@ -87,35 +87,51 @@ export function parseLocaleModules(
 }
 
 /**
- * Extract namespace name from URL pathname
+ * Extract all namespace segments from URL pathname
  *
  * Rules:
- * - "/" or "" -> homeNamespace (default: "home")
- * - "/about" -> "about"
- * - "/foo/bar/baz" -> "foo" (first segment only)
- * - Locale prefixes are stripped: "/en/about" -> "about"
+ * - "/" or "" -> [homeNamespace] (default: "home")
+ * - "/about" -> ["about"]
+ * - "/foo/bar/baz" -> ["foo", "bar", "baz"]
+ * - Locale prefixes are stripped: "/en/about" -> ["about"]
+ *                                 "/zh-CN/foo/bar" -> ["foo", "bar"]
  */
 export function getNamespaceFromPath(
 	pathname: string,
 	options?: { homeNamespace?: string }
-): string {
+): string[] {
 	const homeNamespace = options?.homeNamespace ?? 'home';
 
 	// Remove locale prefix if present (e.g., /en/about -> /about, /zh-CN/about -> /about)
-	const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}(-[a-z]{2})?(?=\/|$)/i, '') || '/';
+	// Supports formats like: en, en-US, zh-CN, etc.
+	const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}(-[A-Z]{2})?(?=\/|$)/i, '') || '/';
 
 	// Root path
 	if (pathWithoutLocale === '/' || pathWithoutLocale === '') {
-		return homeNamespace;
+		return [homeNamespace];
 	}
 
-	// Extract first path segment only
-	const firstSegment = pathWithoutLocale.split('/').filter(Boolean)[0];
-	return firstSegment || homeNamespace;
+	// Split and filter out empty segments
+	const segments = pathWithoutLocale.split('/').filter(Boolean);
+
+	// If after stripping there's still nothing, fall back to home
+	return segments.length > 0 ? segments : [homeNamespace];
 }
 
 /**
  * Get namespaces to preload for a given pathname
+ *
+ * @returns Array of namespace names that exist in translations
+ */
+
+/**
+ * Get namespaces to preload for a given pathname
+ *
+ * Rules:
+ * - Always include baseNamespaces (e.g., ['common'])
+ * - For each path segment prefix, add the corresponding namespace if it exists
+ *   e.g., /foo/bar/baz -> try adding: 'foo', 'foo/bar', 'foo/bar/baz'
+ * - Only add if namespace exists in availableNamespaces and not duplicated
  *
  * @returns Array of namespace names that exist in translations
  */
@@ -128,20 +144,28 @@ export function getNamespacesForPath(
 	}
 ): string[] {
 	const baseNamespaces = options?.baseNamespaces ?? ['common'];
-	const namespaces = [...baseNamespaces];
+	const homeNamespace = options?.homeNamespace ?? 'home';
 
-	const pageNamespace = getNamespaceFromPath(pathname, options);
+	const namespaces = new Set<string>(baseNamespaces);
 
-	// Only add if namespace exists and not already in list
-	if (
-		pageNamespace &&
-		availableNamespaces.has(pageNamespace) &&
-		!namespaces.includes(pageNamespace)
-	) {
-		namespaces.push(pageNamespace);
+	// Get all segments from the path (now returns string[])
+	const segments = getNamespaceFromPath(pathname, { homeNamespace });
+
+	// If it's the home path, try adding the homeNamespace if it exists
+	if (segments.length === 1 && segments[0] === homeNamespace) {
+		if (availableNamespaces.has(homeNamespace)) {
+			namespaces.add(homeNamespace);
+		}
+		return Array.from(namespaces);
 	}
 
-	return namespaces;
+	for (const segment of segments) {
+		if (availableNamespaces.has(segment) && !namespaces.has(segment)) {
+			namespaces.add(segment);
+		}
+	}
+
+	return Array.from(namespaces);
 }
 
 /**
