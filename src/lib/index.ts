@@ -72,3 +72,16 @@ export type {
 // Utilities
 // ========================================
 export { extractNamespace, extractKeyPath, parseGlobImports } from './utils.js';
+
+// ========================================
+// Server-side utilities
+// ========================================
+export {
+	parseLocaleModules,
+	getNamespaceFromPath,
+	getNamespacesForPath,
+	getPreloadedTranslations,
+	createServerLoader
+} from './server.js';
+
+export type { ParsedLocaleData, PreloadOptions } from './server.js';
