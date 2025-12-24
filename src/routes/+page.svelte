@@ -581,20 +581,6 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 		gap: 0.5rem;
 	}
 
-	/* Grid Layout */
-	.grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-		gap: 1rem;
-	}
-
-	/* Translation List */
-	.translation-list {
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-	}
-
 	.translation-item {
 		display: flex;
 		align-items: center;
@@ -788,14 +774,6 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 			font-size: 0.875rem;
 			margin-bottom: 0.5rem;
 			padding-bottom: 0.375rem;
-		}
-
-		.grid {
-			grid-template-columns: 1fr;
-		}
-
-		.locales-grid {
-			grid-template-columns: 1fr;
 		}
 
 		.locale-switcher {

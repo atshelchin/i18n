@@ -88,12 +88,6 @@
 		letter-spacing: -0.02em;
 	}
 
-	.subtitle {
-		color: #57606a;
-		font-size: 0.9375rem;
-		margin: 0;
-	}
-
 	/* Mobile Responsive */
 	@media (max-width: 640px) {
 		.demo-container {
@@ -107,10 +101,6 @@
 
 		.demo-header h1 {
 			font-size: 1.125rem;
-		}
-
-		.subtitle {
-			font-size: 0.75rem;
 		}
 	}
 

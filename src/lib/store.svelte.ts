@@ -50,8 +50,7 @@ class I18nStore implements I18nInstance {
 	constructor(options: InitI18nOptions) {
 		this._locale = options.locale;
 		this._defaultLocale = options.defaultLocale ?? 'en';
-		this._devMode =
-			options.devMode ?? (typeof import.meta !== 'undefined' && import.meta.env?.DEV) ?? false;
+		this._devMode = options.devMode ?? false;
 
 		// Initialize locales from SSR-provided metadata first
 		if (options.localeMetas) {
