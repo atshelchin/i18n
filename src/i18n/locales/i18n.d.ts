@@ -38,6 +38,7 @@ declare module '@shelchin/i18n' {
 		'common.sections.pluralization': string;
 		'common.sections.quickStart': string;
 		'home.description': string;
+		'home.features': string;
 		'home.features.0': string;
 		'home.features.1': string;
 		'home.features.2': string;

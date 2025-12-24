@@ -4,7 +4,15 @@
  * Helper functions for SSR preloading with automatic namespace detection
  */
 
-import type { LocaleData, LocaleMeta, PreloadedTranslations } from './types.js';
+import type { LocaleData, LocaleMeta, PreloadedTranslations, TranslationKey } from './types.js';
+import {
+	getNestedValue,
+	getNestedArray,
+	extractNamespace,
+	extractKeyPath,
+	interpolate,
+	getPluralKey
+} from './utils.js';
 
 /** Parsed locale data from glob imports */
 export interface ParsedLocaleData {
@@ -231,17 +239,210 @@ export function getPreloadedTranslations(
 	return result;
 }
 
+/** Translation return type - string by default, or string[] when specified */
+export type ServerTranslationResult<T = string> = T extends string[] ? string[] : string;
+
+/** Server-side translation function interface */
+export interface ServerTranslator {
+	/**
+	 * Translate a key with optional parameters
+	 * @example t('home.title') // string
+	 * @example t<string[]>('home.features') // string[]
+	 * @example t('common.greeting', { name: 'World' }) // "Hello, World!"
+	 */
+	<T = string>(
+		key: TranslationKey,
+		params?: Record<string, string | number>
+	): ServerTranslationResult<T>;
+}
+
+/** SvelteKit event-like object for locale detection */
+export interface ServerEvent {
+	url: URL;
+	cookies: { get: (name: string) => string | undefined };
+}
+
+/** Options for createServerT */
+export interface ServerTOptions {
+	/** Current locale (if known) */
+	locale?: string;
+	/** Default locale for fallback */
+	defaultLocale?: string;
+	/** SvelteKit event for auto-detecting locale from URL/cookies */
+	event?: ServerEvent;
+	/** Cookie name for locale (default: 'i18n-locale') */
+	cookieName?: string;
+	/** List of supported locales (for validation) */
+	supportedLocales?: string[];
+	/** Custom locale extractor from pathname */
+	extractLocale?: (pathname: string) => string | null;
+}
+
+/**
+ * Create a server-side translation function
+ *
+ * This is a pure function that works without any global state,
+ * perfect for SSR in +layout.server.ts or +page.server.ts
+ *
+ * @example
+ * // Option 1: Pass locale directly
+ * const t = createServerT(translations, { locale: 'en' });
+ *
+ * @example
+ * // Option 2: Auto-detect from SvelteKit event
+ * export const load = async (event) => {
+ *   const t = createServerT(translations, { event, defaultLocale: 'en' });
+ *   return { seoTitle: t('home.title') };
+ * };
+ *
+ * @example
+ * // Option 3: With supported locales validation
+ * const t = createServerT(translations, {
+ *   event,
+ *   defaultLocale: 'en',
+ *   supportedLocales: ['en', 'zh', 'ja']
+ * });
+ */
+export function createServerT(
+	translations: Record<string, Record<string, LocaleData>>,
+	options: ServerTOptions
+): ServerTranslator {
+	const {
+		defaultLocale = 'en',
+		event,
+		cookieName = 'i18n-locale',
+		supportedLocales,
+		extractLocale: customExtractLocale
+	} = options;
+
+	// Determine locale
+	let locale = options.locale;
+
+	if (!locale && event) {
+		// Default locale extractor: /en/... -> en
+		const extractLocale =
+			customExtractLocale ??
+			((pathname: string) => {
+				const match = pathname.match(/^\/([a-z]{2}(?:-[a-z]{2})?)(?=\/|$)/i);
+				return match ? match[1].toLowerCase() : null;
+			});
+
+		// Try URL first
+		locale = extractLocale(event.url.pathname) ?? undefined;
+
+		// Validate against supported locales
+		if (locale && supportedLocales && !supportedLocales.includes(locale)) {
+			locale = undefined;
+		}
+
+		// Fallback to cookie
+		if (!locale) {
+			const cookieLocale = event.cookies.get(cookieName);
+			if (cookieLocale && (!supportedLocales || supportedLocales.includes(cookieLocale))) {
+				locale = cookieLocale;
+			}
+		}
+
+		// Fallback to default
+		if (!locale) {
+			locale = defaultLocale;
+		}
+	}
+
+	// Final fallback
+	if (!locale) {
+		locale = defaultLocale;
+	}
+
+	const translate = <T = string>(
+		key: TranslationKey,
+		params?: Record<string, string | number>
+	): ServerTranslationResult<T> => {
+		const namespace = extractNamespace(key as string);
+		const keyPath = extractKeyPath(key as string);
+
+		// Try current locale first
+		const localeTranslations = translations[locale]?.[namespace];
+
+		// Try to get as array first
+		const arrayValue = getNestedArray(localeTranslations, keyPath);
+		if (arrayValue !== undefined) {
+			return arrayValue as ServerTranslationResult<T>;
+		}
+
+		// Get as string
+		let value = getNestedValue(localeTranslations, keyPath);
+
+		// Handle pluralization
+		if (params && typeof params['count'] === 'number') {
+			const pluralKey = getPluralKey(keyPath, params['count']);
+			const pluralValue = getNestedValue(localeTranslations, pluralKey);
+			if (pluralValue) {
+				value = pluralValue;
+			}
+		}
+
+		// Fallback to default locale
+		if (value === undefined && locale !== defaultLocale) {
+			const defaultTranslations = translations[defaultLocale]?.[namespace];
+
+			// Try array fallback
+			const defaultArrayValue = getNestedArray(defaultTranslations, keyPath);
+			if (defaultArrayValue !== undefined) {
+				return defaultArrayValue as ServerTranslationResult<T>;
+			}
+
+			value = getNestedValue(defaultTranslations, keyPath);
+
+			// Handle pluralization for fallback
+			if (params && typeof params['count'] === 'number') {
+				const pluralKey = getPluralKey(keyPath, params['count']);
+				const pluralValue = getNestedValue(defaultTranslations, pluralKey);
+				if (pluralValue) {
+					value = pluralValue;
+				}
+			}
+		}
+
+		// Return key if not found
+		if (value === undefined) {
+			return key as string as ServerTranslationResult<T>;
+		}
+
+		return interpolate(value, params, locale) as ServerTranslationResult<T>;
+	};
+
+	return translate as ServerTranslator;
+}
+
 /**
  * Create a complete SSR load helper
  *
+ * For server-side translations (SEO, meta tags), use `createServerT` separately.
+ *
  * @example
  * // In +layout.server.ts
- * import { createServerLoader } from '@shelchin/i18n/server';
+ * import { createServerLoader, createServerT } from '@shelchin/i18n/server';
  *
- * const modules = import.meta.glob('../locales/** /*.json', { eager: true });
- * const { load } = createServerLoader(modules);
+ * const { load: i18nLoad, translations, localeMetas } = createServerLoader(
+ *   import.meta.glob('./locales/** /*.json', { eager: true }),
+ *   { defaultLocale: 'en' }
+ * );
  *
- * export { load };
+ * export const load = async (event) => {
+ *   const data = await i18nLoad(event);
+ *
+ *   // Use createServerT for server-side translations
+ *   const t = createServerT(translations, { locale: data.locale });
+ *
+ *   return {
+ *     ...data,
+ *     localeMetas,
+ *     // SEO metadata
+ *     seoTitle: t('home.title'),
+ *     features: t<string[]>('home.features')
+ *   };
+ * };
  */
 export function createServerLoader(
 	modules: Record<string, { default: LocaleData }>,

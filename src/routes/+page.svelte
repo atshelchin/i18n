@@ -284,20 +284,126 @@ i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.items'</span>,
 			<div class="usage-code">
 				<pre class="code-block-small"><code
 						><span class="hl-comment">// JSON: "features": ["Feature 1", "Feature 2", ...]</span>
+<span class="hl-comment">// Access by index</span>
 i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.features.0'</span>) <span
 							class="hl-comment">// First item</span
 						>
 i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.features.1'</span>) <span
 							class="hl-comment">// Second item</span
-						></code
+						>
+
+<span class="hl-comment">// Get full array (client &amp; server)</span>
+i18n.<span class="hl-func">t</span>&lt;string[]&gt;(<span class="hl-string">'home.features'</span
+						>) <span class="hl-comment">// string[]</span></code
 					></pre>
 			</div>
 			<div class="usage-demo">
+				<p class="array-label">i18n.t&lt;string[]&gt;('home.features'):</p>
 				<ul class="features-list">
-					<li>{i18n.t('home.features.0')}</li>
-					<li>{i18n.t('home.features.1')}</li>
-					<li>{i18n.t('home.features.2')}</li>
+					{#each i18n.t<string[]>('home.features') as feature}
+						<li>{feature}</li>
+					{/each}
 				</ul>
+			</div>
+		</div>
+	</section>
+
+	<!-- SSR Preloading with createServerLoader -->
+	<section class="card usage-card">
+		<h2>SSR Preloading</h2>
+		<div class="usage-content">
+			<div class="usage-code">
+				<pre class="code-block-small"><code
+						><span class="hl-comment">// +layout.server.ts</span>
+<span class="hl-keyword">import</span> {'{'} createServerLoader }
+  <span class="hl-keyword">from</span> <span class="hl-string">'@shelchin/i18n'</span>;
+
+<span class="hl-keyword">const</span> {'{'} load: i18nLoad, localeMetas } =
+  <span class="hl-func">createServerLoader</span>(
+    <span class="hl-keyword">import</span>.meta.<span class="hl-func">glob</span>(<span
+							class="hl-string">'./locales/**/*.json'</span
+						>, {'{'} eager: <span class="hl-keyword">true</span> }),
+    {'{'}
+      defaultLocale: <span class="hl-string">'en'</span>,
+      baseNamespaces: [<span class="hl-string">'common'</span>],
+      homeNamespace: <span class="hl-string">'home'</span>
+    }
+  );
+
+<span class="hl-keyword">export const</span> load = <span class="hl-keyword">async</span
+						> (event) => {'{'}
+  <span class="hl-keyword">const</span> data = <span class="hl-keyword">await</span> <span
+							class="hl-func">i18nLoad</span
+						>(event);
+  <span class="hl-keyword">return</span> {'{'} ...data, localeMetas };
+};</code
+					></pre>
+			</div>
+			<div class="usage-demo">
+				<div class="ssr-info">
+					<div class="ssr-item">
+						<span class="ssr-label">baseNamespaces</span>
+						<span class="ssr-desc">Always preload these</span>
+					</div>
+					<div class="ssr-item">
+						<span class="ssr-label">homeNamespace</span>
+						<span class="ssr-desc">Namespace for "/" route</span>
+					</div>
+					<div class="ssr-item">
+						<span class="ssr-label">Auto-detect</span>
+						<span class="ssr-desc">/about → preloads "about" ns</span>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+
+	<!-- Server-Side Translation (SSR) -->
+	<section class="card usage-card">
+		<h2>Server-Side Translation</h2>
+		<div class="usage-content">
+			<div class="usage-code">
+				<pre class="code-block-small"><code
+						><span class="hl-comment">// +page.server.ts</span>
+<span class="hl-keyword">import</span> {'{'} createServerT, parseLocaleModules }
+  <span class="hl-keyword">from</span> <span class="hl-string">'@shelchin/i18n'</span>;
+
+<span class="hl-keyword">const</span> parsed = <span class="hl-func">parseLocaleModules</span>(
+  <span class="hl-keyword">import</span>.meta.<span class="hl-func">glob</span>(<span
+							class="hl-string">'./locales/**/*.json'</span
+						>, {'{'} eager: <span class="hl-keyword">true</span> })
+);
+
+<span class="hl-keyword">export const</span> load = <span class="hl-keyword">async</span
+						> (event) => {'{'}
+  <span class="hl-keyword">const</span> t = <span class="hl-func">createServerT</span
+						>(parsed.translations, {'{'}
+    event,
+    defaultLocale: <span class="hl-string">'en'</span>
+  });
+
+  <span class="hl-keyword">return</span> {'{'}
+    seoTitle: t(<span class="hl-string">'home.title'</span>),
+    features: t&lt;string[]&gt;(<span class="hl-string">'home.features'</span>)
+  };
+};</code
+					></pre>
+			</div>
+			<div class="usage-demo">
+				<div class="ssr-info">
+					<div class="ssr-item">
+						<span class="ssr-label">t(key)</span>
+						<span class="ssr-desc">Returns string</span>
+					</div>
+					<div class="ssr-item">
+						<span class="ssr-label">t&lt;string[]&gt;(key)</span>
+						<span class="ssr-desc">Returns string[]</span>
+					</div>
+					<div class="ssr-item">
+						<span class="ssr-label">event</span>
+						<span class="ssr-desc">Auto-detect locale from URL/cookies</span>
+					</div>
+				</div>
 			</div>
 		</div>
 	</section>
@@ -358,6 +464,7 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 		border-radius: 6px;
 		padding: 1.25rem;
 		border: 1px solid #d0d7de;
+		overflow: hidden;
 	}
 
 	.card h2 {
@@ -578,6 +685,7 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 	/* Usage Cards - Full Width with Code + Demo Layout */
 	.usage-card {
 		width: 100%;
+		max-width: 100%;
 	}
 
 	.usage-content {
@@ -585,6 +693,7 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 		grid-template-columns: 1fr 1fr;
 		gap: 1rem;
 		align-items: start;
+		min-width: 0;
 	}
 
 	.usage-code {
@@ -595,12 +704,15 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 		height: 100%;
 		display: flex;
 		align-items: center;
+		overflow-x: auto;
+		min-width: 0;
 	}
 
 	.code-block-small {
 		margin: 0;
 		background: transparent;
 		overflow-x: auto;
+		max-width: 100%;
 	}
 
 	.code-block-small code {
@@ -608,6 +720,7 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 		font-size: 0.8125rem;
 		color: #1f2328;
 		white-space: pre;
+		display: block;
 	}
 
 	.usage-demo {
@@ -735,6 +848,58 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 		font-size: 0.8125rem;
 		font-weight: 500;
 		border: 1px solid #54aeff66;
+	}
+
+	/* SSR Info - Server-Side Translation */
+	.ssr-info {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.ssr-item {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.5rem 0.75rem;
+		background: #f6f8fa;
+		border: 1px solid #d0d7de;
+		border-radius: 6px;
+	}
+
+	.ssr-label {
+		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+		font-size: 0.8125rem;
+		font-weight: 600;
+		color: #8250df;
+		background: #fbefff;
+		padding: 0.125rem 0.5rem;
+		border-radius: 4px;
+		border: 1px solid #d8b4fe;
+	}
+
+	.ssr-desc {
+		font-size: 0.875rem;
+		color: #656d76;
+	}
+
+	/* Features List */
+	.array-label {
+		margin: 0 0 0.5rem 0;
+		font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+		font-size: 0.8125rem;
+		color: #656d76;
+	}
+
+	.features-list {
+		margin: 0;
+		padding-left: 1.25rem;
+		color: #1f2328;
+	}
+
+	.features-list li {
+		padding: 0.25rem 0;
+		font-size: 0.875rem;
 	}
 
 	/* Test Navigation */

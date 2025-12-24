@@ -1,6 +1,8 @@
 import type { LayoutServerLoad } from './$types.js';
 import type { LocaleData } from '$lib/types.js';
 import { createServerLoader } from '$lib/server.js';
+import pkg from '../../package.json' with { type: 'json' };
+const { version } = pkg;
 
 // Auto-scan all locale files and create server loader
 const { load: i18nLoad, localeMetas } = createServerLoader(
@@ -16,6 +18,7 @@ export const load = (async (event) => {
 	const data = await i18nLoad(event);
 	return {
 		...data,
-		localeMetas
+		localeMetas,
+		version
 	};
 }) satisfies LayoutServerLoad;

@@ -1,0 +1,6 @@
+{
+	"title": "Sobre Nós",
+	"description": "Esta é a página sobre para testar o carregamento preguiçoso.",
+	"content": "Ao navegar da página inicial para esta página, o namespace 'about' deve ser carregado de forma preguiçosa.",
+	"backHome": "Voltar para a Página Inicial"
+}

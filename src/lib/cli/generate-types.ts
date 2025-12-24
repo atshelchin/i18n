@@ -36,12 +36,22 @@ const PLURAL_SUFFIXES = ['_zero', '_one', '_two', '_few', '_many', '_other'];
 
 /**
  * Extract all translation keys from a JSON object
+ *
+ * For arrays, generates both:
+ * - The array key itself (for t.array('key'))
+ * - Index-based keys (for t('key.0'), t('key.1'), etc.)
  */
 function extractKeys(obj: Record<string, unknown>, prefix = ''): string[] {
 	const keys: string[] = [];
 
-	// Handle arrays - generate index-based keys
+	// Handle arrays - generate both array key and index-based keys
 	if (Array.isArray(obj)) {
+		// Add the array key itself (for t.array())
+		if (prefix) {
+			keys.push(prefix);
+		}
+
+		// Add index-based keys (for t('key.0'))
 		for (let i = 0; i < obj.length; i++) {
 			const fullKey = prefix ? `${prefix}.${i}` : String(i);
 			const value = obj[i];
@@ -73,7 +83,7 @@ function extractKeys(obj: Record<string, unknown>, prefix = ''): string[] {
 				}
 			}
 		} else if (Array.isArray(value)) {
-			// Handle arrays
+			// Handle arrays - generates both array key and index keys
 			keys.push(...extractKeys(value as unknown as Record<string, unknown>, fullKey));
 		} else if (typeof value === 'object' && value !== null) {
 			keys.push(...extractKeys(value as Record<string, unknown>, fullKey));

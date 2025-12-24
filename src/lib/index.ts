@@ -65,7 +65,8 @@ export type {
 
 	// Type-safe keys (augmentable)
 	TranslationKeys,
-	TranslationKey
+	TranslationKey,
+	TranslationResult
 } from './types.js';
 
 // ========================================
@@ -81,7 +82,14 @@ export {
 	getNamespaceFromPath,
 	getNamespacesForPath,
 	getPreloadedTranslations,
-	createServerLoader
+	createServerLoader,
+	createServerT
 } from './server.js';
 
-export type { ParsedLocaleData, PreloadOptions } from './server.js';
+export type {
+	ParsedLocaleData,
+	PreloadOptions,
+	ServerTranslator,
+	ServerTOptions,
+	ServerEvent
+} from './server.js';

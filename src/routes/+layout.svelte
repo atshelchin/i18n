@@ -42,7 +42,7 @@
 
 <div class="demo-container">
 	<header class="demo-header">
-		<h1>@shelchin/i18n v2.0</h1>
+		<h1>@shelchin/i18n v{data.version}</h1>
 	</header>
 	{@render children()}
 </div>
@@ -60,7 +60,7 @@
 
 	/* GitHub-style Design System */
 	.demo-container {
-		max-width: 800px;
+		max-width: 820px;
 		margin: 0 auto;
 		padding: 1.5rem;
 		font-family:
@@ -68,6 +68,10 @@
 		font-size: 14px;
 		line-height: 1.5;
 		color: #1f2328;
+		/* Prevent horizontal scroll on mobile */
+		width: 100%;
+		box-sizing: border-box;
+		overflow-x: hidden;
 	}
 
 	.demo-header {

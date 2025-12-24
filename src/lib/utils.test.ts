@@ -5,6 +5,7 @@
 import { describe, it, expect } from 'vitest';
 import {
 	getNestedValue,
+	getNestedArray,
 	extractNamespace,
 	extractKeyPath,
 	interpolate,
@@ -179,5 +180,39 @@ describe('deepMerge', () => {
 	it('should handle null/undefined inputs', () => {
 		expect(deepMerge(null as unknown as Record<string, unknown>, { a: 1 })).toEqual({ a: 1 });
 		expect(deepMerge({ a: 1 }, null as unknown as Record<string, unknown>)).toEqual({ a: 1 });
+	});
+});
+
+describe('getNestedArray', () => {
+	it('should get simple array', () => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const obj = { features: ['a', 'b', 'c'] } as any;
+		expect(getNestedArray(obj, 'features')).toEqual(['a', 'b', 'c']);
+	});
+
+	it('should get nested array', () => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const obj = { home: { features: ['x', 'y', 'z'] } } as any;
+		expect(getNestedArray(obj, 'home.features')).toEqual(['x', 'y', 'z']);
+	});
+
+	it('should return undefined for missing key', () => {
+		const obj = { title: 'Hello' };
+		expect(getNestedArray(obj, 'missing')).toBeUndefined();
+	});
+
+	it('should return undefined for non-array values', () => {
+		const obj = { title: 'Hello' };
+		expect(getNestedArray(obj, 'title')).toBeUndefined();
+	});
+
+	it('should return undefined for arrays with non-string items', () => {
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		const obj = { items: [1, 2, 3] } as any;
+		expect(getNestedArray(obj, 'items')).toBeUndefined();
+	});
+
+	it('should handle undefined input', () => {
+		expect(getNestedArray(undefined, 'key')).toBeUndefined();
 	});
 });

@@ -32,6 +32,38 @@ export function getNestedValue(
 }
 
 /**
+ * Get nested array from object using dot notation
+ * @example getNestedArray({ features: ['a', 'b', 'c'] }, 'features') => ['a', 'b', 'c']
+ */
+export function getNestedArray(
+	obj: LocaleData | TranslationContent | undefined,
+	path: string
+): string[] | undefined {
+	if (!obj) return undefined;
+
+	const keys = path.split('.');
+	let current: unknown = obj;
+
+	for (const key of keys) {
+		// Skip _meta
+		if (key === '_meta') return undefined;
+
+		if (!isObject(current) || !(key in current)) {
+			return undefined;
+		}
+
+		current = (current as Record<string, unknown>)[key];
+	}
+
+	// Return array if it's an array of strings
+	if (Array.isArray(current) && current.every((item) => typeof item === 'string')) {
+		return current as string[];
+	}
+
+	return undefined;
+}
+
+/**
  * Check if value is an object
  */
 export function isObject(value: unknown): value is Record<string, unknown> {

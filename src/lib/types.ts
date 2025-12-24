@@ -101,6 +101,9 @@ export interface TranslationKeys {}
 /** Translation key type - uses generated keys if available, falls back to string */
 export type TranslationKey = keyof TranslationKeys extends never ? string : keyof TranslationKeys;
 
+/** Translation return type - string by default, or string[] when specified */
+export type TranslationResult<T = string> = T extends string[] ? string[] : string;
+
 /** I18n store interface */
 export interface I18nInstance {
 	/** Current locale (reactive) */
@@ -109,8 +112,15 @@ export interface I18nInstance {
 	/** Supported locales with metadata */
 	readonly locales: LocaleMeta[];
 
-	/** Translation function */
-	t(key: TranslationKey, params?: Record<string, string | number>): string;
+	/**
+	 * Translation function with optional generic type
+	 * @example t('home.title') // string
+	 * @example t<string[]>('home.features') // string[]
+	 */
+	t<T = string>(
+		key: TranslationKey,
+		params?: Record<string, string | number>
+	): TranslationResult<T>;
 
 	/** Switch locale (async, loads translations) */
 	setLocale(locale: string): Promise<void>;

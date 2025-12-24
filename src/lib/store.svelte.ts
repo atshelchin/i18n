@@ -16,10 +16,12 @@ import type {
 	NamespaceStates,
 	TranslationContent,
 	PreloadedTranslations,
-	TranslationKey
+	TranslationKey,
+	TranslationResult
 } from './types.js';
 import {
 	getNestedValue,
+	getNestedArray,
 	extractNamespace,
 	extractKeyPath,
 	interpolate,
@@ -88,8 +90,10 @@ class I18nStore implements I18nInstance {
 	/**
 	 * Translate a key with optional parameters
 	 * Automatically triggers lazy loading if namespace not loaded
+	 * @example t('home.title') // string
+	 * @example t<string[]>('home.features') // string[]
 	 */
-	t(key: string, params?: Record<string, string | number>): string {
+	t<T = string>(key: string, params?: Record<string, string | number>): TranslationResult<T> {
 		// Access reactive state to create dependency for Svelte reactivity
 		void this._version;
 		void this._locale;
@@ -100,12 +104,23 @@ class I18nStore implements I18nInstance {
 		// Trigger lazy load if not loaded
 		if (!this._isNamespaceLoaded(namespace)) {
 			this._triggerLazyLoad(namespace);
-			return this._getFallback(key, params);
+			// Return appropriate fallback based on expected type
+			// We detect array type by checking if T extends string[]
+			// At runtime, we return key for string, [] for array
+			return this._getFallback(key, params) as TranslationResult<T>;
 		}
 
 		// Get translation from registry - use locale:namespace as key
 		const registryKey = `${this._locale}:${namespace}`;
 		const namespaceData = this._registry[registryKey];
+
+		// Try to get as array first
+		const arrayValue = getNestedArray(namespaceData, keyPath);
+		if (arrayValue !== undefined) {
+			return arrayValue as TranslationResult<T>;
+		}
+
+		// Get as string
 		let value = getNestedValue(namespaceData, keyPath);
 
 		// Handle pluralization
@@ -119,11 +134,11 @@ class I18nStore implements I18nInstance {
 
 		// If not found, try fallback
 		if (value === undefined) {
-			return this._getFallback(key, params);
+			return this._getFallback(key, params) as TranslationResult<T>;
 		}
 
 		// Interpolate parameters
-		return interpolate(value, params, this._locale);
+		return interpolate(value, params, this._locale) as TranslationResult<T>;
 	}
 
 	/**
@@ -333,7 +348,7 @@ class I18nStore implements I18nInstance {
 		return loadPromise;
 	}
 
-	private _getFallback(key: string, params?: Record<string, string | number>): string {
+	private _getFallback(key: string, params?: Record<string, string | number>): string | string[] {
 		const namespace = extractNamespace(key);
 		const keyPath = extractKeyPath(key);
 
@@ -344,6 +359,19 @@ class I18nStore implements I18nInstance {
 			// If default locale namespace is loaded, try to get translation
 			if (this._namespaceStates[defaultKey] === 'loaded') {
 				const namespaceData = this._registry[defaultKey];
+
+				// Try array first
+				const arrayValue = getNestedArray(namespaceData, keyPath);
+				if (arrayValue !== undefined) {
+					if (this._devMode) {
+						console.warn(
+							`[i18n] Missing translation: "${key}" for locale "${this._locale}", using fallback from "${this._defaultLocale}"`
+						);
+					}
+					return arrayValue;
+				}
+
+				// Try string
 				let value = getNestedValue(namespaceData, keyPath);
 
 				if (params && typeof params['count'] === 'number') {
@@ -539,9 +567,14 @@ export function getInstance(): I18nInstance {
 /**
  * Translate function - direct import version
  * @example import { t } from '@shelchin/i18n'
+ * @example t('home.title') // string
+ * @example t<string[]>('home.features') // string[]
  */
-export function t(key: TranslationKey, params?: Record<string, string | number>): string {
-	return getInstance().t(key, params);
+export function t<T = string>(
+	key: TranslationKey,
+	params?: Record<string, string | number>
+): TranslationResult<T> {
+	return getInstance().t<T>(key, params);
 }
 
 /**

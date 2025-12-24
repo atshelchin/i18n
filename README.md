@@ -237,7 +237,7 @@ Use `{key}` syntax with optional formatting:
 
 ## Array Access
 
-You can define arrays in your translation files and access elements by index:
+You can define arrays in your translation files and access them in two ways:
 
 ```json
 {
@@ -245,12 +245,96 @@ You can define arrays in your translation files and access elements by index:
 }
 ```
 
+### Access by index
+
 ```svelte
 {i18n.t('home.features.0')}
 <!-- "Auto-scan locale files" -->
 {i18n.t('home.features.1')}
 <!-- "Lazy loading by namespace" -->
 ```
+
+### Get full array
+
+Use the generic type parameter `<string[]>` to get the entire array:
+
+```svelte
+{#each i18n.t<string[]>('home.features') as feature}
+	<li>{feature}</li>
+{/each}
+```
+
+This works on both client and server:
+
+## Server-Side Translation
+
+For SEO metadata or any server-side translation needs, use `createServerT`:
+
+```typescript
+// +page.server.ts
+import { parseLocaleModules, createServerT } from '@shelchin/i18n';
+
+const parsed = parseLocaleModules(import.meta.glob('./locales/**/*.json', { eager: true }));
+
+export const load = async (event) => {
+	// Auto-detect locale from URL/cookies
+	const t = createServerT(parsed.translations, {
+		event,
+		defaultLocale: 'en',
+		supportedLocales: parsed.locales
+	});
+
+	return {
+		seoTitle: t('home.title'),
+		seoDescription: t('home.description'),
+		features: t<string[]>('home.features')
+	};
+};
+```
+
+### Usage Options
+
+```typescript
+// Option 1: Auto-detect from SvelteKit event (recommended)
+const t = createServerT(translations, { event, defaultLocale: 'en' });
+
+// Option 2: Pass locale directly
+const t = createServerT(translations, { locale: 'zh' });
+
+// Option 3: With validation
+const t = createServerT(translations, {
+	event,
+	defaultLocale: 'en',
+	supportedLocales: ['en', 'zh', 'ja'],
+	cookieName: 'i18n-locale' // default
+});
+```
+
+### ServerTranslator API
+
+| Method                    | Return Type         | Description                                    |
+| ------------------------- | ------------------- | ---------------------------------------------- |
+| `t(key, params?)`         | `string`            | Translate a key                                |
+| `t<string[]>(key)`        | `string[]`          | Get array of translations (generic type)       |
+
+### ServerTOptions
+
+| Option             | Type               | Description                            |
+| ------------------ | ------------------ | -------------------------------------- |
+| `locale`           | `string`           | Locale to use (skips auto-detection)   |
+| `event`            | `ServerEvent`      | SvelteKit event for auto-detection     |
+| `defaultLocale`    | `string`           | Fallback locale (default: `'en'`)      |
+| `supportedLocales` | `string[]`         | Valid locales for validation           |
+| `cookieName`       | `string`           | Cookie name (default: `'i18n-locale'`) |
+| `extractLocale`    | `(path) => string` | Custom URL locale extractor            |
+
+Features:
+
+- **Auto-detection** - Extracts locale from URL path (`/en/about`) or cookies
+- **Pure function** - No global state, works in any server context
+- **Fallback support** - Falls back to `defaultLocale` if key not found
+- **Pluralization** - Supports `_zero`, `_one`, `_other` suffixes
+- **Interpolation** - Supports `{param}` and `{param:format}` syntax
 
 ## Fallback Behavior
 
@@ -298,13 +382,14 @@ Options:
 
 ### Server Functions
 
-| Function                               | Description                           |
-| -------------------------------------- | ------------------------------------- |
-| `createServerLoader(modules, options)` | Create SSR load function              |
-| `parseLocaleModules(modules)`          | Parse glob imports to structured data |
-| `getPreloadedTranslations(data, opts)` | Get filtered translations for SSR     |
-| `getNamespaceFromPath(pathname)`       | Extract namespace from URL path       |
-| `getNamespacesForPath(pathname, ns)`   | Get all namespaces for a path         |
+| Function                               | Description                                    |
+| -------------------------------------- | ---------------------------------------------- |
+| `createServerLoader(modules, options)` | Create SSR load function                       |
+| `createServerT(translations, options)` | Create server-side translator with `t.array()` |
+| `parseLocaleModules(modules)`          | Parse glob imports to structured data          |
+| `getPreloadedTranslations(data, opts)` | Get filtered translations for SSR              |
+| `getNamespaceFromPath(pathname)`       | Extract namespace from URL path                |
+| `getNamespacesForPath(pathname, ns)`   | Get all namespaces for a path                  |
 
 ### InitI18nOptions
 
@@ -354,6 +439,7 @@ export const reroute = ({ url }) => deLocalizeUrl(url).pathname;
 
 - **From v0.x to v2.0:** See [MIGRATION.md](./MIGRATION.md)
 - **From v2.0.x to v2.1.0:** See [v2.0 to v2.1 Migration](#v20x-to-v210-migration) below
+- **From v2.1.x to v2.2.0:** See [v2.1 to v2.2 Migration](#v21x-to-v220-migration) below
 
 ### v2.0.x to v2.1.0 Migration
 
@@ -411,6 +497,39 @@ export const load = async (event) => {
 	return { ...data, localeMetas };
 };
 ```
+
+### v2.1.x to v2.2.0 Migration
+
+v2.2.0 unifies array translation API using TypeScript generics:
+
+#### Changed: Array Access with Generics
+
+The separate `tArray()` method has been replaced with a generic type parameter on `t()`:
+
+**Before (v2.1.x):**
+
+```typescript
+// Client-side
+i18n.tArray('home.features');
+
+// Server-side
+t.array('home.features');
+```
+
+**After (v2.2.0):**
+
+```typescript
+// Client-side
+i18n.t<string[]>('home.features');
+
+// Server-side
+t<string[]>('home.features');
+```
+
+Benefits:
+- **Unified API** - Same syntax on client and server
+- **Type-safe** - TypeScript infers return type from generic parameter
+- **Simpler** - One function instead of two
 
 ## License
 
