@@ -63,7 +63,33 @@ function extractKeys(obj: Record<string, unknown>, prefix = ''): string[] {
 }
 
 /**
- * Read all JSON files in a locale directory and extract keys
+ * Recursively find all JSON files in a directory
+ */
+function findJsonFiles(dir: string, baseDir: string = dir): string[] {
+	const files: string[] = [];
+
+	if (!fs.existsSync(dir)) {
+		return files;
+	}
+
+	const entries = fs.readdirSync(dir, { withFileTypes: true });
+
+	for (const entry of entries) {
+		const fullPath = path.join(dir, entry.name);
+		if (entry.isDirectory()) {
+			// Recursively scan subdirectories
+			files.push(...findJsonFiles(fullPath, baseDir));
+		} else if (entry.isFile() && entry.name.endsWith('.json')) {
+			files.push(fullPath);
+		}
+	}
+
+	return files;
+}
+
+/**
+ * Read all JSON files in a locale directory (including subdirectories) and extract keys
+ * Subdirectories are for organization only - namespace is the filename
  */
 function extractKeysFromLocale(localeDir: string): Map<string, string[]> {
 	const namespaceKeys = new Map<string, string[]>();
@@ -72,17 +98,20 @@ function extractKeysFromLocale(localeDir: string): Map<string, string[]> {
 		return namespaceKeys;
 	}
 
-	const files = fs.readdirSync(localeDir).filter((f) => f.endsWith('.json'));
+	const jsonFiles = findJsonFiles(localeDir);
 
-	for (const file of files) {
-		const namespace = file.replace('.json', '');
-		const filePath = path.join(localeDir, file);
+	for (const filePath of jsonFiles) {
+		// Use only the filename as namespace (ignore subdirectory structure)
+		const namespace = path.basename(filePath, '.json');
 		const content = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 		const keys = extractKeys(content);
 
 		// Prefix keys with namespace
 		const prefixedKeys = keys.map((k) => `${namespace}.${k}`);
-		namespaceKeys.set(namespace, prefixedKeys);
+
+		// Merge with existing keys if namespace already exists (from different subdirs)
+		const existingKeys = namespaceKeys.get(namespace) || [];
+		namespaceKeys.set(namespace, [...new Set([...existingKeys, ...prefixedKeys])]);
 	}
 
 	return namespaceKeys;

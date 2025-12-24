@@ -33,6 +33,10 @@ export interface PreloadOptions {
 /**
  * Parse Vite glob import results into structured locale data
  *
+ * Supports nested directory structures - only the filename is used as namespace:
+ * - locales/en/common.json -> namespace: "common"
+ * - locales/en/routes/about.json -> namespace: "about" (directory is ignored)
+ *
  * @example
  * const modules = import.meta.glob('../locales/** /*.json', { eager: true });
  * const { locales, localeMetas, translations } = parseLocaleModules(modules);
@@ -46,8 +50,10 @@ export function parseLocaleModules(
 	const metaMap = new Map<string, LocaleMeta>();
 
 	for (const [path, module] of Object.entries(modules)) {
-		// Extract locale and namespace from path: ../locales/en/common.json -> en, common
-		const match = path.match(/\/([a-zA-Z]{2}(?:-[a-zA-Z]{2})?)\/([^/]+)\.json$/i);
+		// Extract locale and namespace from path
+		// Supports: ../locales/en/common.json -> en, common
+		// Supports: ../locales/en/routes/about.json -> en, about (subdirs are for organization only)
+		const match = path.match(/\/([a-zA-Z]{2}(?:-[a-zA-Z]{2})?)\/(?:.*\/)?([^/]+)\.json$/i);
 		if (match) {
 			const [, locale, namespace] = match;
 			const normalizedLocale = locale.toLowerCase();
@@ -86,7 +92,7 @@ export function parseLocaleModules(
  * Rules:
  * - "/" or "" -> homeNamespace (default: "home")
  * - "/about" -> "about"
- * - "/foo/bar/baz" -> "foo" (first segment)
+ * - "/foo/bar/baz" -> "foo" (first segment only)
  * - Locale prefixes are stripped: "/en/about" -> "about"
  */
 export function getNamespaceFromPath(
@@ -103,7 +109,7 @@ export function getNamespaceFromPath(
 		return homeNamespace;
 	}
 
-	// Extract first path segment
+	// Extract first path segment only
 	const firstSegment = pathWithoutLocale.split('/').filter(Boolean)[0];
 	return firstSegment || homeNamespace;
 }
@@ -127,7 +133,11 @@ export function getNamespacesForPath(
 	const pageNamespace = getNamespaceFromPath(pathname, options);
 
 	// Only add if namespace exists and not already in list
-	if (pageNamespace && availableNamespaces.has(pageNamespace) && !namespaces.includes(pageNamespace)) {
+	if (
+		pageNamespace &&
+		availableNamespaces.has(pageNamespace) &&
+		!namespaces.includes(pageNamespace)
+	) {
 		namespaces.push(pageNamespace);
 	}
 

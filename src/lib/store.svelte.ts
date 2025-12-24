@@ -531,6 +531,11 @@ export function getLocales(): LocaleMeta[] {
 
 /**
  * Register loaders from Vite glob import
+ *
+ * Supports nested directory structures - subdirectories are for organization only:
+ * - ./locales/en/common.json -> namespace: "common"
+ * - ./locales/en/routes/about.json -> namespace: "about"
+ *
  * @example
  * registerGlobLoaders(import.meta.glob('./locales/** /*.json'))
  */
@@ -541,9 +546,10 @@ export function registerGlobLoaders(
 	const store = instance ?? getInstance();
 
 	for (const [path, loader] of Object.entries(modules)) {
-		// Expected path format: ./locales/{locale}/{namespace}.json
+		// Expected path format: ./locales/{locale}/[subdir/]{namespace}.json
 		// Match locale codes like: en, zh, en-US, zh-CN (case insensitive)
-		const match = path.match(/\/([a-zA-Z]{2}(?:-[a-zA-Z]{2})?)\/([^/]+)\.json$/i);
+		// Subdirectories are ignored - only filename is used as namespace
+		const match = path.match(/\/([a-zA-Z]{2}(?:-[a-zA-Z]{2})?)\/(?:.*\/)?([^/]+)\.json$/i);
 		if (match) {
 			const [, locale, namespace] = match;
 			store._registerLoader(locale.toLowerCase(), namespace, loader as LocaleLoader);

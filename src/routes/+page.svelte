@@ -299,7 +299,9 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 	<!-- Test Lazy Loading Navigation -->
 	<section class="card test-nav">
 		<h2>Test Lazy Loading</h2>
-		<p>Click the link below to navigate to the About page. The 'about' namespace will be lazy loaded.</p>
+		<p>
+			Click the link below to navigate to the About page. The 'about' namespace will be lazy loaded.
+		</p>
 		<a href="/about" class="test-link">Go to About Page →</a>
 	</section>
 

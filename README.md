@@ -150,12 +150,12 @@ export const load = (async (event) => {
 
 The server loader automatically detects which namespace to preload based on URL:
 
-| URL Path         | Namespaces Loaded    |
-| ---------------- | -------------------- |
-| `/`              | `common` + `home`    |
-| `/about`         | `common` + `about`   |
-| `/products/list` | `common` + `products`|
-| `/en/about`      | `common` + `about`   |
+| URL Path         | Namespaces Loaded     |
+| ---------------- | --------------------- |
+| `/`              | `common` + `home`     |
+| `/about`         | `common` + `about`    |
+| `/products/list` | `common` + `products` |
+| `/en/about`      | `common` + `about`    |
 
 Only namespaces that exist in your locale files are preloaded. Unknown namespaces fall back to client-side lazy loading.
 
@@ -166,9 +166,7 @@ For more control, use the individual helper functions:
 ```typescript
 import { parseLocaleModules, getPreloadedTranslations } from '@shelchin/i18n';
 
-const parsed = parseLocaleModules(
-	import.meta.glob('./locales/**/*.json', { eager: true })
-);
+const parsed = parseLocaleModules(import.meta.glob('./locales/**/*.json', { eager: true }));
 
 export const load: LayoutServerLoad = async ({ url, cookies }) => {
 	const locale = cookies.get('i18n-locale') || 'en';
@@ -256,13 +254,13 @@ Options:
 
 ### Server Functions
 
-| Function                              | Description                           |
-| ------------------------------------- | ------------------------------------- |
-| `createServerLoader(modules, options)`| Create SSR load function              |
-| `parseLocaleModules(modules)`         | Parse glob imports to structured data |
-| `getPreloadedTranslations(data, opts)`| Get filtered translations for SSR     |
-| `getNamespaceFromPath(pathname)`      | Extract namespace from URL path       |
-| `getNamespacesForPath(pathname, ns)`  | Get all namespaces for a path         |
+| Function                               | Description                           |
+| -------------------------------------- | ------------------------------------- |
+| `createServerLoader(modules, options)` | Create SSR load function              |
+| `parseLocaleModules(modules)`          | Parse glob imports to structured data |
+| `getPreloadedTranslations(data, opts)` | Get filtered translations for SSR     |
+| `getNamespaceFromPath(pathname)`       | Extract namespace from URL path       |
+| `getNamespacesForPath(pathname, ns)`   | Get all namespaces for a path         |
 
 ### InitI18nOptions
 
