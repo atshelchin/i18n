@@ -46,6 +46,8 @@ class I18nStore implements I18nInstance {
 	private _defaultLocale: string;
 	private _devMode: boolean;
 	private _pendingLoads = new Map<string, Promise<void>>();
+	// Non-reactive set to track queued loads (prevents duplicate queueMicrotask calls)
+	private _queuedLoads = new Set<string>();
 
 	constructor(options: InitI18nOptions) {
 		this._locale = options.locale;
@@ -240,14 +242,28 @@ class I18nStore implements I18nInstance {
 	private _triggerLazyLoad(namespace: string): void {
 		const key = `${this._locale}:${namespace}`;
 
-		// Already loading or loaded
-		if (this._namespaceStates[key] === 'loading' || this._namespaceStates[key] === 'loaded') {
+		// Already loading, loaded, or queued
+		if (
+			this._namespaceStates[key] === 'loading' ||
+			this._namespaceStates[key] === 'loaded' ||
+			this._queuedLoads.has(key)
+		) {
 			return;
 		}
 
-		// Start loading (fire and forget, UI will update reactively)
-		this._loadNamespace(this._locale, namespace).catch((err) => {
-			console.error(`[i18n] Failed to load namespace "${namespace}":`, err);
+		// Mark as queued immediately (non-reactive to prevent duplicate triggers during render)
+		this._queuedLoads.add(key);
+
+		// Capture locale to avoid closure issues
+		const locale = this._locale;
+
+		// Use queueMicrotask to defer ALL state mutations outside the render context
+		// This prevents Svelte 5's state_unsafe_mutation error when t() is called during render
+		queueMicrotask(() => {
+			this._queuedLoads.delete(key);
+			this._loadNamespace(locale, namespace).catch((err) => {
+				console.error(`[i18n] Failed to load namespace "${namespace}":`, err);
+			});
 		});
 	}
 
