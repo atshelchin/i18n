@@ -58,20 +58,39 @@ const {
 // Base namespaces to always preload
 const BASE_NAMESPACES = ['common'];
 
-// Map URL paths to additional namespaces needed
+// Get all available namespace names from translations
+const AVAILABLE_NAMESPACES = new Set(
+	Object.values(ALL_TRANSLATIONS).flatMap((localeData) => Object.keys(localeData))
+);
+
+/**
+ * Auto-detect namespaces from URL path
+ * Rules:
+ * - "/" or "" -> "home"
+ * - "/about" -> "about"
+ * - "/foo/bar" -> "foo" (first segment)
+ * - Only returns namespace if it exists in translations
+ */
 function getNamespacesForPath(pathname: string): string[] {
 	const namespaces = [...BASE_NAMESPACES];
 
-	// Remove locale prefix if present
+	// Remove locale prefix if present (e.g., /en/about -> /about)
 	const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}(?=\/|$)/, '') || '/';
 
-	// Add page-specific namespaces based on path
+	// Determine namespace from path
+	let pageNamespace: string;
 	if (pathWithoutLocale === '/' || pathWithoutLocale === '') {
-		namespaces.push('home');
-	} else if (pathWithoutLocale.startsWith('/about')) {
-		namespaces.push('about');
+		pageNamespace = 'home';
+	} else {
+		// Extract first path segment: /about/team -> about, /foo/bar/baz -> foo
+		const firstSegment = pathWithoutLocale.split('/').filter(Boolean)[0];
+		pageNamespace = firstSegment || 'home';
 	}
-	// Add more mappings as needed
+
+	// Only add if namespace exists in translations
+	if (pageNamespace && AVAILABLE_NAMESPACES.has(pageNamespace) && !namespaces.includes(pageNamespace)) {
+		namespaces.push(pageNamespace);
+	}
 
 	return namespaces;
 }
