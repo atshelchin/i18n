@@ -1,0 +1,47 @@
+{
+	"_meta": {
+		"code": "en",
+		"name": "English",
+		"englishName": "English",
+		"direction": "ltr",
+		"flag": "🇬🇧"
+	},
+	"ok": "OK",
+	"cancel": "Cancel",
+	"loading": "Loading...",
+	"currentLocale": "Current Locale",
+	"sections": {
+		"basic": "Basic Translation",
+		"interpolation": "Interpolation",
+		"pluralization": "Pluralization",
+		"namespaces": "Loaded Namespaces",
+		"locales": "Supported Locales",
+		"quickStart": "Quick Start",
+		"features": "Features"
+	},
+	"labels": {
+		"name": "Name",
+		"count": "Count"
+	},
+	"github": {
+		"star": "Star on GitHub",
+		"description": "If you like this project, please give us a star!"
+	},
+	"quickStart": {
+		"install": "Install",
+		"setup": "Setup in +layout.svelte",
+		"usage": "Usage in components",
+		"step1": "1. Install the package",
+		"step2": "2. Create locale files",
+		"step3": "3. Initialize in layout",
+		"step4": "4. Use in components"
+	},
+	"features": {
+		"autoScan": "Auto-scan locale files",
+		"lazyLoad": "Lazy loading by namespace",
+		"ssr": "SSR support",
+		"typeSafe": "Type-safe keys",
+		"minimal": "Minimal API (5 functions)",
+		"svelte5": "Svelte 5 runes"
+	}
+}

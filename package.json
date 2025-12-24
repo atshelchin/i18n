@@ -1,6 +1,6 @@
 {
 	"name": "@shelchin/i18n",
-	"version": "0.0.4",
+	"version": "2.0.0-alpha.1",
 	"scripts": {
 		"dev": "vite dev",
 		"build": "vite build",
@@ -26,23 +26,39 @@
 	"sideEffects": [
 		"**/*.css"
 	],
-	"svelte": "./dist/index.js",
-	"types": "./dist/index.d.ts",
+	"svelte": "./dist/v2/index.js",
+	"types": "./dist/v2/index.d.ts",
 	"type": "module",
 	"exports": {
 		".": {
+			"types": "./dist/v2/index.d.ts",
+			"svelte": "./dist/v2/index.js",
+			"default": "./dist/v2/index.js"
+		},
+		"./server": {
+			"types": "./dist/v2/server/index.d.ts",
+			"default": "./dist/v2/server/index.js"
+		},
+		"./cli": {
+			"types": "./dist/v2/cli/index.d.ts",
+			"default": "./dist/v2/cli/index.js"
+		},
+		"./v1": {
 			"types": "./dist/index.d.ts",
 			"default": "./dist/index.js"
 		},
-		"./svelte": {
+		"./v1/svelte": {
 			"types": "./dist/svelte/index.d.ts",
 			"svelte": "./dist/svelte/index.js",
 			"default": "./dist/svelte/index.js"
 		},
-		"./utils": {
+		"./v1/utils": {
 			"types": "./dist/utils/index.d.ts",
 			"default": "./dist/utils/index.js"
 		}
+	},
+	"bin": {
+		"i18n": "./dist/v2/cli/generate-types.js"
 	},
 	"peerDependencies": {
 		"svelte": "^5.0.0"

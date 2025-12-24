@@ -1,0 +1,47 @@
+{
+	"_meta": {
+		"code": "zh",
+		"name": "中文",
+		"englishName": "Chinese",
+		"direction": "ltr",
+		"flag": "🇨🇳"
+	},
+	"ok": "确定",
+	"cancel": "取消",
+	"loading": "加载中...",
+	"currentLocale": "当前语言",
+	"sections": {
+		"basic": "基础翻译",
+		"interpolation": "参数插值",
+		"pluralization": "复数形式",
+		"namespaces": "已加载的命名空间",
+		"locales": "支持的语言",
+		"quickStart": "快速上手",
+		"features": "特性"
+	},
+	"labels": {
+		"name": "名称",
+		"count": "数量"
+	},
+	"github": {
+		"star": "在 GitHub 上 Star",
+		"description": "如果你喜欢这个项目，请给我们一个 Star！"
+	},
+	"quickStart": {
+		"install": "安装",
+		"setup": "在 +layout.svelte 中配置",
+		"usage": "在组件中使用",
+		"step1": "1. 安装包",
+		"step2": "2. 创建语言文件",
+		"step3": "3. 在布局中初始化",
+		"step4": "4. 在组件中使用"
+	},
+	"features": {
+		"autoScan": "自动扫描语言文件",
+		"lazyLoad": "按命名空间懒加载",
+		"ssr": "支持 SSR",
+		"typeSafe": "类型安全的键",
+		"minimal": "极简 API（5 个函数）",
+		"svelte5": "Svelte 5 runes"
+	}
+}

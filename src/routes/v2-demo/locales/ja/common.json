@@ -1,0 +1,47 @@
+{
+	"_meta": {
+		"code": "ja",
+		"name": "日本語",
+		"englishName": "Japanese",
+		"direction": "ltr",
+		"flag": "🇯🇵"
+	},
+	"ok": "OK",
+	"cancel": "キャンセル",
+	"loading": "読み込み中...",
+	"currentLocale": "現在の言語",
+	"sections": {
+		"basic": "基本翻訳",
+		"interpolation": "パラメータ補間",
+		"pluralization": "複数形",
+		"namespaces": "ロード済み名前空間",
+		"locales": "対応言語",
+		"quickStart": "クイックスタート",
+		"features": "機能"
+	},
+	"labels": {
+		"name": "名前",
+		"count": "数量"
+	},
+	"github": {
+		"star": "GitHub でスター",
+		"description": "このプロジェクトが気に入ったら、スターをお願いします！"
+	},
+	"quickStart": {
+		"install": "インストール",
+		"setup": "+layout.svelte でセットアップ",
+		"usage": "コンポーネントでの使用",
+		"step1": "1. パッケージをインストール",
+		"step2": "2. ロケールファイルを作成",
+		"step3": "3. レイアウトで初期化",
+		"step4": "4. コンポーネントで使用"
+	},
+	"features": {
+		"autoScan": "ロケールファイルの自動スキャン",
+		"lazyLoad": "名前空間による遅延読み込み",
+		"ssr": "SSR サポート",
+		"typeSafe": "型安全なキー",
+		"minimal": "最小限の API（5 関数）",
+		"svelte5": "Svelte 5 runes"
+	}
+}

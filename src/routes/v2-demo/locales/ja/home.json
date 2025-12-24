@@ -1,0 +1,8 @@
+{
+	"title": "v2へようこそ",
+	"description": "これは新しいi18n v2 APIのデモです",
+	"greeting": "こんにちは、{name}さん！",
+	"items_zero": "アイテムなし",
+	"items_one": "{count}個のアイテム",
+	"items_other": "{count}個のアイテム"
+}

@@ -1,0 +1,8 @@
+{
+	"title": "Bienvenido a v2",
+	"description": "Esta es la demo de la nueva API i18n v2",
+	"greeting": "¡Hola, {name}!",
+	"items_zero": "Sin elementos",
+	"items_one": "{count} elemento",
+	"items_other": "{count} elementos"
+}

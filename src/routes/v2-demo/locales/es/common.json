@@ -1,0 +1,47 @@
+{
+	"_meta": {
+		"code": "es",
+		"name": "Español",
+		"englishName": "Spanish",
+		"direction": "ltr",
+		"flag": "🇪🇸"
+	},
+	"ok": "Aceptar",
+	"cancel": "Cancelar",
+	"loading": "Cargando...",
+	"currentLocale": "Idioma actual",
+	"sections": {
+		"basic": "Traducción básica",
+		"interpolation": "Interpolación",
+		"pluralization": "Pluralización",
+		"namespaces": "Espacios de nombres cargados",
+		"locales": "Idiomas soportados",
+		"quickStart": "Inicio rápido",
+		"features": "Características"
+	},
+	"labels": {
+		"name": "Nombre",
+		"count": "Cantidad"
+	},
+	"github": {
+		"star": "Estrella en GitHub",
+		"description": "Si te gusta este proyecto, ¡danos una estrella!"
+	},
+	"quickStart": {
+		"install": "Instalación",
+		"setup": "Configuración en +layout.svelte",
+		"usage": "Uso en componentes",
+		"step1": "1. Instalar el paquete",
+		"step2": "2. Crear archivos de locale",
+		"step3": "3. Inicializar en el layout",
+		"step4": "4. Usar en componentes"
+	},
+	"features": {
+		"autoScan": "Escaneo automático de archivos",
+		"lazyLoad": "Carga diferida por namespace",
+		"ssr": "Soporte SSR",
+		"typeSafe": "Claves type-safe",
+		"minimal": "API mínima (5 funciones)",
+		"svelte5": "Svelte 5 runes"
+	}
+}

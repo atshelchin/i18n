@@ -175,7 +175,7 @@
 
 	.app {
 		min-height: 100vh;
-		padding: 2rem;
+		padding: 0.5rem;
 	}
 
 	:global(*) {

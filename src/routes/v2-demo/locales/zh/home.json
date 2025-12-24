@@ -1,0 +1,8 @@
+{
+	"title": "欢迎使用 v2",
+	"description": "这是新的 i18n v2 API 演示",
+	"greeting": "你好，{name}！",
+	"items_zero": "没有项目",
+	"items_one": "{count} 个项目",
+	"items_other": "{count} 个项目"
+}
