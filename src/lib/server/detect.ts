@@ -160,11 +160,7 @@ export function setLocaleCookie(
 		path?: string;
 	} = {}
 ): void {
-	const {
-		cookieName = 'i18n-locale',
-		maxAge = 365 * 24 * 60 * 60,
-		path = '/'
-	} = options;
+	const { cookieName = 'i18n-locale', maxAge = 365 * 24 * 60 * 60, path = '/' } = options;
 
 	cookies.set(cookieName, locale, {
 		maxAge,

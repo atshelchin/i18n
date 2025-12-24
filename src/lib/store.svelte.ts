@@ -50,7 +50,8 @@ class I18nStore implements I18nInstance {
 	constructor(options: InitI18nOptions) {
 		this._locale = options.locale;
 		this._defaultLocale = options.defaultLocale ?? 'en';
-		this._devMode = options.devMode ?? (typeof import.meta !== 'undefined' && import.meta.env?.DEV) ?? false;
+		this._devMode =
+			options.devMode ?? (typeof import.meta !== 'undefined' && import.meta.env?.DEV) ?? false;
 
 		// Initialize locales from SSR-provided metadata first
 		if (options.localeMetas) {
@@ -140,9 +141,7 @@ class I18nStore implements I18nInstance {
 			.map((key) => key.split(':')[1]);
 
 		// Load all namespaces for new locale in parallel
-		await Promise.all(
-			namespaces.map((ns) => this._loadNamespace(locale, ns))
-		);
+		await Promise.all(namespaces.map((ns) => this._loadNamespace(locale, ns)));
 
 		// Update locale
 		this._locale = locale;
@@ -155,9 +154,7 @@ class I18nStore implements I18nInstance {
 	 * Preload specific namespaces (useful for SSR)
 	 */
 	async preload(namespaces: string[]): Promise<void> {
-		await Promise.all(
-			namespaces.map((ns) => this._loadNamespace(this._locale, ns))
-		);
+		await Promise.all(namespaces.map((ns) => this._loadNamespace(this._locale, ns)));
 	}
 
 	/**
@@ -399,18 +396,23 @@ class I18nStore implements I18nInstance {
 		}
 	}
 
-	private _readStoredLocale(options?: { cookie?: boolean; cookieName?: string; localStorage?: boolean; localStorageKey?: string }): string | null {
+	private _readStoredLocale(options?: {
+		cookie?: boolean;
+		cookieName?: string;
+		localStorage?: boolean;
+		localStorageKey?: string;
+	}): string | null {
 		const cookieName = options?.cookieName ?? 'i18n-locale';
 		const localStorageKey = options?.localStorageKey ?? 'i18n-locale';
 
 		// Try localStorage first
-		if ((options?.localStorage !== false) && typeof localStorage !== 'undefined') {
+		if (options?.localStorage !== false && typeof localStorage !== 'undefined') {
 			const stored = localStorage.getItem(localStorageKey);
 			if (stored) return stored;
 		}
 
 		// Try cookie
-		if ((options?.cookie !== false) && typeof document !== 'undefined') {
+		if (options?.cookie !== false && typeof document !== 'undefined') {
 			const cookie = document.cookie.split('; ').find((row) => row.startsWith(`${cookieName}=`));
 			if (cookie) return cookie.split('=')[1];
 		}
@@ -458,7 +460,9 @@ export function setI18nContext(instance: I18nInstance): void {
 export function useI18n(): I18nInstance {
 	const instance = getContext<I18nInstance | undefined>(I18N_CONTEXT_KEY);
 	if (!instance) {
-		throw new Error('useI18n() must be called within a component that has I18n context. Did you forget to call initI18n() and setI18nContext()?');
+		throw new Error(
+			'useI18n() must be called within a component that has I18n context. Did you forget to call initI18n() and setI18nContext()?'
+		);
 	}
 	return instance;
 }

@@ -49,8 +49,11 @@ function parseLocaleModules(): {
 	};
 }
 
-const { locales: SUPPORTED_LOCALES, localeMetas: LOCALE_METAS, translations: ALL_TRANSLATIONS } =
-	parseLocaleModules();
+const {
+	locales: SUPPORTED_LOCALES,
+	localeMetas: LOCALE_METAS,
+	translations: ALL_TRANSLATIONS
+} = parseLocaleModules();
 
 export const load = (async ({ url, cookies }) => {
 	// Extract locale from URL pathname

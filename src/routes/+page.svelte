@@ -17,7 +17,7 @@
 		const newPath = `/${locale}${pathWithoutLocale || '/'}`;
 		goto(newPath);
 	}
-	console.log(123,i18n.locales)
+	console.log(123, i18n.locales);
 </script>
 
 <div class="demo-page">
@@ -89,47 +89,85 @@
 
 		<div class="step">
 			<h3>{i18n.t('common.quickStart.step1')}</h3>
-			<pre class="code-block"><code><span class="hl-cmd">npm</span> install @shelchin/i18n</code></pre>
+			<pre class="code-block"><code><span class="hl-cmd">npm</span> install @shelchin/i18n</code
+				></pre>
 		</div>
 
 		<div class="step">
 			<h3>{i18n.t('common.quickStart.step2')}</h3>
-			<pre class="code-block"><code><span class="hl-comment">// locales/en/common.json</span>
-{'{'}<br />  <span class="hl-key">"_meta"</span>: {'{'} <span class="hl-key">"code"</span>: <span class="hl-string">"en"</span>, <span class="hl-key">"name"</span>: <span class="hl-string">"English"</span>, <span class="hl-key">"flag"</span>: <span class="hl-string">"🇬🇧"</span> {'}'},<br />  <span class="hl-key">"hello"</span>: <span class="hl-string">"Hello"</span>,<br />  <span class="hl-key">"greeting"</span>: <span class="hl-string">"Hello, {'{'}<span class="hl-param">name</span>{'}'}!"</span><br />{'}'}
+			<pre class="code-block"><code
+					><span class="hl-comment">// locales/en/common.json</span>
+{'{'}<br />  <span class="hl-key">"_meta"</span>: {'{'} <span class="hl-key">"code"</span>: <span
+						class="hl-string">"en"</span
+					>, <span class="hl-key">"name"</span>: <span class="hl-string">"English"</span>, <span
+						class="hl-key">"flag"</span
+					>: <span class="hl-string">"🇬🇧"</span> {'}'},<br />  <span class="hl-key">"hello"</span
+					>: <span class="hl-string">"Hello"</span>,<br />  <span class="hl-key">"greeting"</span
+					>: <span class="hl-string">"Hello, {'{'}<span class="hl-param">name</span>{'}'}!"</span
+					><br />{'}'}
 
 <span class="hl-comment">// locales/zh/common.json</span>
-{'{'}<br />  <span class="hl-key">"_meta"</span>: {'{'} <span class="hl-key">"code"</span>: <span class="hl-string">"zh"</span>, <span class="hl-key">"name"</span>: <span class="hl-string">"中文"</span>, <span class="hl-key">"flag"</span>: <span class="hl-string">"🇨🇳"</span> {'}'},<br />  <span class="hl-key">"hello"</span>: <span class="hl-string">"你好"</span>,<br />  <span class="hl-key">"greeting"</span>: <span class="hl-string">"你好，{'{'}<span class="hl-param">name</span>{'}'}！"</span><br />{'}'}</code></pre>
+{'{'}<br />  <span class="hl-key">"_meta"</span>: {'{'} <span class="hl-key">"code"</span>: <span
+						class="hl-string">"zh"</span
+					>, <span class="hl-key">"name"</span>: <span class="hl-string">"中文"</span>, <span
+						class="hl-key">"flag"</span
+					>: <span class="hl-string">"🇨🇳"</span> {'}'},<br />  <span class="hl-key">"hello"</span
+					>: <span class="hl-string">"你好"</span>,<br />  <span class="hl-key">"greeting"</span
+					>: <span class="hl-string">"你好，{'{'}<span class="hl-param">name</span>{'}'}！"</span
+					><br />{'}'}</code
+				></pre>
 		</div>
 
 		<div class="step">
 			<h3>{i18n.t('common.quickStart.step3')}</h3>
-			<pre class="code-block"><code><span class="hl-comment">// +layout.svelte</span>
+			<pre class="code-block"><code
+					><span class="hl-comment">// +layout.svelte</span>
 <span class="hl-tag">&lt;script&gt;</span>
-  <span class="hl-keyword">import</span> {'{'} initI18n, setI18nContext, registerGlobLoaders {'}'} <span class="hl-keyword">from</span> <span class="hl-string">'@shelchin/i18n'</span>;
+  <span class="hl-keyword">import</span
+					> {'{'} initI18n, setI18nContext, registerGlobLoaders {'}'} <span class="hl-keyword"
+						>from</span
+					> <span class="hl-string">'@shelchin/i18n'</span>;
 
-  <span class="hl-keyword">const</span> i18n = <span class="hl-func">initI18n</span>({'{'} locale: <span class="hl-string">'en'</span>, defaultLocale: <span class="hl-string">'en'</span> {'}'});
+  <span class="hl-keyword">const</span> i18n = <span class="hl-func">initI18n</span
+					>({'{'} locale: <span class="hl-string">'en'</span>, defaultLocale: <span
+						class="hl-string">'en'</span
+					> {'}'});
 
   <span class="hl-comment">// Auto-scan all locale files</span>
-  <span class="hl-func">registerGlobLoaders</span>(<span class="hl-keyword">import</span>.meta.<span class="hl-func">glob</span>(<span class="hl-string">'./locales/**/*.json'</span>), i18n);
+  <span class="hl-func">registerGlobLoaders</span>(<span class="hl-keyword">import</span>.meta.<span
+						class="hl-func">glob</span
+					>(<span class="hl-string">'./locales/**/*.json'</span>), i18n);
 
   <span class="hl-func">setI18nContext</span>(i18n);
-<span class="hl-tag">&lt;/script&gt;</span></code></pre>
+<span class="hl-tag">&lt;/script&gt;</span></code
+				></pre>
 		</div>
 
 		<div class="step">
 			<h3>{i18n.t('common.quickStart.step4')}</h3>
-			<pre class="code-block"><code><span class="hl-comment">// +page.svelte</span>
+			<pre class="code-block"><code
+					><span class="hl-comment">// +page.svelte</span>
 <span class="hl-tag">&lt;script&gt;</span>
-  <span class="hl-keyword">import</span> {'{'} useI18n {'}'} <span class="hl-keyword">from</span> <span class="hl-string">'@shelchin/i18n'</span>;
+  <span class="hl-keyword">import</span> {'{'} useI18n {'}'} <span class="hl-keyword">from</span
+					> <span class="hl-string">'@shelchin/i18n'</span>;
   <span class="hl-keyword">const</span> i18n = <span class="hl-func">useI18n</span>();
 <span class="hl-tag">&lt;/script&gt;</span>
 
-<span class="hl-tag">&lt;p&gt;</span>{'{'}i18n.<span class="hl-func">t</span>(<span class="hl-string">'common.hello'</span>){'}'}<span class="hl-tag">&lt;/p&gt;</span>
-<span class="hl-tag">&lt;p&gt;</span>{'{'}i18n.<span class="hl-func">t</span>(<span class="hl-string">'common.greeting'</span>, {'{'} name: <span class="hl-string">'World'</span> {'}'}){'}'}<span class="hl-tag">&lt;/p&gt;</span>
+<span class="hl-tag">&lt;p&gt;</span>{'{'}i18n.<span class="hl-func">t</span>(<span
+						class="hl-string">'common.hello'</span
+					>){'}'}<span class="hl-tag">&lt;/p&gt;</span>
+<span class="hl-tag">&lt;p&gt;</span>{'{'}i18n.<span class="hl-func">t</span>(<span
+						class="hl-string">'common.greeting'</span
+					>, {'{'} name: <span class="hl-string">'World'</span> {'}'}){'}'}<span class="hl-tag"
+						>&lt;/p&gt;</span
+					>
 
-<span class="hl-tag">&lt;button</span> <span class="hl-attr">onclick</span>={'{'}() => i18n.<span class="hl-func">setLocale</span>(<span class="hl-string">'zh'</span>){'}'}<span class="hl-tag">&gt;</span>
+<span class="hl-tag">&lt;button</span> <span class="hl-attr">onclick</span>={'{'}() => i18n.<span
+						class="hl-func">setLocale</span
+					>(<span class="hl-string">'zh'</span>){'}'}<span class="hl-tag">&gt;</span>
   Switch to Chinese
-<span class="hl-tag">&lt;/button&gt;</span></code></pre>
+<span class="hl-tag">&lt;/button&gt;</span></code
+				></pre>
 		</div>
 	</section>
 
@@ -138,8 +176,10 @@
 		<h2>{i18n.t('common.sections.basic')}</h2>
 		<div class="usage-content">
 			<div class="usage-code">
-				<pre class="code-block-small"><code>i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.title'</span>)
-i18n.<span class="hl-func">t</span>(<span class="hl-string">'common.ok'</span>)</code></pre>
+				<pre class="code-block-small"><code
+						>i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.title'</span>)
+i18n.<span class="hl-func">t</span>(<span class="hl-string">'common.ok'</span>)</code
+					></pre>
 			</div>
 			<div class="usage-demo">
 				<div class="translation-item">
@@ -171,8 +211,13 @@ i18n.<span class="hl-func">t</span>(<span class="hl-string">'common.ok'</span>)<
 		<h2>{i18n.t('common.sections.interpolation')}</h2>
 		<div class="usage-content">
 			<div class="usage-code">
-				<pre class="code-block-small"><code><span class="hl-comment">// JSON: "greeting": "Hello, {'{'}<span class="hl-param">name</span>{'}'}!"</span>
-i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.greeting'</span>, {'{'} name: <span class="hl-string">'{name}'</span> {'}'})</code></pre>
+				<pre class="code-block-small"><code
+						><span class="hl-comment"
+							>// JSON: "greeting": "Hello, {'{'}<span class="hl-param">name</span>{'}'}!"</span
+						>
+i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.greeting'</span
+						>, {'{'} name: <span class="hl-string">'{name}'</span> {'}'})</code
+					></pre>
 			</div>
 			<div class="usage-demo">
 				<div class="input-group">
@@ -195,10 +240,18 @@ i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.greeting'</spa
 		<h2>{i18n.t('common.sections.pluralization')}</h2>
 		<div class="usage-content">
 			<div class="usage-code">
-				<pre class="code-block-small"><code><span class="hl-comment">// JSON: "items_zero": "No items"</span>
-<span class="hl-comment">//       "items_one": "{'{'}<span class="hl-param">count</span>{'}'} item"</span>
-<span class="hl-comment">//       "items_other": "{'{'}<span class="hl-param">count</span>{'}'} items"</span>
-i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.items'</span>, {'{'} count: <span class="hl-number">{count}</span> {'}'})</code></pre>
+				<pre class="code-block-small"><code
+						><span class="hl-comment">// JSON: "items_zero": "No items"</span>
+<span class="hl-comment"
+							>//       "items_one": "{'{'}<span class="hl-param">count</span>{'}'} item"</span
+						>
+<span class="hl-comment"
+							>//       "items_other": "{'{'}<span class="hl-param">count</span>{'}'} items"</span
+						>
+i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.items'</span>, {'{'} count: <span
+							class="hl-number">{count}</span
+						> {'}'})</code
+					></pre>
 			</div>
 			<div class="usage-demo">
 				<div class="input-group">
@@ -228,8 +281,10 @@ i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.items'</span>,
 		<h2>{i18n.t('common.sections.namespaces')}</h2>
 		<div class="usage-content">
 			<div class="usage-code">
-				<pre class="code-block-small"><code>i18n.<span class="hl-func">getLoadedNamespaces</span>()
-i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</span>)</code></pre>
+				<pre class="code-block-small"><code
+						>i18n.<span class="hl-func">getLoadedNamespaces</span>()
+i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</span>)</code
+					></pre>
 			</div>
 			<div class="usage-demo">
 				<div class="namespace-list">
@@ -600,7 +655,9 @@ i18n.<span class="hl-func">isLoaded</span>(<span class="hl-string">'common'</spa
 		font-size: 0.875rem;
 		background: #ffffff;
 		color: #1f2328;
-		transition: border-color 0.15s, box-shadow 0.15s;
+		transition:
+			border-color 0.15s,
+			box-shadow 0.15s;
 	}
 
 	.input-group input:focus {

@@ -71,8 +71,4 @@ export type {
 // ========================================
 // Utilities
 // ========================================
-export {
-	extractNamespace,
-	extractKeyPath,
-	parseGlobImports
-} from './utils.js';
+export { extractNamespace, extractKeyPath, parseGlobImports } from './utils.js';

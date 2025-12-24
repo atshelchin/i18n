@@ -19,25 +19,27 @@
 
 ### 0.2 改动总结表
 
-| 你想做什么 | 需要改动什么 | 改动量 |
-|------------|--------------|--------|
-| 什么都不改 | 无 | **0 行** |
-| 只要单语言加载 | `+layout.svelte` 的注册方式 | **~3 行** |
-| 拆分部分翻译 | 新增文件 + 页面加载代码 | **~5 行/页** |
-| 所有 `t()` 调用 | 无 | **永远 0 行** |
-| JSON 文件内容 | 无 | **永远 0 行** |
+| 你想做什么      | 需要改动什么                | 改动量        |
+| --------------- | --------------------------- | ------------- |
+| 什么都不改      | 无                          | **0 行**      |
+| 只要单语言加载  | `+layout.svelte` 的注册方式 | **~3 行**     |
+| 拆分部分翻译    | 新增文件 + 页面加载代码     | **~5 行/页**  |
+| 所有 `t()` 调用 | 无                          | **永远 0 行** |
+| JSON 文件内容   | 无                          | **永远 0 行** |
 
 ### 0.3 改动示例对比
 
 **场景 A：完全不改（继续工作）**
+
 ```typescript
 // +layout.svelte - 现有代码，无需任何修改
 import en from './locales/en.json';
 import zh from './locales/zh.json';
-i18n.register('__default__', { en, zh });  // ✅ 继续工作
+i18n.register('__default__', { en, zh }); // ✅ 继续工作
 ```
 
 **场景 B：启用单语言加载（最小改动）**
+
 ```typescript
 // +layout.svelte - 只改这 3 行
 // ❌ 删除: import en from './locales/en.json';
@@ -46,39 +48,40 @@ i18n.register('__default__', { en, zh });  // ✅ 继续工作
 
 // ✅ 新增:
 i18n.registerLoader('__default__', {
-  en: () => import('./locales/en.json'),
-  zh: () => import('./locales/zh.json'),
+	en: () => import('./locales/en.json'),
+	zh: () => import('./locales/zh.json')
 });
 ```
 
 **使用处 - 完全不变：**
+
 ```svelte
 <!-- +page.svelte - 不改任何代码 -->
-{i18n.t('title')}           // ✅ 不变
-{i18n.t('features.title')}  // ✅ 不变
+{i18n.t('title')} // ✅ 不变
+{i18n.t('features.title')} // ✅ 不变
 ```
 
 ### 0.4 API 分类
 
-| 分类 | API | 用途 |
-|------|-----|------|
-| **核心（必须）** | `registerLoader` | 注册懒加载器 |
-| **核心（必须）** | `registerLoaders` | 批量注册（配合 Glob） |
-| **核心（必须）** | `ensureNamespace` | 确保 namespace 已加载 |
-| **核心（必须）** | `setLocaleAsync` | 异步切换语言 |
-| 高级（可选） | `loadNamespace` | 强制重新加载 |
-| 高级（可选） | `isNamespaceLoaded` | 检查加载状态 |
-| 高级（可选） | `preload` / `hydrate` | SSR 支持 |
+| 分类             | API                   | 用途                  |
+| ---------------- | --------------------- | --------------------- |
+| **核心（必须）** | `registerLoader`      | 注册懒加载器          |
+| **核心（必须）** | `registerLoaders`     | 批量注册（配合 Glob） |
+| **核心（必须）** | `ensureNamespace`     | 确保 namespace 已加载 |
+| **核心（必须）** | `setLocaleAsync`      | 异步切换语言          |
+| 高级（可选）     | `loadNamespace`       | 强制重新加载          |
+| 高级（可选）     | `isNamespaceLoaded`   | 检查加载状态          |
+| 高级（可选）     | `preload` / `hydrate` | SSR 支持              |
 
 ### 0.5 兼容性保证
 
-| 现有 API | 状态 | 说明 |
-|----------|------|------|
-| `register()` | ✅ 保留 | 同步注册，兼容模式 |
-| `t()` | ✅ 不变 | 翻译函数，语法完全不变 |
-| `setLocale()` | ✅ 保留 | 同步切换（不自动加载新语言） |
-| `getMeta()` | ✅ 不变 | 获取语言元信息 |
-| `getSupportedLocales()` | ✅ 不变 | 获取支持的语言列表 |
+| 现有 API                | 状态    | 说明                         |
+| ----------------------- | ------- | ---------------------------- |
+| `register()`            | ✅ 保留 | 同步注册，兼容模式           |
+| `t()`                   | ✅ 不变 | 翻译函数，语法完全不变       |
+| `setLocale()`           | ✅ 保留 | 同步切换（不自动加载新语言） |
+| `getMeta()`             | ✅ 不变 | 获取语言元信息               |
+| `getSupportedLocales()` | ✅ 不变 | 获取支持的语言列表           |
 
 ---
 
@@ -88,23 +91,23 @@ i18n.registerLoader('__default__', {
 
 随着应用功能增长，翻译文件（如 `en.json`、`zh.json`）可能达到数万行、数兆字节。当前方案存在以下问题：
 
-| 问题 | 影响 |
-|------|------|
-| 全量加载 | 首屏加载所有翻译，即使只需要当前页面的少量翻译 |
-| 多语言同时加载 | 同时加载所有语言，即使用户只使用一种语言 |
-| 文件过大 | 单个 JSON 文件数万行，难以维护 |
-| 浪费带宽 | 页面 JS 几十 KB，翻译文件却有几 MB |
+| 问题           | 影响                                           |
+| -------------- | ---------------------------------------------- |
+| 全量加载       | 首屏加载所有翻译，即使只需要当前页面的少量翻译 |
+| 多语言同时加载 | 同时加载所有语言，即使用户只使用一种语言       |
+| 文件过大       | 单个 JSON 文件数万行，难以维护                 |
+| 浪费带宽       | 页面 JS 几十 KB，翻译文件却有几 MB             |
 
 ### 1.2 目标需求
 
-| # | 需求 | 说明 |
-|---|------|------|
-| 1 | **按需加载** | 只加载当前页面/组件需要的翻译 |
-| 2 | **文件拆分** | 每个 JSON 文件行数小，分散到多个文件便于维护 |
-| 3 | **单语言加载** | 只加载当前语言，切换时动态加载目标语言 |
-| 4 | **低破坏性** | 现有 `t()` 调用语法尽量不变 |
-| 5 | **SSR 友好** | 支持服务端渲染，SEO 友好 |
-| 6 | **渐进式迁移** | 现有大文件可继续使用，逐步拆分 |
+| #   | 需求           | 说明                                         |
+| --- | -------------- | -------------------------------------------- |
+| 1   | **按需加载**   | 只加载当前页面/组件需要的翻译                |
+| 2   | **文件拆分**   | 每个 JSON 文件行数小，分散到多个文件便于维护 |
+| 3   | **单语言加载** | 只加载当前语言，切换时动态加载目标语言       |
+| 4   | **低破坏性**   | 现有 `t()` 调用语法尽量不变                  |
+| 5   | **SSR 友好**   | 支持服务端渲染，SEO 友好                     |
+| 6   | **渐进式迁移** | 现有大文件可继续使用，逐步拆分               |
 
 ---
 
@@ -214,12 +217,12 @@ src/
 
 ### 2.3 三层翻译架构
 
-| 层级 | 目录 | 说明 | 加载时机 | 典型内容 |
-|------|------|------|----------|----------|
-| **L0: Legacy** | `locales/en.json` | 现有大文件 | 应用启动 | 所有翻译（兼容模式） |
-| **L1: Common** | `locales/common/` | 全局通用 | 应用启动 | OK、Cancel、Loading、Error |
-| **L2: Page** | `locales/pages/{page}/` | 页面专属 | 进入页面 | 页面标题、说明文字 |
-| **L3: Feature** | `locales/features/{feature}/` | 功能模块 | 使用功能时 | 跨页面复用的功能组件群 |
+| 层级            | 目录                          | 说明       | 加载时机   | 典型内容                   |
+| --------------- | ----------------------------- | ---------- | ---------- | -------------------------- |
+| **L0: Legacy**  | `locales/en.json`             | 现有大文件 | 应用启动   | 所有翻译（兼容模式）       |
+| **L1: Common**  | `locales/common/`             | 全局通用   | 应用启动   | OK、Cancel、Loading、Error |
+| **L2: Page**    | `locales/pages/{page}/`       | 页面专属   | 进入页面   | 页面标题、说明文字         |
+| **L3: Feature** | `locales/features/{feature}/` | 功能模块   | 使用功能时 | 跨页面复用的功能组件群     |
 
 **选择原则**：
 
@@ -320,14 +323,14 @@ Dashboard 页面
 
 ```typescript
 // 拆分前（单个大文件）
-i18n.t('common.ok')
-i18n.t('home.title')
-i18n.t('chains.all_chains')
+i18n.t('common.ok');
+i18n.t('home.title');
+i18n.t('chains.all_chains');
 
 // 拆分后（多个小文件）
-i18n.t('common.ok')           // ✅ 完全一样
-i18n.t('home.title')          // ✅ 完全一样
-i18n.t('chains.all_chains')   // ✅ 完全一样
+i18n.t('common.ok'); // ✅ 完全一样
+i18n.t('home.title'); // ✅ 完全一样
+i18n.t('chains.all_chains'); // ✅ 完全一样
 ```
 
 **原理**：多个 namespace 的翻译通过 deep merge 合并到同一个注册表。
@@ -343,9 +346,7 @@ i18n.t('chains.all_chains')   // ✅ 完全一样
  * 自动扫描 locales 目录，生成 namespace loaders
  * Vite 会在构建时静态分析并生成代码
  */
-const localeModules = import.meta.glob<{ default: LocaleData }>(
-  '../locales/**/*.json'
-);
+const localeModules = import.meta.glob<{ default: LocaleData }>('../locales/**/*.json');
 
 /**
  * 解析 glob 结果为 namespace -> locale -> loader 结构
@@ -354,21 +355,21 @@ const localeModules = import.meta.glob<{ default: LocaleData }>(
  * 输出: { 'common': { en: () => import(...) } }
  */
 function parseLocaleLoaders(
-  modules: Record<string, () => Promise<{ default: LocaleData }>>
+	modules: Record<string, () => Promise<{ default: LocaleData }>>
 ): Record<string, NamespaceLoaders> {
-  const loaders: Record<string, NamespaceLoaders> = {};
+	const loaders: Record<string, NamespaceLoaders> = {};
 
-  for (const [path, loader] of Object.entries(modules)) {
-    // 解析路径: ../locales/pages/home/en.json → namespace: 'pages/home', locale: 'en'
-    const match = path.match(/\.\.\/locales\/(.+)\/(\w+)\.json$/);
-    if (match) {
-      const [, namespace, locale] = match;
-      loaders[namespace] ??= {};
-      loaders[namespace][locale] = loader;
-    }
-  }
+	for (const [path, loader] of Object.entries(modules)) {
+		// 解析路径: ../locales/pages/home/en.json → namespace: 'pages/home', locale: 'en'
+		const match = path.match(/\.\.\/locales\/(.+)\/(\w+)\.json$/);
+		if (match) {
+			const [, namespace, locale] = match;
+			loaders[namespace] ??= {};
+			loaders[namespace][locale] = loader;
+		}
+	}
 
-  return loaders;
+	return loaders;
 }
 
 // 解析后的 loaders
@@ -376,12 +377,12 @@ const appLoaders = parseLocaleLoaders(localeModules);
 
 // 使用示例
 export function setupI18n(initialLocale: string) {
-  const i18n = createI18nStore({ initialLocale });
+	const i18n = createI18nStore({ initialLocale });
 
-  // 一行代码批量注册所有 namespace
-  i18n.registerLoaders(appLoaders);
+	// 一行代码批量注册所有 namespace
+	i18n.registerLoaders(appLoaders);
 
-  return i18n;
+	return i18n;
 }
 ```
 
@@ -441,19 +442,19 @@ export type LocaleLoader = () => Promise<{ default: LocaleData } | LocaleData>;
  * Namespace 加载器配置
  */
 export interface NamespaceLoaders {
-  [locale: string]: LocaleLoader;
+	[locale: string]: LocaleLoader;
 }
 
 /**
  * Namespace 加载状态
  */
 export interface NamespaceState {
-  /** 已加载的语言 */
-  loadedLocales: Set<string>;
-  /** 是否正在加载 */
-  loading: boolean;
-  /** 加载器配置 */
-  loaders: NamespaceLoaders;
+	/** 已加载的语言 */
+	loadedLocales: Set<string>;
+	/** 是否正在加载 */
+	loading: boolean;
+	/** 加载器配置 */
+	loaders: NamespaceLoaders;
 }
 ```
 
@@ -636,25 +637,23 @@ import { createI18nStore, type LocaleData, type NamespaceLoaders } from '@anthro
 // ============================================
 // 自动扫描 locales 目录（Vite Glob Import）
 // ============================================
-const localeModules = import.meta.glob<{ default: LocaleData }>(
-  '../locales/**/*.json'
-);
+const localeModules = import.meta.glob<{ default: LocaleData }>('../locales/**/*.json');
 
 function parseLocaleLoaders(
-  modules: Record<string, () => Promise<{ default: LocaleData }>>
+	modules: Record<string, () => Promise<{ default: LocaleData }>>
 ): Record<string, NamespaceLoaders> {
-  const loaders: Record<string, NamespaceLoaders> = {};
+	const loaders: Record<string, NamespaceLoaders> = {};
 
-  for (const [path, loader] of Object.entries(modules)) {
-    const match = path.match(/\.\.\/locales\/(.+)\/(\w+)\.json$/);
-    if (match) {
-      const [, namespace, locale] = match;
-      loaders[namespace] ??= {};
-      loaders[namespace][locale] = loader;
-    }
-  }
+	for (const [path, loader] of Object.entries(modules)) {
+		const match = path.match(/\.\.\/locales\/(.+)\/(\w+)\.json$/);
+		if (match) {
+			const [, namespace, locale] = match;
+			loaders[namespace] ??= {};
+			loaders[namespace][locale] = loader;
+		}
+	}
 
-  return loaders;
+	return loaders;
 }
 
 const appLoaders = parseLocaleLoaders(localeModules);
@@ -663,16 +662,16 @@ const appLoaders = parseLocaleLoaders(localeModules);
 // 导出 i18n 初始化函数
 // ============================================
 export function setupI18n(initialLocale: string, initialData?: Record<string, LocaleData>) {
-  const i18n = createI18nStore({
-    initialLocale,
-    initialData,  // SSR 预加载数据
-    fallbackMode: 'key',
-  });
+	const i18n = createI18nStore({
+		initialLocale,
+		initialData, // SSR 预加载数据
+		fallbackMode: 'key'
+	});
 
-  // 一行代码批量注册所有 namespace（自动扫描）
-  i18n.registerLoaders(appLoaders);
+	// 一行代码批量注册所有 namespace（自动扫描）
+	i18n.registerLoaders(appLoaders);
 
-  return i18n;
+	return i18n;
 }
 
 // 导出 loaders 供 SSR 预加载使用
@@ -686,24 +685,24 @@ export { appLoaders };
 ```svelte
 <!-- src/routes/dashboard/+page.svelte -->
 <script lang="ts">
-  import { useI18n } from '@anthropic/i18n';
-  import { onMount } from 'svelte';
+	import { useI18n } from '@anthropic/i18n';
+	import { onMount } from 'svelte';
 
-  const i18n = useI18n();
-  let ready = $state(false);
+	const i18n = useI18n();
+	let ready = $state(false);
 
-  onMount(async () => {
-    // 加载当前页面需要的 namespace
-    await i18n.loadNamespaces(['common', 'dashboard']);
-    ready = true;
-  });
+	onMount(async () => {
+		// 加载当前页面需要的 namespace
+		await i18n.loadNamespaces(['common', 'dashboard']);
+		ready = true;
+	});
 </script>
 
 {#if ready}
-  <h1>{i18n.t('dashboard.title')}</h1>
-  <button>{i18n.t('common.save')}</button>
+	<h1>{i18n.t('dashboard.title')}</h1>
+	<button>{i18n.t('common.save')}</button>
 {:else}
-  <p>Loading...</p>
+	<p>Loading...</p>
 {/if}
 ```
 
@@ -715,34 +714,31 @@ import type { PageServerLoad } from './$types';
 import { preloadNamespaces } from '$lib/i18n-setup';
 
 export const load: PageServerLoad = async ({ locals }) => {
-  const locale = locals.locale;
+	const locale = locals.locale;
 
-  // 服务端预加载当前页面需要的翻译
-  const translations = await preloadNamespaces(
-    ['common', 'dashboard'],
-    locale
-  );
+	// 服务端预加载当前页面需要的翻译
+	const translations = await preloadNamespaces(['common', 'dashboard'], locale);
 
-  return {
-    i18n: {
-      locale,
-      translations,
-      namespaces: ['common', 'dashboard'],
-    }
-  };
+	return {
+		i18n: {
+			locale,
+			translations,
+			namespaces: ['common', 'dashboard']
+		}
+	};
 };
 ```
 
 ```svelte
 <!-- src/routes/dashboard/+page.svelte -->
 <script lang="ts">
-  import { useI18n } from '@anthropic/i18n';
+	import { useI18n } from '@anthropic/i18n';
 
-  let { data } = $props();
-  const i18n = useI18n();
+	let { data } = $props();
+	const i18n = useI18n();
 
-  // 水合服务端数据（同步，SSR 时已有数据）
-  i18n.hydrate(data.i18n.translations);
+	// 水合服务端数据（同步，SSR 时已有数据）
+	i18n.hydrate(data.i18n.translations);
 </script>
 
 <!-- 无需等待，SSR 时数据已存在 -->
@@ -754,23 +750,20 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 ```svelte
 <script lang="ts">
-  import { useI18n } from '@anthropic/i18n';
+	import { useI18n } from '@anthropic/i18n';
 
-  const i18n = useI18n();
+	const i18n = useI18n();
 
-  async function switchLanguage(locale: string) {
-    // 异步切换：自动加载已使用 namespace 的目标语言
-    await i18n.setLocaleAsync(locale);
-  }
+	async function switchLanguage(locale: string) {
+		// 异步切换：自动加载已使用 namespace 的目标语言
+		await i18n.setLocaleAsync(locale);
+	}
 </script>
 
-<select
-  value={i18n.locale}
-  onchange={(e) => switchLanguage(e.currentTarget.value)}
->
-  {#each i18n.supportedLocales as locale}
-    <option value={locale.code}>{locale.flag} {locale.name}</option>
-  {/each}
+<select value={i18n.locale} onchange={(e) => switchLanguage(e.currentTarget.value)}>
+	{#each i18n.supportedLocales as locale}
+		<option value={locale.code}>{locale.flag} {locale.name}</option>
+	{/each}
 </select>
 ```
 
@@ -782,15 +775,18 @@ export const load: PageServerLoad = async ({ locals }) => {
 
 ```typescript
 class I18n {
-  // Namespace 状态追踪
-  private namespaceStates = new Map<string, {
-    loadedLocales: Set<string>,  // 已加载的语言
-    loading: boolean,            // 是否正在加载
-    loaders: NamespaceLoaders,   // 加载器配置
-  }>();
+	// Namespace 状态追踪
+	private namespaceStates = new Map<
+		string,
+		{
+			loadedLocales: Set<string>; // 已加载的语言
+			loading: boolean; // 是否正在加载
+			loaders: NamespaceLoaders; // 加载器配置
+		}
+	>();
 
-  // 已使用的 namespace（用于语言切换）
-  private loadedNamespaces = new Set<string>();
+	// 已使用的 namespace（用于语言切换）
+	private loadedNamespaces = new Set<string>();
 }
 ```
 
@@ -972,23 +968,24 @@ private async loadNamespaceForLocale(namespace: string, locale: string): Promise
 
 #### 5.3.4 边界情况处理
 
-| 场景 | 处理方式 |
-|------|----------|
-| 目标语言已全部加载 | 跳过网络请求，直接切换 |
-| 部分 namespace 缺少目标语言 loader | 警告 + 跳过该 namespace |
-| 网络请求失败 | 抛出错误，语言不切换 |
-| 切换过程中再次切换 | 后一次切换覆盖前一次 |
-| SSR 水合后切换 | 正常流程，水合数据不影响 |
+| 场景                               | 处理方式                 |
+| ---------------------------------- | ------------------------ |
+| 目标语言已全部加载                 | 跳过网络请求，直接切换   |
+| 部分 namespace 缺少目标语言 loader | 警告 + 跳过该 namespace  |
+| 网络请求失败                       | 抛出错误，语言不切换     |
+| 切换过程中再次切换                 | 后一次切换覆盖前一次     |
+| SSR 水合后切换                     | 正常流程，水合数据不影响 |
 
 #### 5.3.5 性能优化
 
 ```typescript
 // 并行加载，而非串行
-await Promise.all(loaders);  // ✅ 3 个请求并行，总时间 = 最慢的一个
+await Promise.all(loaders); // ✅ 3 个请求并行，总时间 = 最慢的一个
 
 // 而非
-for (const ns of namespaces) {  // ❌ 串行，总时间 = 3 个请求之和
-  await loadNamespace(ns);
+for (const ns of namespaces) {
+	// ❌ 串行，总时间 = 3 个请求之和
+	await loadNamespace(ns);
 }
 ```
 
@@ -1070,13 +1067,13 @@ const i18n = createI18nStore({ initialLocale: 'en' });
 
 // 注册加载器
 i18n.registerLoader('common', {
-  en: () => import('./locales/common/en.json'),
-  zh: () => import('./locales/common/zh.json'),
+	en: () => import('./locales/common/en.json'),
+	zh: () => import('./locales/common/zh.json')
 });
 
 i18n.registerLoader('home', {
-  en: () => import('./locales/pages/home/en.json'),
-  zh: () => import('./locales/pages/home/zh.json'),
+	en: () => import('./locales/pages/home/en.json'),
+	zh: () => import('./locales/pages/home/zh.json')
 });
 
 // 加载初始 namespace
@@ -1133,8 +1130,8 @@ i18n.register('__default__', { en: legacyTranslations });
 
 // 新方式：注册加载器
 i18n.registerLoader('new-feature', {
-  en: () => import('./locales/new-feature/en.json'),
-  zh: () => import('./locales/new-feature/zh.json'),
+	en: () => import('./locales/new-feature/en.json'),
+	zh: () => import('./locales/new-feature/zh.json')
 });
 ```
 
@@ -1144,41 +1141,41 @@ i18n.registerLoader('new-feature', {
 
 ### 7.1 无破坏性变更
 
-| 功能 | 状态 |
-|------|------|
-| `t(key)` 调用语法 | ✅ 不变 |
-| `t(key, params)` 参数插值 | ✅ 不变 |
+| 功能                           | 状态    |
+| ------------------------------ | ------- |
+| `t(key)` 调用语法              | ✅ 不变 |
+| `t(key, params)` 参数插值      | ✅ 不变 |
 | `t(key, { package })` 多包支持 | ✅ 不变 |
-| `register()` 同步注册 | ✅ 保留 |
-| `setLocale()` 同步切换 | ✅ 保留 |
-| `locale` 响应式属性 | ✅ 不变 |
-| `supportedLocales` 响应式属性 | ✅ 不变 |
+| `register()` 同步注册          | ✅ 保留 |
+| `setLocale()` 同步切换         | ✅ 保留 |
+| `locale` 响应式属性            | ✅ 不变 |
+| `supportedLocales` 响应式属性  | ✅ 不变 |
 
 ### 7.2 新增 API（非破坏性）
 
-| API | 类型 | 说明 |
-|-----|------|------|
-| `registerLoader()` | 新增 | 注册单个 namespace 加载器 |
-| `registerLoaders()` | 新增 | 批量注册加载器（配合 Glob Import） |
-| `loadNamespace()` | 新增 | 强制加载单个 namespace |
-| `loadNamespaces()` | 新增 | 强制批量加载 namespace |
-| `ensureNamespace()` | 新增 | 确保 namespace 已加载（幂等，推荐） |
-| `ensureNamespaces()` | 新增 | 确保批量 namespace 已加载（幂等） |
-| `isNamespaceLoaded()` | 新增 | 检查加载状态 |
-| `setLocaleAsync()` | 新增 | 异步切换语言（自动加载已用 namespace） |
-| `getLoadedNamespaces()` | 新增 | 获取已加载列表 |
-| `hydrate()` | 新增 | SSR 水合 |
-| `preload()` | 新增 | SSR 预加载 |
+| API                     | 类型 | 说明                                   |
+| ----------------------- | ---- | -------------------------------------- |
+| `registerLoader()`      | 新增 | 注册单个 namespace 加载器              |
+| `registerLoaders()`     | 新增 | 批量注册加载器（配合 Glob Import）     |
+| `loadNamespace()`       | 新增 | 强制加载单个 namespace                 |
+| `loadNamespaces()`      | 新增 | 强制批量加载 namespace                 |
+| `ensureNamespace()`     | 新增 | 确保 namespace 已加载（幂等，推荐）    |
+| `ensureNamespaces()`    | 新增 | 确保批量 namespace 已加载（幂等）      |
+| `isNamespaceLoaded()`   | 新增 | 检查加载状态                           |
+| `setLocaleAsync()`      | 新增 | 异步切换语言（自动加载已用 namespace） |
+| `getLoadedNamespaces()` | 新增 | 获取已加载列表                         |
+| `hydrate()`             | 新增 | SSR 水合                               |
+| `preload()`             | 新增 | SSR 预加载                             |
 
 ### 7.3 新增选项（非破坏性）
 
-| 选项 | 类型 | 默认值 | 说明 |
-|------|------|--------|------|
-| `initialData` | `Record<string, LocaleData>` | `undefined` | SSR 预加载数据 |
-| `fallbackMode` | `'key' \| 'loading' \| 'empty'` | `'key'` | 未加载时的 fallback |
-| `loadingText` | `string` | `'...'` | loading 模式显示的文本 |
-| `defaultLocale` | `string` | `'en'` | 默认语言（用于生产环境 fallback） |
-| `devMode` | `boolean` | `import.meta.env?.DEV` | 是否为开发环境 |
+| 选项            | 类型                            | 默认值                 | 说明                              |
+| --------------- | ------------------------------- | ---------------------- | --------------------------------- |
+| `initialData`   | `Record<string, LocaleData>`    | `undefined`            | SSR 预加载数据                    |
+| `fallbackMode`  | `'key' \| 'loading' \| 'empty'` | `'key'`                | 未加载时的 fallback               |
+| `loadingText`   | `string`                        | `'...'`                | loading 模式显示的文本            |
+| `defaultLocale` | `string`                        | `'en'`                 | 默认语言（用于生产环境 fallback） |
+| `devMode`       | `boolean`                       | `import.meta.env?.DEV` | 是否为开发环境                    |
 
 ### 7.4 翻译 Fallback 策略
 
@@ -1230,19 +1227,19 @@ i18n.registerLoader('new-feature', {
 
 ```typescript
 const i18n = createI18nStore({
-  initialLocale: 'zh',
-  defaultLocale: 'en',        // 生产环境 fallback 语言
-  devMode: import.meta.env.DEV, // 自动检测环境
+	initialLocale: 'zh',
+	defaultLocale: 'en', // 生产环境 fallback 语言
+	devMode: import.meta.env.DEV // 自动检测环境
 });
 ```
 
 **行为对比**：
 
-| 环境 | `t('home.missing')` 结果 | 说明 |
-|------|-------------------------|------|
-| 开发环境 | `"home.missing"` | 显示 key，便于发现遗漏翻译 |
-| 生产环境 | `"Welcome"` (默认语言值) | 用户看到有意义的文本 |
-| 生产环境（默认语言也无） | `"home.missing"` | 最后兜底 |
+| 环境                     | `t('home.missing')` 结果 | 说明                       |
+| ------------------------ | ------------------------ | -------------------------- |
+| 开发环境                 | `"home.missing"`         | 显示 key，便于发现遗漏翻译 |
+| 生产环境                 | `"Welcome"` (默认语言值) | 用户看到有意义的文本       |
+| 生产环境（默认语言也无） | `"home.missing"`         | 最后兜底                   |
 
 **实现代码**：
 
@@ -1320,12 +1317,12 @@ t(key: string, params?: Record<string, string | number>): string {
 
 ### 9.1 加载体积对比
 
-| 场景 | Before | After |
-|------|--------|-------|
-| 首页加载 | 全部翻译 (3MB) | common + home (50KB) |
-| 进入 Dashboard | 无额外加载 | dashboard (30KB) |
-| 切换语言 en→zh | 已加载 | common + home + dashboard zh (80KB) |
-| 未访问 Settings | 已加载 | 不加载 (0KB) |
+| 场景            | Before         | After                               |
+| --------------- | -------------- | ----------------------------------- |
+| 首页加载        | 全部翻译 (3MB) | common + home (50KB)                |
+| 进入 Dashboard  | 无额外加载     | dashboard (30KB)                    |
+| 切换语言 en→zh  | 已加载         | common + home + dashboard zh (80KB) |
+| 未访问 Settings | 已加载         | 不加载 (0KB)                        |
 
 ### 9.2 请求数量
 
@@ -1376,14 +1373,15 @@ const i18n = createI18nStore({ initialLocale: data.locale });
 
 // 只改这一处：register → registerLoader
 i18n.registerLoader('__default__', {
-  en: () => import('./locales/en.json'),
-  zh: () => import('./locales/zh.json'),
+	en: () => import('./locales/en.json'),
+	zh: () => import('./locales/zh.json')
 });
 
 setI18nContext(i18n);
 ```
 
 **注意**：首次渲染时翻译可能短暂显示 key（因为懒加载）。如需避免：
+
 - 方案 A：使用 SSR 预加载
 - 方案 B：将首屏必需的翻译同步加载，其余懒加载
 
@@ -1398,9 +1396,7 @@ import commonZh from './locales/common/zh.json';
 i18n.register('common', { en: commonEn, zh: commonZh });
 
 // 页面级：懒加载
-i18n.registerLoaders(parseLocaleLoaders(
-  import.meta.glob('./locales/pages/**/*.json')
-));
+i18n.registerLoaders(parseLocaleLoaders(import.meta.glob('./locales/pages/**/*.json')));
 ```
 
 #### 场景 4：库开发者（翻译打包在库中）
@@ -1411,10 +1407,10 @@ import en from './locales/en.json';
 import zh from './locales/zh.json';
 
 export const useMyLibI18n = () => {
-  const i18n = useI18n();
-  // 库的翻译通常较小，同步加载即可
-  i18n.register('my-lib', { en, zh });
-  return i18n;
+	const i18n = useI18n();
+	// 库的翻译通常较小，同步加载即可
+	i18n.register('my-lib', { en, zh });
+	return i18n;
 };
 ```
 
@@ -1424,10 +1420,10 @@ export const useMyLibI18n = () => {
 
 #### Q: `registerLoader` 和 `register` 有什么区别？
 
-| API | 加载时机 | 适用场景 |
-|-----|----------|----------|
-| `register(name, data)` | 立即（同步） | 小文件、库、首屏必需 |
-| `registerLoader(name, loaders)` | 按需（异步） | 大文件、页面级翻译 |
+| API                             | 加载时机     | 适用场景             |
+| ------------------------------- | ------------ | -------------------- |
+| `register(name, data)`          | 立即（同步） | 小文件、库、首屏必需 |
+| `registerLoader(name, loaders)` | 按需（异步） | 大文件、页面级翻译   |
 
 两者可以混用。
 
@@ -1454,7 +1450,7 @@ await i18n.setLocaleAsync('zh');
 ```typescript
 // 检查单个 namespace
 if (i18n.isNamespaceLoaded('pages/dashboard')) {
-  // 已加载
+	// 已加载
 }
 
 // 获取所有已加载的 namespace
@@ -1465,10 +1461,10 @@ const loaded = i18n.getLoadedNamespaces();
 
 ```typescript
 try {
-  await i18n.ensureNamespace('pages/dashboard');
+	await i18n.ensureNamespace('pages/dashboard');
 } catch (error) {
-  console.error('翻译加载失败:', error);
-  // 可以显示错误提示或使用 fallback
+	console.error('翻译加载失败:', error);
+	// 可以显示错误提示或使用 fallback
 }
 ```
 
@@ -1492,9 +1488,9 @@ console.log('pages/home 是否加载:', i18n.isNamespaceLoaded('pages/home'));
 // 创建 store
 // ============================================
 const i18n = createI18nStore({
-  initialLocale: 'en',
-  initialData: ssrData,      // SSR 预加载数据
-  fallbackMode: 'key',       // 未加载时显示 key
+	initialLocale: 'en',
+	initialData: ssrData, // SSR 预加载数据
+	fallbackMode: 'key' // 未加载时显示 key
 });
 
 // ============================================
@@ -1505,30 +1501,30 @@ i18n.registerLoaders(parseLocaleLoaders(loaders));
 
 // 或手动注册单个
 i18n.registerLoader('namespace', {
-  en: () => import('./locales/namespace/en.json'),
-  zh: () => import('./locales/namespace/zh.json'),
+	en: () => import('./locales/namespace/en.json'),
+	zh: () => import('./locales/namespace/zh.json')
 });
 
 // ============================================
 // 加载 namespace（推荐使用 ensure，幂等）
 // ============================================
-await i18n.ensureNamespace('namespace');     // 幂等，已加载则跳过
+await i18n.ensureNamespace('namespace'); // 幂等，已加载则跳过
 await i18n.ensureNamespaces(['ns1', 'ns2']); // 批量幂等
 
-await i18n.loadNamespace('namespace');       // 强制加载
-await i18n.loadNamespaces(['ns1', 'ns2']);   // 强制批量加载
+await i18n.loadNamespace('namespace'); // 强制加载
+await i18n.loadNamespaces(['ns1', 'ns2']); // 强制批量加载
 
 // ============================================
 // 检查状态
 // ============================================
-i18n.isNamespaceLoaded('namespace');  // boolean
-i18n.getLoadedNamespaces();           // string[]
+i18n.isNamespaceLoaded('namespace'); // boolean
+i18n.getLoadedNamespaces(); // string[]
 
 // ============================================
 // 切换语言
 // ============================================
-i18n.setLocale('zh');                 // 同步（不自动加载新翻译）
-await i18n.setLocaleAsync('zh');      // 异步（自动加载已使用 namespace 的目标语言）
+i18n.setLocale('zh'); // 同步（不自动加载新翻译）
+await i18n.setLocaleAsync('zh'); // 异步（自动加载已使用 namespace 的目标语言）
 
 // ============================================
 // SSR 支持
@@ -1547,19 +1543,21 @@ i18n.t('home.title', { name: 'World' });
 
 ## 附录 B：三层架构速查（渐进式迁移）
 
-| 层级 | 目录 | namespace 示例 | 加载责任 | 加载时机 |
-|------|------|---------------|----------|----------|
-| L0 Legacy | `locales/en.json` | `'__default__'` | 应用启动 | 同步加载（兼容） |
-| L1 Common | `locales/common/` | `'common'` | Layout | 应用启动 |
-| L2 Page | `locales/pages/{page}/` | `'pages/home'` | 页面自己 | 进入页面 |
-| L3 Feature | `locales/features/{feat}/` | `'features/auth'` | 页面负责 | 进入页面 |
+| 层级       | 目录                       | namespace 示例    | 加载责任 | 加载时机         |
+| ---------- | -------------------------- | ----------------- | -------- | ---------------- |
+| L0 Legacy  | `locales/en.json`          | `'__default__'`   | 应用启动 | 同步加载（兼容） |
+| L1 Common  | `locales/common/`          | `'common'`        | Layout   | 应用启动         |
+| L2 Page    | `locales/pages/{page}/`    | `'pages/home'`    | 页面自己 | 进入页面         |
+| L3 Feature | `locales/features/{feat}/` | `'features/auth'` | 页面负责 | 进入页面         |
 
 **核心原则：页面负责加载**
+
 - 现有代码零修改（L0 兼容模式）
 - 页面知道自己用了哪些翻译（包括 feature）
 - 组件代码完全不变
 
 **选择依据**：
+
 - 暂不拆分 → L0（继续用 en.json）
 - 全局复用 → L1
 - 单页面专用 → L2
@@ -1589,6 +1587,7 @@ setLocaleAsync('zh')
 ```
 
 **关键点**：
+
 - 只加载**已使用**的 namespace，未访问的页面翻译不加载
 - **并行**加载，总时间 = 最慢的一个请求
 - 如果目标语言已全部加载，**跳过网络请求**直接切换

@@ -75,12 +75,14 @@ export interface InitI18nOptions {
 	devMode?: boolean;
 
 	/** Persist locale to cookie/localStorage */
-	persist?: boolean | {
-		cookie?: boolean;
-		cookieName?: string;
-		localStorage?: boolean;
-		localStorageKey?: string;
-	};
+	persist?:
+		| boolean
+		| {
+				cookie?: boolean;
+				cookieName?: string;
+				localStorage?: boolean;
+				localStorageKey?: string;
+		  };
 }
 
 /**

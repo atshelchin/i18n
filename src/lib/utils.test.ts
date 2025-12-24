@@ -140,15 +140,9 @@ describe('parseGlobImports', () => {
 		const result = parseGlobImports(modules);
 
 		expect(result).toHaveLength(3);
-		expect(result).toContainEqual(
-			expect.objectContaining({ locale: 'en', namespace: 'common' })
-		);
-		expect(result).toContainEqual(
-			expect.objectContaining({ locale: 'en', namespace: 'home' })
-		);
-		expect(result).toContainEqual(
-			expect.objectContaining({ locale: 'zh', namespace: 'common' })
-		);
+		expect(result).toContainEqual(expect.objectContaining({ locale: 'en', namespace: 'common' }));
+		expect(result).toContainEqual(expect.objectContaining({ locale: 'en', namespace: 'home' }));
+		expect(result).toContainEqual(expect.objectContaining({ locale: 'zh', namespace: 'common' }));
 	});
 
 	it('should handle paths with full src prefix', () => {

@@ -65,13 +65,13 @@ src/locales/
 ```svelte
 <!-- src/routes/+layout.svelte -->
 <script>
-  import { initI18n, setI18nContext } from '@shelchin/i18n';
+	import { initI18n, setI18nContext } from '@shelchin/i18n';
 
-  let { data, children } = $props();
+	let { data, children } = $props();
 
-  // 一行初始化，自动扫描 src/locales/**
-  const i18n = initI18n({ locale: data.locale });
-  setI18nContext(i18n);
+	// 一行初始化，自动扫描 src/locales/**
+	const i18n = initI18n({ locale: data.locale });
+	setI18nContext(i18n);
 </script>
 
 {@render children()}
@@ -82,7 +82,7 @@ src/locales/
 ```svelte
 <!-- src/routes/+page.svelte -->
 <script>
-  import { t, locale, setLocale, locales } from '@shelchin/i18n';
+	import { t, locale, setLocale, locales } from '@shelchin/i18n';
 </script>
 
 <h1>{t('home.title')}</h1>
@@ -91,9 +91,9 @@ src/locales/
 
 <!-- 语言切换 -->
 <select value={locale} onchange={(e) => setLocale(e.target.value)}>
-  {#each locales as loc}
-    <option value={loc.code}>{loc.flag} {loc.name}</option>
-  {/each}
+	{#each locales as loc}
+		<option value={loc.code}>{loc.flag} {loc.name}</option>
+	{/each}
 </select>
 ```
 
@@ -105,35 +105,35 @@ src/locales/
 
 ### 2.1 完整 API 列表（共 5 个）
 
-| API | 类型 | 说明 |
-|-----|------|------|
-| `initI18n(options)` | 函数 | 初始化 i18n，返回 store |
-| `t(key, params?)` | 函数 | 翻译，支持插值和复数 |
-| `setLocale(locale)` | 函数 | 切换语言（自动加载翻译） |
-| `locale` | 响应式 | 当前语言代码 |
-| `locales` | 响应式 | 支持的语言列表 |
+| API                 | 类型   | 说明                     |
+| ------------------- | ------ | ------------------------ |
+| `initI18n(options)` | 函数   | 初始化 i18n，返回 store  |
+| `t(key, params?)`   | 函数   | 翻译，支持插值和复数     |
+| `setLocale(locale)` | 函数   | 切换语言（自动加载翻译） |
+| `locale`            | 响应式 | 当前语言代码             |
+| `locales`           | 响应式 | 支持的语言列表           |
 
 ### 2.2 initI18n(options)
 
 ```typescript
 interface InitOptions {
-  /** 初始语言 */
-  locale: string;
+	/** 初始语言 */
+	locale: string;
 
-  /** 默认语言（fallback 用） */
-  defaultLocale?: string;  // 默认 'en'
+	/** 默认语言（fallback 用） */
+	defaultLocale?: string; // 默认 'en'
 
-  /** 预加载的 namespace（SSR 用） */
-  preload?: string[];
+	/** 预加载的 namespace（SSR 用） */
+	preload?: string[];
 
-  /** 翻译文件目录（相对于 src/） */
-  localesDir?: string;  // 默认 'locales'
+	/** 翻译文件目录（相对于 src/） */
+	localesDir?: string; // 默认 'locales'
 }
 
 const i18n = initI18n({
-  locale: 'zh',
-  defaultLocale: 'en',
-  preload: ['common', 'home'],
+	locale: 'zh',
+	defaultLocale: 'en',
+	preload: ['common', 'home']
 });
 ```
 
@@ -141,18 +141,18 @@ const i18n = initI18n({
 
 ```typescript
 // 简单翻译
-t('common.ok')  // "OK"
+t('common.ok'); // "OK"
 
 // 带参数插值
-t('greeting', { name: 'World' })  // "Hello, World!"
+t('greeting', { name: 'World' }); // "Hello, World!"
 
 // 复数形式
-t('items', { count: 0 })   // "No items"     (items_zero)
-t('items', { count: 1 })   // "1 item"       (items_one)
-t('items', { count: 5 })   // "5 items"      (items_other)
+t('items', { count: 0 }); // "No items"     (items_zero)
+t('items', { count: 1 }); // "1 item"       (items_one)
+t('items', { count: 5 }); // "5 items"      (items_other)
 
 // 格式化
-t('price', { amount: 1234.5 })  // "Price: $1,234.50" (使用 {amount:currency})
+t('price', { amount: 1234.5 }); // "Price: $1,234.50" (使用 {amount:currency})
 ```
 
 ### 2.4 setLocale(locale)
@@ -172,7 +172,7 @@ await setLocale('zh');
 
 ```svelte
 <script>
-  import { locale, locales } from '@shelchin/i18n';
+	import { locale, locales } from '@shelchin/i18n';
 </script>
 
 <!-- locale: 当前语言代码 -->
@@ -180,7 +180,7 @@ await setLocale('zh');
 
 <!-- locales: 支持的语言列表 -->
 {#each locales as loc}
-  <span>{loc.flag} {loc.name} ({loc.code})</span>
+	<span>{loc.flag} {loc.name} ({loc.code})</span>
 {/each}
 ```
 
@@ -205,6 +205,7 @@ src/locales/
 ```
 
 **规则**：
+
 - 目录名 = 语言代码（en, zh, ja...）
 - 文件名 = namespace（去掉 .json）
 - key 格式：`{namespace}.{key}` → `t('home.title')`
@@ -214,22 +215,23 @@ src/locales/
 ```json
 // src/locales/en/home.json
 {
-  "_meta": {
-    "code": "en",
-    "name": "English",
-    "englishName": "English",
-    "flag": "🇬🇧",
-    "direction": "ltr"
-  },
-  "title": "Welcome",
-  "description": "This is {name}'s home page",
-  "items_zero": "No items",
-  "items_one": "{count} item",
-  "items_other": "{count} items"
+	"_meta": {
+		"code": "en",
+		"name": "English",
+		"englishName": "English",
+		"flag": "🇬🇧",
+		"direction": "ltr"
+	},
+	"title": "Welcome",
+	"description": "This is {name}'s home page",
+	"items_zero": "No items",
+	"items_one": "{count} item",
+	"items_other": "{count} items"
 }
 ```
 
 **说明**：
+
 - `_meta`：语言元信息（只需在 common.json 中定义一次）
 - `{name}`：插值占位符
 - `key_zero/one/other`：复数形式
@@ -320,8 +322,8 @@ t('dashboard.stats.users')  → "Total Users"
 ```typescript
 // 如果想避免首屏 fallback 闪烁，可以预加载
 const i18n = initI18n({
-  locale: 'en',
-  preload: ['common', 'home'],  // 这些会同步加载
+	locale: 'en',
+	preload: ['common', 'home'] // 这些会同步加载
 });
 ```
 
@@ -333,13 +335,13 @@ const i18n = initI18n({
 
 ```svelte
 <script>
-  import { locale, locales, setLocale } from '@shelchin/i18n';
+	import { locale, locales, setLocale } from '@shelchin/i18n';
 </script>
 
 <select value={locale} onchange={(e) => setLocale(e.target.value)}>
-  {#each locales as loc}
-    <option value={loc.code}>{loc.flag} {loc.name}</option>
-  {/each}
+	{#each locales as loc}
+		<option value={loc.code}>{loc.flag} {loc.name}</option>
+	{/each}
 </select>
 ```
 
@@ -367,19 +369,19 @@ setLocale('zh') 调用
 
 ```svelte
 <script>
-  import { setLocale } from '@shelchin/i18n';
+	import { setLocale } from '@shelchin/i18n';
 
-  let switching = $state(false);
+	let switching = $state(false);
 
-  async function handleSwitch(newLocale: string) {
-    switching = true;
-    await setLocale(newLocale);
-    switching = false;
-  }
+	async function handleSwitch(newLocale: string) {
+		switching = true;
+		await setLocale(newLocale);
+		switching = false;
+	}
 </script>
 
 {#if switching}
-  <span>切换中...</span>
+	<span>切换中...</span>
 {/if}
 ```
 
@@ -394,18 +396,19 @@ setLocale('zh') 调用
 import { detectLocale } from '@shelchin/i18n/server';
 
 export async function load({ cookies, request }) {
-  const locale = detectLocale({
-    cookies,
-    request,
-    defaultLocale: 'en',
-    supportedLocales: ['en', 'zh', 'ja'],
-  });
+	const locale = detectLocale({
+		cookies,
+		request,
+		defaultLocale: 'en',
+		supportedLocales: ['en', 'zh', 'ja']
+	});
 
-  return { locale };
+	return { locale };
 }
 ```
 
 **检测优先级**：
+
 1. Cookie（用户之前的选择）
 2. Accept-Language header
 3. 默认语言
@@ -415,16 +418,16 @@ export async function load({ cookies, request }) {
 ```svelte
 <!-- src/routes/+layout.svelte -->
 <script>
-  import { initI18n, setI18nContext } from '@shelchin/i18n';
+	import { initI18n, setI18nContext } from '@shelchin/i18n';
 
-  let { data, children } = $props();
+	let { data, children } = $props();
 
-  const i18n = initI18n({
-    locale: data.locale,
-    preload: ['common'],  // 首屏必需的 namespace
-  });
+	const i18n = initI18n({
+		locale: data.locale,
+		preload: ['common'] // 首屏必需的 namespace
+	});
 
-  setI18nContext(i18n);
+	setI18nContext(i18n);
 </script>
 ```
 
@@ -433,12 +436,12 @@ export async function load({ cookies, request }) {
 ```typescript
 // src/routes/dashboard/+page.ts
 export async function load({ parent }) {
-  const { i18n } = await parent();
+	const { i18n } = await parent();
 
-  // 预加载 dashboard 翻译
-  await i18n.preload(['dashboard']);
+	// 预加载 dashboard 翻译
+	await i18n.preload(['dashboard']);
 
-  return {};
+	return {};
 }
 ```
 
@@ -460,21 +463,21 @@ npx i18n generate-types
 import '@shelchin/i18n';
 
 declare module '@shelchin/i18n' {
-  interface TranslationKeys {
-    'common.ok': string;
-    'common.cancel': string;
-    'common.loading': string;
-    'home.title': string;
-    'home.description': string;
-    'dashboard.title': string;
-    'dashboard.stats.users': string;
-    // ... 所有 key 自动列出
-  }
+	interface TranslationKeys {
+		'common.ok': string;
+		'common.cancel': string;
+		'common.loading': string;
+		'home.title': string;
+		'home.description': string;
+		'dashboard.title': string;
+		'dashboard.stats.users': string;
+		// ... 所有 key 自动列出
+	}
 
-  export function t<K extends keyof TranslationKeys>(
-    key: K,
-    params?: Record<string, string | number>
-  ): string;
+	export function t<K extends keyof TranslationKeys>(
+		key: K,
+		params?: Record<string, string | number>
+	): string;
 }
 ```
 
@@ -483,9 +486,9 @@ declare module '@shelchin/i18n' {
 ```typescript
 import { t } from '@shelchin/i18n';
 
-t('common.ok');       // ✅ 类型正确
-t('common.okkk');     // ❌ 类型错误，IDE 报红
-t('home.ti');         // IDE 自动补全 → 'home.title'
+t('common.ok'); // ✅ 类型正确
+t('common.okkk'); // ❌ 类型错误，IDE 报红
+t('home.ti'); // IDE 自动补全 → 'home.title'
 ```
 
 ### 7.3 自动更新类型
@@ -493,10 +496,10 @@ t('home.ti');         // IDE 自动补全 → 'home.title'
 ```json
 // package.json
 {
-  "scripts": {
-    "dev": "i18n generate-types --watch & vite dev",
-    "build": "i18n generate-types && vite build"
-  }
+	"scripts": {
+		"dev": "i18n generate-types --watch & vite dev",
+		"build": "i18n generate-types && vite build"
+	}
 }
 ```
 
@@ -511,8 +514,8 @@ t('home.ti');         // IDE 自动补全 → 'home.title'
 import { createLibI18n } from '@shelchin/i18n';
 
 export const { t, locale } = createLibI18n({
-  name: 'my-lib',
-  locales: import.meta.glob('./locales/*/*.json'),
+	name: 'my-lib',
+	locales: import.meta.glob('./locales/*/*.json')
 });
 ```
 
@@ -521,7 +524,7 @@ export const { t, locale } = createLibI18n({
 ```svelte
 <!-- my-lib/src/Button.svelte -->
 <script>
-  import { t } from './i18n';
+	import { t } from './i18n';
 </script>
 
 <button>{t('button.submit')}</button>
@@ -532,8 +535,8 @@ export const { t, locale } = createLibI18n({
 ```svelte
 <!-- 应用中使用库组件 -->
 <script>
-  import { Button } from 'my-lib';
-  import { t } from '@shelchin/i18n';
+	import { Button } from 'my-lib';
+	import { t } from '@shelchin/i18n';
 </script>
 
 <!-- 库组件使用自己的翻译 -->
@@ -579,8 +582,8 @@ export const { t, locale } = createLibI18n({
 
 ```typescript
 const i18n = initI18n({
-  locale: 'zh',
-  defaultLocale: 'en',  // fallback 语言
+	locale: 'zh',
+	defaultLocale: 'en' // fallback 语言
 });
 ```
 
@@ -590,19 +593,19 @@ const i18n = initI18n({
 
 ### 10.1 API 对照表
 
-| v1 API | v2 API | 说明 |
-|--------|--------|------|
-| `createI18nStore()` | `initI18n()` | 简化命名 |
-| `useI18n()` | 直接导入 `t` | 无需 hook |
-| `i18n.t()` | `t()` | 模块级函数 |
-| `i18n.locale` | `locale` | 响应式变量 |
-| `i18n.setLocale()` | `setLocale()` | 自动异步 |
-| `i18n.supportedLocales` | `locales` | 简化命名 |
-| `register()` | 删除 | 自动扫描 |
-| `registerLoader()` | 删除 | 自动懒加载 |
-| `ensureNamespace()` | 删除 | 自动触发 |
-| `setLocaleAsync()` | `setLocale()` | 统一为异步 |
-| `getMeta()` | `locales[n]` | 从列表获取 |
+| v1 API                  | v2 API        | 说明       |
+| ----------------------- | ------------- | ---------- |
+| `createI18nStore()`     | `initI18n()`  | 简化命名   |
+| `useI18n()`             | 直接导入 `t`  | 无需 hook  |
+| `i18n.t()`              | `t()`         | 模块级函数 |
+| `i18n.locale`           | `locale`      | 响应式变量 |
+| `i18n.setLocale()`      | `setLocale()` | 自动异步   |
+| `i18n.supportedLocales` | `locales`     | 简化命名   |
+| `register()`            | 删除          | 自动扫描   |
+| `registerLoader()`      | 删除          | 自动懒加载 |
+| `ensureNamespace()`     | 删除          | 自动触发   |
+| `setLocaleAsync()`      | `setLocale()` | 统一为异步 |
+| `getMeta()`             | `locales[n]`  | 从列表获取 |
 
 ### 10.2 迁移步骤
 
@@ -713,19 +716,21 @@ let _registry = $state<Record<string, Record<string, unknown>>>({});
 let _loadedNamespaces = $state<Set<string>>(new Set());
 
 export const locale = {
-  get current() { return _locale; },
+	get current() {
+		return _locale;
+	}
 };
 
 export function t(key: string, params?: Record<string, unknown>): string {
-  // 访问 _locale 和 _registry 创建响应式依赖
-  const ns = key.split('.')[0];
+	// 访问 _locale 和 _registry 创建响应式依赖
+	const ns = key.split('.')[0];
 
-  if (!_loadedNamespaces.has(ns)) {
-    loadNamespace(ns);  // 异步加载
-    return fallback(key);
-  }
+	if (!_loadedNamespaces.has(ns)) {
+		loadNamespace(ns); // 异步加载
+		return fallback(key);
+	}
 
-  return lookup(_registry, _locale, key, params);
+	return lookup(_registry, _locale, key, params);
 }
 ```
 
@@ -746,11 +751,11 @@ const loaders = parseModules(modules);
 
 ### 12.1 加载策略
 
-| 场景 | 加载方式 | 说明 |
-|------|----------|------|
-| 首屏 | 预加载 | `preload: ['common']` |
-| 页面切换 | 自动懒加载 | `t('dashboard.x')` 触发 |
-| 语言切换 | 并行加载 | 只加载已使用的 namespace |
+| 场景     | 加载方式   | 说明                     |
+| -------- | ---------- | ------------------------ |
+| 首屏     | 预加载     | `preload: ['common']`    |
+| 页面切换 | 自动懒加载 | `t('dashboard.x')` 触发  |
+| 语言切换 | 并行加载   | 只加载已使用的 namespace |
 
 ### 12.2 Bundle 影响
 
@@ -805,25 +810,25 @@ my-app/
 import { detectLocale } from '@shelchin/i18n/server';
 
 export async function load({ cookies, request }) {
-  return {
-    locale: detectLocale({ cookies, request, defaultLocale: 'en' }),
-  };
+	return {
+		locale: detectLocale({ cookies, request, defaultLocale: 'en' })
+	};
 }
 ```
 
 ```svelte
 <!-- src/routes/+layout.svelte -->
 <script>
-  import { initI18n, setI18nContext } from '@shelchin/i18n';
+	import { initI18n, setI18nContext } from '@shelchin/i18n';
 
-  let { data, children } = $props();
+	let { data, children } = $props();
 
-  const i18n = initI18n({
-    locale: data.locale,
-    preload: ['common'],
-  });
+	const i18n = initI18n({
+		locale: data.locale,
+		preload: ['common']
+	});
 
-  setI18nContext(i18n);
+	setI18nContext(i18n);
 </script>
 
 {@render children()}
@@ -832,29 +837,29 @@ export async function load({ cookies, request }) {
 ```svelte
 <!-- src/routes/+page.svelte -->
 <script>
-  import { t, locale, locales, setLocale } from '@shelchin/i18n';
+	import { t, locale, locales, setLocale } from '@shelchin/i18n';
 </script>
 
 <header>
-  <h1>{t('home.title')}</h1>
+	<h1>{t('home.title')}</h1>
 
-  <select value={locale} onchange={(e) => setLocale(e.target.value)}>
-    {#each locales as loc}
-      <option value={loc.code}>{loc.flag} {loc.name}</option>
-    {/each}
-  </select>
+	<select value={locale} onchange={(e) => setLocale(e.target.value)}>
+		{#each locales as loc}
+			<option value={loc.code}>{loc.flag} {loc.name}</option>
+		{/each}
+	</select>
 </header>
 
 <main>
-  <p>{t('home.description')}</p>
-  <button>{t('common.ok')}</button>
+	<p>{t('home.description')}</p>
+	<button>{t('common.ok')}</button>
 </main>
 ```
 
 ```svelte
 <!-- src/routes/dashboard/+page.svelte -->
 <script>
-  import { t } from '@shelchin/i18n';
+	import { t } from '@shelchin/i18n';
 </script>
 
 <!-- dashboard namespace 自动懒加载 -->
@@ -873,9 +878,9 @@ export async function load({ cookies, request }) {
 import { initI18n, setI18nContext } from '@shelchin/i18n';
 
 const i18n = initI18n({
-  locale: 'en',
-  defaultLocale: 'en',
-  preload: ['common'],
+	locale: 'en',
+	defaultLocale: 'en',
+	preload: ['common']
 });
 setI18nContext(i18n);
 
@@ -884,16 +889,16 @@ setI18nContext(i18n);
 // ============================================
 import { t } from '@shelchin/i18n';
 
-t('common.ok')                     // 简单翻译
-t('greeting', { name: 'World' })   // 插值
-t('items', { count: 5 })           // 复数
+t('common.ok'); // 简单翻译
+t('greeting', { name: 'World' }); // 插值
+t('items', { count: 5 }); // 复数
 
 // ============================================
 // 语言切换
 // ============================================
 import { locale, locales, setLocale } from '@shelchin/i18n';
 
-await setLocale('zh');  // 切换语言
+await setLocale('zh'); // 切换语言
 
 // ============================================
 // 服务端
@@ -907,11 +912,11 @@ const locale = detectLocale({ cookies, request });
 
 ## 附录 C：与 v1 对比
 
-| 方面 | v1 | v2 |
-|------|----|----|
-| API 数量 | 15+ | 5 |
-| 初始化代码 | 5+ 行 | 2 行 |
-| 手动注册 | 必须 | 自动 |
-| 手动加载 | 必须 | 自动 |
-| 类型安全 | 无 | 自动生成 |
-| 迁移工具 | 无 | CLI 提供 |
+| 方面       | v1    | v2       |
+| ---------- | ----- | -------- |
+| API 数量   | 15+   | 5        |
+| 初始化代码 | 5+ 行 | 2 行     |
+| 手动注册   | 必须  | 自动     |
+| 手动加载   | 必须  | 自动     |
+| 类型安全   | 无    | 自动生成 |
+| 迁移工具   | 无    | CLI 提供 |

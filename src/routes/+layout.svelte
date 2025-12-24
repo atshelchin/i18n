@@ -63,13 +63,7 @@
 		margin: 0 auto;
 		padding: 1.5rem;
 		font-family:
-			-apple-system,
-			BlinkMacSystemFont,
-			'Segoe UI',
-			'Noto Sans',
-			Helvetica,
-			Arial,
-			sans-serif;
+			-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
 		font-size: 14px;
 		line-height: 1.5;
 		color: #1f2328;
