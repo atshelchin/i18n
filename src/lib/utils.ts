@@ -383,7 +383,16 @@ const LOCALE_CURRENCY_MAP: Record<string, string> = {
 	'ko-kr': 'KRW',
 	// Others
 	ru: 'RUB',
-	'ru-ru': 'RUB'
+	'ru-ru': 'RUB',
+	// Turkish
+	tr: 'TRY',
+	'tr-tr': 'TRY',
+	// Vietnamese
+	vi: 'VND',
+	'vi-vn': 'VND',
+	// Indonesian
+	id: 'IDR',
+	'id-id': 'IDR'
 };
 
 /**
