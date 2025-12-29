@@ -1,0 +1,6 @@
+{
+	"title": "À Propos",
+	"description": "Ceci est la page à propos pour tester le chargement différé.",
+	"content": "En naviguant de l'accueil vers cette page, le namespace 'about' devrait être chargé de manière différée.",
+	"backHome": "Retour à l'Accueil"
+}

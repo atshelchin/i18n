@@ -1,0 +1,6 @@
+{
+	"title": "Sobre Nosotros",
+	"description": "Esta es la página sobre nosotros para probar la carga diferida.",
+	"content": "Al navegar desde inicio a esta página, el namespace 'about' debería cargarse de forma diferida.",
+	"backHome": "Volver al Inicio"
+}

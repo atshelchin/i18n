@@ -1,0 +1,6 @@
+{
+	"title": "Giới thiệu",
+	"description": "Đây là trang giới thiệu để kiểm tra tải lười.",
+	"content": "Khi điều hướng từ trang chủ đến trang này, namespace 'about' sẽ được tải lười.",
+	"backHome": "Quay lại Trang chủ"
+}

@@ -1,0 +1,6 @@
+{
+	"title": "Tentang Kami",
+	"description": "Ini adalah halaman tentang kami untuk menguji pemuatan lambat.",
+	"content": "Saat menavigasi dari beranda ke halaman ini, namespace 'about' akan dimuat secara lambat.",
+	"backHome": "Kembali ke Beranda"
+}
