@@ -1,0 +1,27 @@
+{
+	"title": "v2에 오신 것을 환영합니다",
+	"description": "새로운 i18n v2 API 데모입니다",
+	"greeting": "안녕하세요, {name}님!",
+	"items_zero": "항목 없음",
+	"items_one": "{count}개 항목",
+	"items_other": "{count}개 항목",
+	"features": [
+		"Vite glob 가져오기를 사용한 로케일 파일 자동 스캔",
+		"네임스페이스별 지연 로딩 - 필요에 따라 번역 로드",
+		"미리 로드된 번역으로 완전한 SSR 지원"
+	],
+	"faqs": [
+		{
+			"question": "@shelchin/i18n이란 무엇인가요?",
+			"answer": "SSR을 지원하는 Svelte 5용 경량 i18n 라이브러리입니다."
+		},
+		{
+			"question": "TypeScript를 지원하나요?",
+			"answer": "네! 자동 생성 타입으로 완전한 타입 안전성을 제공합니다."
+		},
+		{
+			"question": "언어를 어떻게 변경하나요?",
+			"answer": "i18n.setLocale('ko')를 사용하거나 /ko/...로 이동하세요"
+		}
+	]
+}

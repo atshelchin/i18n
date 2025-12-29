@@ -1,0 +1,49 @@
+{
+	"_meta": {
+		"code": "ko",
+		"name": "한국어",
+		"englishName": "Korean",
+		"direction": "ltr",
+		"flag": "🇰🇷"
+	},
+	"ok": "확인",
+	"cancel": "취소",
+	"loading": "로딩 중...",
+	"currentLocale": "현재 언어",
+	"sections": {
+		"basic": "기본 번역",
+		"interpolation": "보간법",
+		"pluralization": "복수형",
+		"namespaces": "로드된 네임스페이스",
+		"locales": "지원 언어",
+		"quickStart": "빠른 시작",
+		"features": "기능"
+	},
+	"labels": {
+		"name": "이름",
+		"count": "개수"
+	},
+	"github": {
+		"star": "GitHub에서 스타 주기",
+		"description": "이 프로젝트가 마음에 드신다면, 스타를 눌러주세요!"
+	},
+	"quickStart": {
+		"install": "설치",
+		"setup": "+layout.svelte에서 설정",
+		"usage": "컴포넌트에서 사용",
+		"step1": "1. 패키지 설치",
+		"step2": "2. 로케일 파일 생성",
+		"step3": "3. 레이아웃에서 초기화",
+		"step4": "4. 컴포넌트에서 사용"
+	},
+	"features": {
+		"autoScan": "로케일 파일 자동 스캔",
+		"lazyLoad": "네임스페이스별 지연 로딩",
+		"ssr": "SSR 지원",
+		"typeSafe": "타입 안전 키",
+		"minimal": "최소 핵심 API",
+		"svelte5": "Svelte 5 룬",
+		"formatting": "로케일 기반 숫자/날짜 형식",
+		"zeroDeps": "무의존성, 초경량"
+	}
+}

@@ -1,0 +1,49 @@
+{
+	"_meta": {
+		"code": "tr",
+		"name": "Türkçe",
+		"englishName": "Turkish",
+		"direction": "ltr",
+		"flag": "🇹🇷"
+	},
+	"ok": "Tamam",
+	"cancel": "İptal",
+	"loading": "Yükleniyor...",
+	"currentLocale": "Mevcut Dil",
+	"sections": {
+		"basic": "Temel Çeviri",
+		"interpolation": "Değişken Ekleme",
+		"pluralization": "Çoğullama",
+		"namespaces": "Yüklenmiş Ad Alanları",
+		"locales": "Desteklenen Diller",
+		"quickStart": "Hızlı Başlangıç",
+		"features": "Özellikler"
+	},
+	"labels": {
+		"name": "İsim",
+		"count": "Sayı"
+	},
+	"github": {
+		"star": "GitHub'da Yıldız Ver",
+		"description": "Bu projeyi beğendiyseniz, lütfen yıldız verin!"
+	},
+	"quickStart": {
+		"install": "Kurulum",
+		"setup": "+layout.svelte'de Kurulum",
+		"usage": "Bileşenlerde Kullanım",
+		"step1": "1. Paketi kurun",
+		"step2": "2. Yerel ayar dosyaları oluşturun",
+		"step3": "3. Layout'ta başlatın",
+		"step4": "4. Bileşenlerde kullanın"
+	},
+	"features": {
+		"autoScan": "Yerel ayar dosyalarını otomatik tara",
+		"lazyLoad": "Ad alanına göre tembel yükleme",
+		"ssr": "SSR desteği",
+		"typeSafe": "Tip güvenli anahtarlar",
+		"minimal": "Minimal çekirdek API",
+		"svelte5": "Svelte 5 runes",
+		"formatting": "Yerel ayara duyarlı sayı/tarih biçimlendirme",
+		"zeroDeps": "Sıfır bağımlılık, ultra hafif"
+	}
+}

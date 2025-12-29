@@ -1,0 +1,27 @@
+{
+	"title": "Selamat Datang di v2",
+	"description": "Ini adalah demo API i18n v2 yang baru",
+	"greeting": "Halo, {name}!",
+	"items_zero": "Tidak ada item",
+	"items_one": "{count} item",
+	"items_other": "{count} item",
+	"features": [
+		"Pemindaian otomatis file locale menggunakan Vite glob imports",
+		"Pemuatan lambat per namespace - muat terjemahan sesuai kebutuhan",
+		"Dukungan SSR penuh dengan terjemahan yang sudah dimuat"
+	],
+	"faqs": [
+		{
+			"question": "Apa itu @shelchin/i18n?",
+			"answer": "Pustaka i18n ringan untuk Svelte 5 dengan dukungan SSR."
+		},
+		{
+			"question": "Apakah mendukung TypeScript?",
+			"answer": "Ya! Keamanan tipe penuh dengan tipe yang dibuat otomatis."
+		},
+		{
+			"question": "Bagaimana cara mengganti bahasa?",
+			"answer": "Gunakan i18n.setLocale('id') atau navigasi ke /id/..."
+		}
+	]
+}

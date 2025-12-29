@@ -1,0 +1,49 @@
+{
+	"_meta": {
+		"code": "id",
+		"name": "Bahasa Indonesia",
+		"englishName": "Indonesian",
+		"direction": "ltr",
+		"flag": "🇮🇩"
+	},
+	"ok": "OK",
+	"cancel": "Batal",
+	"loading": "Memuat...",
+	"currentLocale": "Bahasa Saat Ini",
+	"sections": {
+		"basic": "Terjemahan Dasar",
+		"interpolation": "Interpolasi",
+		"pluralization": "Pluralisasi",
+		"namespaces": "Namespace yang Dimuat",
+		"locales": "Bahasa yang Didukung",
+		"quickStart": "Mulai Cepat",
+		"features": "Fitur"
+	},
+	"labels": {
+		"name": "Nama",
+		"count": "Jumlah"
+	},
+	"github": {
+		"star": "Beri Bintang di GitHub",
+		"description": "Jika Anda menyukai proyek ini, beri kami bintang!"
+	},
+	"quickStart": {
+		"install": "Instalasi",
+		"setup": "Pengaturan di +layout.svelte",
+		"usage": "Penggunaan di komponen",
+		"step1": "1. Instal paket",
+		"step2": "2. Buat file locale",
+		"step3": "3. Inisialisasi di layout",
+		"step4": "4. Gunakan di komponen"
+	},
+	"features": {
+		"autoScan": "Pemindaian otomatis file locale",
+		"lazyLoad": "Pemuatan lambat per namespace",
+		"ssr": "Dukungan SSR",
+		"typeSafe": "Kunci yang aman tipe",
+		"minimal": "API inti minimal",
+		"svelte5": "Svelte 5 runes",
+		"formatting": "Format angka/tanggal sesuai locale",
+		"zeroDeps": "Tanpa dependensi, sangat ringan"
+	}
+}

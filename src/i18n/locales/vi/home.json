@@ -1,0 +1,27 @@
+{
+	"title": "Chào mừng đến với v2",
+	"description": "Đây là demo API i18n v2 mới",
+	"greeting": "Xin chào, {name}!",
+	"items_zero": "Không có mục nào",
+	"items_one": "{count} mục",
+	"items_other": "{count} mục",
+	"features": [
+		"Tự động quét file locale bằng Vite glob imports",
+		"Tải lười theo namespace - tải bản dịch khi cần",
+		"Hỗ trợ SSR đầy đủ với bản dịch được tải trước"
+	],
+	"faqs": [
+		{
+			"question": "@shelchin/i18n là gì?",
+			"answer": "Một thư viện i18n nhẹ cho Svelte 5 với hỗ trợ SSR."
+		},
+		{
+			"question": "Có hỗ trợ TypeScript không?",
+			"answer": "Có! An toàn kiểu hoàn toàn với các type tự động tạo."
+		},
+		{
+			"question": "Làm sao để chuyển ngôn ngữ?",
+			"answer": "Sử dụng i18n.setLocale('vi') hoặc điều hướng đến /vi/..."
+		}
+	]
+}

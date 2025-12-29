@@ -1,0 +1,49 @@
+{
+	"_meta": {
+		"code": "vi",
+		"name": "Tiếng Việt",
+		"englishName": "Vietnamese",
+		"direction": "ltr",
+		"flag": "🇻🇳"
+	},
+	"ok": "OK",
+	"cancel": "Hủy",
+	"loading": "Đang tải...",
+	"currentLocale": "Ngôn ngữ hiện tại",
+	"sections": {
+		"basic": "Dịch cơ bản",
+		"interpolation": "Nội suy",
+		"pluralization": "Số nhiều",
+		"namespaces": "Các namespace đã tải",
+		"locales": "Ngôn ngữ hỗ trợ",
+		"quickStart": "Bắt đầu nhanh",
+		"features": "Tính năng"
+	},
+	"labels": {
+		"name": "Tên",
+		"count": "Số lượng"
+	},
+	"github": {
+		"star": "Cho sao trên GitHub",
+		"description": "Nếu bạn thích dự án này, hãy cho chúng tôi một ngôi sao!"
+	},
+	"quickStart": {
+		"install": "Cài đặt",
+		"setup": "Thiết lập trong +layout.svelte",
+		"usage": "Sử dụng trong component",
+		"step1": "1. Cài đặt gói",
+		"step2": "2. Tạo các file locale",
+		"step3": "3. Khởi tạo trong layout",
+		"step4": "4. Sử dụng trong component"
+	},
+	"features": {
+		"autoScan": "Tự động quét file locale",
+		"lazyLoad": "Tải lười theo namespace",
+		"ssr": "Hỗ trợ SSR",
+		"typeSafe": "Khóa an toàn kiểu",
+		"minimal": "API tối giản",
+		"svelte5": "Svelte 5 runes",
+		"formatting": "Định dạng số/ngày theo locale",
+		"zeroDeps": "Không phụ thuộc, siêu nhẹ"
+	}
+}

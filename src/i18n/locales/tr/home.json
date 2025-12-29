@@ -1,0 +1,27 @@
+{
+	"title": "v2'ye Hoş Geldiniz",
+	"description": "Bu yeni i18n v2 API demosudur",
+	"greeting": "Merhaba, {name}!",
+	"items_zero": "Öğe yok",
+	"items_one": "{count} öğe",
+	"items_other": "{count} öğe",
+	"features": [
+		"Vite glob içe aktarımlarını kullanarak yerel ayar dosyalarını otomatik tara",
+		"Ad alanına göre tembel yükleme - çevirileri isteğe bağlı olarak yükle",
+		"Önceden yüklenmiş çevirilerle tam SSR desteği"
+	],
+	"faqs": [
+		{
+			"question": "@shelchin/i18n nedir?",
+			"answer": "SSR desteği ile Svelte 5 için hafif bir i18n kütüphanesidir."
+		},
+		{
+			"question": "TypeScript'i destekliyor mu?",
+			"answer": "Evet! Otomatik oluşturulan türlerle tam tip güvenliği."
+		},
+		{
+			"question": "Diller nasıl değiştirilir?",
+			"answer": "i18n.setLocale('tr') kullanın veya /tr/... adresine gidin"
+		}
+	]
+}
