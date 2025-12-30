@@ -165,7 +165,8 @@ const { load: i18nLoad, localeMetas } = createServerLoader(
 	{
 		defaultLocale: 'en',
 		baseNamespaces: ['common'], // Always preload these
-		homeNamespace: 'home' // Namespace for "/" route
+		homeNamespace: 'home', // Namespace for "/" route
+		namespacePrefix: 'routes' // Optional: prefix for route namespaces
 	}
 );
 
@@ -187,6 +188,37 @@ The server loader automatically detects which namespace to preload based on URL:
 | `/zh/apps/chain-tools/tool`       | `common` + `apps` + `apps/chain-tools` + `apps/chain-tools/tool` |
 
 Only namespaces that exist in your locale files are preloaded. Unknown namespaces fall back to client-side lazy loading.
+
+### Namespace Prefix
+
+Use `namespacePrefix` to organize route-specific translations under a dedicated directory:
+
+```
+locales/
+├── en/
+│   ├── common.json              # namespace: "common"
+│   └── routes/
+│       ├── home.json            # namespace: "routes/home"
+│       ├── about.json           # namespace: "routes/about"
+│       └── apps/
+│           └── chain-tools.json # namespace: "routes/apps/chain-tools"
+```
+
+```typescript
+const { load: i18nLoad } = createServerLoader(modules, {
+	defaultLocale: 'en',
+	baseNamespaces: ['common'],
+	namespacePrefix: 'routes' // Maps /about → routes/about namespace
+});
+```
+
+| URL Path        | Namespaces Loaded (with `namespacePrefix: 'routes'`)    |
+| --------------- | ------------------------------------------------------- |
+| `/`             | `common` + `routes/home`                                |
+| `/about`        | `common` + `routes/about`                               |
+| `/apps/tools`   | `common` + `routes/apps` + `routes/apps/tools`          |
+
+This keeps route translations separate from shared translations like `common`.
 
 ### Manual SSR Setup
 

@@ -43,6 +43,8 @@ export interface PreloadOptions {
 	baseNamespaces?: string[];
 	/** Home namespace name (default: 'home') */
 	homeNamespace?: string;
+	/** Prefix to add to namespace paths (e.g., 'routes' -> URL /apps maps to routes/apps) */
+	namespacePrefix?: string;
 }
 
 /**
@@ -112,20 +114,29 @@ export function parseLocaleModules(
  * - "/apps/chain-tools/tool/uniswap" -> ["apps", "apps/chain-tools", "apps/chain-tools/tool", "apps/chain-tools/tool/uniswap"]
  * - Locale prefixes are stripped: "/en/about" -> ["about"]
  *                                 "/zh/apps/foo" -> ["apps", "apps/foo"]
+ *
+ * With namespacePrefix option (e.g., 'routes'):
+ * - "/" -> ["routes/home"]
+ * - "/about" -> ["routes/about"]
+ * - "/apps/chain-tools" -> ["routes/apps", "routes/apps/chain-tools"]
  */
 export function getNamespaceFromPath(
 	pathname: string,
-	options?: { homeNamespace?: string }
+	options?: { homeNamespace?: string; namespacePrefix?: string }
 ): string[] {
 	const homeNamespace = options?.homeNamespace ?? 'home';
+	const prefix = options?.namespacePrefix;
 
 	// Remove locale prefix if present (e.g., /en/about -> /about, /zh-CN/about -> /about)
 	// Supports formats like: en, en-US, zh-CN, etc.
 	const pathWithoutLocale = pathname.replace(/^\/[a-z]{2}(-[A-Z]{2})?(?=\/|$)/i, '') || '/';
 
+	// Helper to add prefix
+	const addPrefix = (ns: string) => (prefix ? `${prefix}/${ns}` : ns);
+
 	// Root path
 	if (pathWithoutLocale === '/' || pathWithoutLocale === '') {
-		return [homeNamespace];
+		return [addPrefix(homeNamespace)];
 	}
 
 	// Split and filter out empty segments
@@ -133,13 +144,14 @@ export function getNamespaceFromPath(
 
 	// If after stripping there's still nothing, fall back to home
 	if (segments.length === 0) {
-		return [homeNamespace];
+		return [addPrefix(homeNamespace)];
 	}
 
 	// Build cumulative namespace paths: ["apps", "apps/chain-tools", "apps/chain-tools/tool", ...]
 	const namespacePaths: string[] = [];
 	for (let i = 0; i < segments.length; i++) {
-		namespacePaths.push(segments.slice(0, i + 1).join('/'));
+		const path = segments.slice(0, i + 1).join('/');
+		namespacePaths.push(addPrefix(path));
 	}
 
 	return namespacePaths;
@@ -159,6 +171,12 @@ export function getNamespaceFromPath(
  * // Available: ['common', 'apps', 'apps/chain-tools', 'apps/chain-tools/tool']
  * // Result: ['common', 'apps', 'apps/chain-tools', 'apps/chain-tools/tool']
  *
+ * @example
+ * // With namespacePrefix: 'routes'
+ * // URL: /zh/apps/chain-tools
+ * // Available: ['common', 'routes/home', 'routes/apps', 'routes/apps/chain-tools']
+ * // Result: ['common', 'routes/apps', 'routes/apps/chain-tools']
+ *
  * @returns Array of namespace names that exist in translations
  */
 export function getNamespacesForPath(
@@ -167,20 +185,25 @@ export function getNamespacesForPath(
 	options?: {
 		baseNamespaces?: string[];
 		homeNamespace?: string;
+		namespacePrefix?: string;
 	}
 ): string[] {
 	const baseNamespaces = options?.baseNamespaces ?? ['common'];
 	const homeNamespace = options?.homeNamespace ?? 'home';
+	const namespacePrefix = options?.namespacePrefix;
 
 	const namespaces = new Set<string>(baseNamespaces);
 
 	// Get hierarchical namespace paths from the URL
-	const namespacePaths = getNamespaceFromPath(pathname, { homeNamespace });
+	const namespacePaths = getNamespaceFromPath(pathname, { homeNamespace, namespacePrefix });
+
+	// Determine the effective home namespace (with prefix if applicable)
+	const effectiveHomeNs = namespacePrefix ? `${namespacePrefix}/${homeNamespace}` : homeNamespace;
 
 	// If it's the home path, try adding the homeNamespace if it exists
-	if (namespacePaths.length === 1 && namespacePaths[0] === homeNamespace) {
-		if (availableNamespaces.has(homeNamespace)) {
-			namespaces.add(homeNamespace);
+	if (namespacePaths.length === 1 && namespacePaths[0] === effectiveHomeNs) {
+		if (availableNamespaces.has(effectiveHomeNs)) {
+			namespaces.add(effectiveHomeNs);
 		}
 		return Array.from(namespaces);
 	}
@@ -219,12 +242,20 @@ export function getPreloadedTranslations(
 	data: ParsedLocaleData,
 	options: PreloadOptions & { defaultLocale?: string }
 ): PreloadedTranslations {
-	const { locale, pathname, baseNamespaces, homeNamespace, defaultLocale = 'en' } = options;
+	const {
+		locale,
+		pathname,
+		baseNamespaces,
+		homeNamespace,
+		namespacePrefix,
+		defaultLocale = 'en'
+	} = options;
 
 	// Get namespaces to preload
 	const namespacesToPreload = getNamespacesForPath(pathname, data.namespaces, {
 		baseNamespaces,
-		homeNamespace
+		homeNamespace,
+		namespacePrefix
 	});
 
 	const result: PreloadedTranslations = {};
@@ -483,6 +514,8 @@ export function createServerLoader(
 		defaultLocale?: string;
 		baseNamespaces?: string[];
 		homeNamespace?: string;
+		/** Prefix for route namespaces (e.g., 'routes' -> URL /apps maps to routes/apps) */
+		namespacePrefix?: string;
 		cookieName?: string;
 		extractLocale?: (pathname: string) => string | null;
 	}
@@ -523,6 +556,7 @@ export function createServerLoader(
 				pathname: url.pathname,
 				baseNamespaces: options?.baseNamespaces,
 				homeNamespace: options?.homeNamespace,
+				namespacePrefix: options?.namespacePrefix,
 				defaultLocale
 			});
 

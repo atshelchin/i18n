@@ -268,6 +268,22 @@ describe('getNamespaceFromPath', () => {
 			'apps/chain-tools/tool/uniswap'
 		]);
 	});
+
+	it('should add namespace prefix to home', () => {
+		expect(getNamespaceFromPath('/', { namespacePrefix: 'routes' })).toEqual(['routes/home']);
+	});
+
+	it('should add namespace prefix to paths', () => {
+		expect(getNamespaceFromPath('/about', { namespacePrefix: 'routes' })).toEqual([
+			'routes/about'
+		]);
+	});
+
+	it('should add namespace prefix to hierarchical paths', () => {
+		expect(
+			getNamespaceFromPath('/zh/apps/chain-tools', { namespacePrefix: 'routes' })
+		).toEqual(['routes/apps', 'routes/apps/chain-tools']);
+	});
 });
 
 describe('getNamespacesForPath', () => {
