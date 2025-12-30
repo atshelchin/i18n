@@ -48,9 +48,11 @@ export interface PreloadOptions {
 /**
  * Parse Vite glob import results into structured locale data
  *
- * Supports nested directory structures - only the filename is used as namespace:
+ * Supports hierarchical namespace structure using slash notation:
  * - locales/en/common.json -> namespace: "common"
- * - locales/en/routes/about.json -> namespace: "about" (directory is ignored)
+ * - locales/en/apps.json -> namespace: "apps"
+ * - locales/en/apps/chain-tools.json -> namespace: "apps/chain-tools"
+ * - locales/en/apps/chain-tools/tool.json -> namespace: "apps/chain-tools/tool"
  *
  * @example
  * const modules = import.meta.glob('../locales/** /*.json', { eager: true });
@@ -65,10 +67,10 @@ export function parseLocaleModules(
 	const metaMap = new Map<string, LocaleMeta>();
 
 	for (const [path, module] of Object.entries(modules)) {
-		// Extract locale and namespace from path
+		// Extract locale and full namespace path from path
 		// Supports: ../locales/en/common.json -> en, common
-		// Supports: ../locales/en/routes/about.json -> en, about (subdirs are for organization only)
-		const match = path.match(/\/([a-zA-Z]{2}(?:-[a-zA-Z]{2})?)\/(?:.*\/)?([^/]+)\.json$/i);
+		// Supports: ../locales/en/apps/chain-tools.json -> en, apps/chain-tools
+		const match = path.match(/\/([a-zA-Z]{2}(?:-[a-zA-Z]{2})?)\/(.+)\.json$/i);
 		if (match) {
 			const [, locale, namespace] = match;
 			const normalizedLocale = locale.toLowerCase();
@@ -102,14 +104,14 @@ export function parseLocaleModules(
 }
 
 /**
- * Extract all namespace segments from URL pathname
+ * Extract hierarchical namespace paths from URL pathname
  *
- * Rules:
+ * Returns an array of cumulative slash-separated namespace paths:
  * - "/" or "" -> [homeNamespace] (default: "home")
  * - "/about" -> ["about"]
- * - "/foo/bar/baz" -> ["foo", "bar", "baz"]
+ * - "/apps/chain-tools/tool/uniswap" -> ["apps", "apps/chain-tools", "apps/chain-tools/tool", "apps/chain-tools/tool/uniswap"]
  * - Locale prefixes are stripped: "/en/about" -> ["about"]
- *                                 "/zh-CN/foo/bar" -> ["foo", "bar"]
+ *                                 "/zh/apps/foo" -> ["apps", "apps/foo"]
  */
 export function getNamespaceFromPath(
 	pathname: string,
@@ -130,23 +132,32 @@ export function getNamespaceFromPath(
 	const segments = pathWithoutLocale.split('/').filter(Boolean);
 
 	// If after stripping there's still nothing, fall back to home
-	return segments.length > 0 ? segments : [homeNamespace];
-}
+	if (segments.length === 0) {
+		return [homeNamespace];
+	}
 
-/**
- * Get namespaces to preload for a given pathname
- *
- * @returns Array of namespace names that exist in translations
- */
+	// Build cumulative namespace paths: ["apps", "apps/chain-tools", "apps/chain-tools/tool", ...]
+	const namespacePaths: string[] = [];
+	for (let i = 0; i < segments.length; i++) {
+		namespacePaths.push(segments.slice(0, i + 1).join('/'));
+	}
+
+	return namespacePaths;
+}
 
 /**
  * Get namespaces to preload for a given pathname
  *
  * Rules:
  * - Always include baseNamespaces (e.g., ['common'])
- * - For each path segment prefix, add the corresponding namespace if it exists
- *   e.g., /foo/bar/baz -> try adding: 'foo', 'foo/bar', 'foo/bar/baz'
- * - Only add if namespace exists in availableNamespaces and not duplicated
+ * - For each hierarchical path prefix, add the corresponding namespace if it exists
+ *   e.g., /apps/chain-tools/tool -> try adding: 'apps', 'apps/chain-tools', 'apps/chain-tools/tool'
+ * - Only add if namespace exists in availableNamespaces
+ *
+ * @example
+ * // URL: /zh/apps/chain-tools/tool/uniswap
+ * // Available: ['common', 'apps', 'apps/chain-tools', 'apps/chain-tools/tool']
+ * // Result: ['common', 'apps', 'apps/chain-tools', 'apps/chain-tools/tool']
  *
  * @returns Array of namespace names that exist in translations
  */
@@ -163,20 +174,21 @@ export function getNamespacesForPath(
 
 	const namespaces = new Set<string>(baseNamespaces);
 
-	// Get all segments from the path (now returns string[])
-	const segments = getNamespaceFromPath(pathname, { homeNamespace });
+	// Get hierarchical namespace paths from the URL
+	const namespacePaths = getNamespaceFromPath(pathname, { homeNamespace });
 
 	// If it's the home path, try adding the homeNamespace if it exists
-	if (segments.length === 1 && segments[0] === homeNamespace) {
+	if (namespacePaths.length === 1 && namespacePaths[0] === homeNamespace) {
 		if (availableNamespaces.has(homeNamespace)) {
 			namespaces.add(homeNamespace);
 		}
 		return Array.from(namespaces);
 	}
 
-	for (const segment of segments) {
-		if (availableNamespaces.has(segment) && !namespaces.has(segment)) {
-			namespaces.add(segment);
+	// Add each hierarchical namespace path that exists
+	for (const nsPath of namespacePaths) {
+		if (availableNamespaces.has(nsPath)) {
+			namespaces.add(nsPath);
 		}
 	}
 

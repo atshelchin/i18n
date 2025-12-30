@@ -316,6 +316,13 @@ export function getPluralKey(baseKey: string, count: number): string {
 
 /**
  * Parse Vite glob import modules to locale loaders
+ *
+ * Supports hierarchical namespace structure using slash notation:
+ * - ./locales/en/common.json -> namespace: "common"
+ * - ./locales/en/apps.json -> namespace: "apps"
+ * - ./locales/en/apps/chain-tools.json -> namespace: "apps/chain-tools"
+ * - ./locales/en/apps/chain-tools/tool.json -> namespace: "apps/chain-tools/tool"
+ *
  * @example parseGlobImports(import.meta.glob('./locales/** /*.json'))
  */
 export function parseGlobImports(
@@ -325,8 +332,8 @@ export function parseGlobImports(
 
 	for (const [path, loader] of Object.entries(modules)) {
 		// Expected path format: ./locales/{locale}/{namespace}.json
-		// or: /src/locales/{locale}/{namespace}.json
-		const match = path.match(/\/([a-z]{2}(?:-[A-Z]{2})?)\/([^/]+)\.json$/);
+		// or: ./locales/{locale}/{path/to/namespace}.json
+		const match = path.match(/\/([a-z]{2}(?:-[A-Z]{2})?)\/(.+)\.json$/i);
 		if (match) {
 			const [, locale, namespace] = match;
 			results.push({ locale, namespace, loader });

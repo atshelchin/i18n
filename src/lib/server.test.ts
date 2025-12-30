@@ -208,15 +208,33 @@ describe('parseLocaleModules', () => {
 		expect(result.translations.en.common.ok).toBe('OK');
 	});
 
-	it('should handle nested directories', () => {
+	it('should handle nested directories with hierarchical namespaces', () => {
 		const modules = {
 			'./locales/en/routes/about.json': { default: { title: 'About' } }
 		};
 
 		const result = parseLocaleModules(modules);
 
-		expect(result.namespaces.has('about')).toBe(true);
-		expect(result.translations.en.about.title).toBe('About');
+		// Now uses full path as namespace: routes/about
+		expect(result.namespaces.has('routes/about')).toBe(true);
+		expect(result.translations.en['routes/about'].title).toBe('About');
+	});
+
+	it('should handle deeply nested directories', () => {
+		const modules = {
+			'./locales/en/apps.json': { default: { title: 'Apps' } },
+			'./locales/en/apps/chain-tools.json': { default: { title: 'Chain Tools' } },
+			'./locales/en/apps/chain-tools/tool.json': { default: { title: 'Tool' } }
+		};
+
+		const result = parseLocaleModules(modules);
+
+		expect(result.namespaces.has('apps')).toBe(true);
+		expect(result.namespaces.has('apps/chain-tools')).toBe(true);
+		expect(result.namespaces.has('apps/chain-tools/tool')).toBe(true);
+		expect(result.translations.en['apps'].title).toBe('Apps');
+		expect(result.translations.en['apps/chain-tools'].title).toBe('Chain Tools');
+		expect(result.translations.en['apps/chain-tools/tool'].title).toBe('Tool');
 	});
 });
 
@@ -229,13 +247,26 @@ describe('getNamespaceFromPath', () => {
 		expect(getNamespaceFromPath('/about')).toEqual(['about']);
 	});
 
-	it('should extract multiple segments', () => {
-		expect(getNamespaceFromPath('/foo/bar/baz')).toEqual(['foo', 'bar', 'baz']);
+	it('should extract multiple segments as hierarchical paths', () => {
+		expect(getNamespaceFromPath('/foo/bar/baz')).toEqual([
+			'foo',
+			'foo/bar',
+			'foo/bar/baz'
+		]);
 	});
 
 	it('should strip locale prefix', () => {
 		expect(getNamespaceFromPath('/en/about')).toEqual(['about']);
-		expect(getNamespaceFromPath('/zh-CN/foo/bar')).toEqual(['foo', 'bar']);
+		expect(getNamespaceFromPath('/zh-CN/foo/bar')).toEqual(['foo', 'foo/bar']);
+	});
+
+	it('should handle apps path hierarchy', () => {
+		expect(getNamespaceFromPath('/zh/apps/chain-tools/tool/uniswap')).toEqual([
+			'apps',
+			'apps/chain-tools',
+			'apps/chain-tools/tool',
+			'apps/chain-tools/tool/uniswap'
+		]);
 	});
 });
 
@@ -260,5 +291,24 @@ describe('getNamespacesForPath', () => {
 	it('should only include available namespaces', () => {
 		const result = getNamespacesForPath('/unknown', available);
 		expect(result).not.toContain('unknown');
+	});
+
+	it('should include hierarchical namespaces', () => {
+		const hierarchicalAvailable = new Set([
+			'common',
+			'apps',
+			'apps/chain-tools',
+			'apps/chain-tools/tool'
+		]);
+		const result = getNamespacesForPath(
+			'/zh/apps/chain-tools/tool/uniswap',
+			hierarchicalAvailable
+		);
+		expect(result).toContain('common');
+		expect(result).toContain('apps');
+		expect(result).toContain('apps/chain-tools');
+		expect(result).toContain('apps/chain-tools/tool');
+		// apps/chain-tools/tool/uniswap is not in available, so not included
+		expect(result).not.toContain('apps/chain-tools/tool/uniswap');
 	});
 });
