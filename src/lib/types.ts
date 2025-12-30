@@ -74,6 +74,13 @@ export interface InitI18nOptions {
 	/** Dev mode (shows keys instead of fallback in dev) */
 	devMode?: boolean;
 
+	/**
+	 * Namespace prefix for route translations
+	 * When set, t('home.title') will look up 'routes/home.title' internally
+	 * @example namespacePrefix: 'routes' // t('home.title') -> namespace 'routes/home'
+	 */
+	namespacePrefix?: string;
+
 	/** Persist locale to cookie/localStorage */
 	persist?:
 		| boolean

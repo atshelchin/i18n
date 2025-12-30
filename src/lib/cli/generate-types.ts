@@ -120,7 +120,7 @@ function findJsonFiles(dir: string, baseDir: string = dir): string[] {
 
 /**
  * Read all JSON files in a locale directory (including subdirectories) and extract keys
- * Subdirectories are for organization only - namespace is the filename
+ * Full path from locale dir is used as namespace (e.g., routes/home, routes/about)
  */
 function extractKeysFromLocale(localeDir: string): Map<string, string[]> {
 	const namespaceKeys = new Map<string, string[]>();
@@ -132,15 +132,17 @@ function extractKeysFromLocale(localeDir: string): Map<string, string[]> {
 	const jsonFiles = findJsonFiles(localeDir);
 
 	for (const filePath of jsonFiles) {
-		// Use only the filename as namespace (ignore subdirectory structure)
-		const namespace = path.basename(filePath, '.json');
+		// Use full path relative to locale dir as namespace
+		// e.g., /locales/en/routes/home.json -> routes/home
+		const relativePath = path.relative(localeDir, filePath);
+		const namespace = relativePath.replace(/\.json$/, '').replace(/\\/g, '/');
 		const content = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
 		const keys = extractKeys(content);
 
 		// Prefix keys with namespace
 		const prefixedKeys = keys.map((k) => `${namespace}.${k}`);
 
-		// Merge with existing keys if namespace already exists (from different subdirs)
+		// Merge with existing keys if namespace already exists
 		const existingKeys = namespaceKeys.get(namespace) || [];
 		namespaceKeys.set(namespace, [...new Set([...existingKeys, ...prefixedKeys])]);
 	}

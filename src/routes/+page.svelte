@@ -192,20 +192,20 @@
 		<div class="usage-content">
 			<div class="usage-code">
 				<pre class="code-block-small"><code
-						>i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.title'</span>)
+						>i18n.<span class="hl-func">t</span>(<span class="hl-string">'routes/home.title'</span>)
 i18n.<span class="hl-func">t</span>(<span class="hl-string">'common.ok'</span>)</code
 					></pre>
 			</div>
 			<div class="usage-demo">
 				<div class="translation-item">
-					<code>home.title</code>
+					<code>routes/home.title</code>
 					<span class="arrow">→</span>
-					<span class="value">{i18n.t('home.title')}</span>
+					<span class="value">{i18n.t('routes/home.title')}</span>
 				</div>
 				<div class="translation-item">
-					<code>home.description</code>
+					<code>routes/home.description</code>
 					<span class="arrow">→</span>
-					<span class="value">{i18n.t('home.description')}</span>
+					<span class="value">{i18n.t('routes/home.description')}</span>
 				</div>
 				<div class="translation-item">
 					<code>common.ok</code>
@@ -230,7 +230,7 @@ i18n.<span class="hl-func">t</span>(<span class="hl-string">'common.ok'</span>)<
 						><span class="hl-comment"
 							>// JSON: "greeting": "Hello, {'{'}<span class="hl-param">name</span>}!"</span
 						>
-i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.greeting'</span
+i18n.<span class="hl-func">t</span>(<span class="hl-string">'routes/home.greeting'</span
 						>, {'{'} name: <span class="hl-string">'{name}'</span> })</code
 					></pre>
 			</div>
@@ -242,9 +242,9 @@ i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.greeting'</spa
 					</label>
 				</div>
 				<div class="result">
-					<code>home.greeting</code>
+					<code>routes/home.greeting</code>
 					<span class="arrow">→</span>
-					<span class="value highlight">{i18n.t('home.greeting', { name })}</span>
+					<span class="value highlight">{i18n.t('routes/home.greeting', { name })}</span>
 				</div>
 			</div>
 		</div>
@@ -263,7 +263,7 @@ i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.greeting'</spa
 <span class="hl-comment"
 							>//       "items_other": "{'{'}<span class="hl-param">count</span>} items"</span
 						>
-i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.items'</span>, {'{'} count: <span
+i18n.<span class="hl-func">t</span>(<span class="hl-string">'routes/home.items'</span>, {'{'} count: <span
 							class="hl-number">{count}</span
 						> })</code
 					></pre>
@@ -283,9 +283,9 @@ i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.items'</span>,
 					<button onclick={() => (count = 100)}>100</button>
 				</div>
 				<div class="result">
-					<code>home.items</code>
+					<code>routes/home.items</code>
 					<span class="arrow">→</span>
-					<span class="value highlight">{i18n.t('home.items', { count })}</span>
+					<span class="value highlight">{i18n.t('routes/home.items', { count })}</span>
 				</div>
 			</div>
 		</div>
@@ -299,22 +299,22 @@ i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.items'</span>,
 				<pre class="code-block-small"><code
 						><span class="hl-comment">// JSON: "features": ["Feature 1", "Feature 2", ...]</span>
 <span class="hl-comment">// Access by index</span>
-i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.features.0'</span>) <span
+i18n.<span class="hl-func">t</span>(<span class="hl-string">'routes/home.features.0'</span>) <span
 							class="hl-comment">// First item</span
 						>
-i18n.<span class="hl-func">t</span>(<span class="hl-string">'home.features.1'</span>) <span
+i18n.<span class="hl-func">t</span>(<span class="hl-string">'routes/home.features.1'</span>) <span
 							class="hl-comment">// Second item</span
 						>
 
 <span class="hl-comment">// Get full array (client &amp; server)</span>
-i18n.<span class="hl-func">t</span>&lt;string[]&gt;(<span class="hl-string">'home.features'</span
+i18n.<span class="hl-func">t</span>&lt;string[]&gt;(<span class="hl-string">'routes/home.features'</span
 						>) <span class="hl-comment">// string[]</span></code
 					></pre>
 			</div>
 			<div class="usage-demo">
-				<p class="array-label">i18n.t&lt;string[]&gt;('home.features'):</p>
+				<p class="array-label">i18n.t&lt;string[]&gt;('routes/home.features'):</p>
 				<ul class="features-list">
-					{#each i18n.t<string[]>('home.features') as feature, i (i)}
+					{#each i18n.t<string[]>('routes/home.features') as feature, i (i)}
 						<li>{feature}</li>
 					{/each}
 				</ul>
@@ -341,15 +341,15 @@ i18n.<span class="hl-func">t</span>&lt;string[]&gt;(<span class="hl-string">'hom
 }
 
 <span class="hl-comment">// Get typed array</span>
-i18n.<span class="hl-func">t</span>&lt;FAQ[]&gt;(<span class="hl-string">'home.faqs'</span>) <span
+i18n.<span class="hl-func">t</span>&lt;FAQ[]&gt;(<span class="hl-string">'routes/home.faqs'</span>) <span
 							class="hl-comment">// FAQ[]</span
 						></code
 					></pre>
 			</div>
 			<div class="usage-demo">
-				<p class="array-label">i18n.t&lt;FAQ[]&gt;('home.faqs'):</p>
+				<p class="array-label">i18n.t&lt;FAQ[]&gt;('routes/home.faqs'):</p>
 				<div class="faq-list">
-					{#each i18n.t<FAQ[]>('home.faqs') as faq, i (i)}
+					{#each i18n.t<FAQ[]>('routes/home.faqs') as faq, i (i)}
 						<div class="faq-item">
 							<div class="faq-question">Q: {faq.question}</div>
 							<div class="faq-answer">A: {faq.answer}</div>
@@ -494,8 +494,8 @@ i18n.format.<span class="hl-func">date</span>(<span class="hl-keyword">new</span
   });
 
   <span class="hl-keyword">return</span> {'{'}
-    seoTitle: t(<span class="hl-string">'home.title'</span>),
-    features: t&lt;string[]&gt;(<span class="hl-string">'home.features'</span>)
+    seoTitle: t(<span class="hl-string">'routes/home.title'</span>),
+    features: t&lt;string[]&gt;(<span class="hl-string">'routes/home.features'</span>)
   };
 };</code
 					></pre>

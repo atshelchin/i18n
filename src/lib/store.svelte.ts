@@ -628,9 +628,10 @@ export function getLocales(): LocaleMeta[] {
 /**
  * Register loaders from Vite glob import
  *
- * Supports nested directory structures - subdirectories are for organization only:
+ * Supports hierarchical namespace structure using full path:
  * - ./locales/en/common.json -> namespace: "common"
- * - ./locales/en/routes/about.json -> namespace: "about"
+ * - ./locales/en/routes/home.json -> namespace: "routes/home"
+ * - ./locales/en/routes/about.json -> namespace: "routes/about"
  *
  * @example
  * registerGlobLoaders(import.meta.glob('./locales/** /*.json'))
@@ -641,16 +642,16 @@ export function registerGlobLoaders(
 ): void {
 	const store = instance ?? getInstance();
 
-	for (const [path, loader] of Object.entries(modules)) {
-		// Expected path format: ./locales/{locale}/[subdir/]{namespace}.json
+	for (const [modulePath, loader] of Object.entries(modules)) {
+		// Expected path format: ./locales/{locale}/{namespace}.json
 		// Match locale codes like: en, zh, en-US, zh-CN (case insensitive)
-		// Subdirectories are ignored - only filename is used as namespace
-		const match = path.match(/\/([a-zA-Z]{2}(?:-[a-zA-Z]{2})?)\/(?:.*\/)?([^/]+)\.json$/i);
+		// Full path after locale is used as namespace (e.g., routes/home, routes/about)
+		const match = modulePath.match(/\/([a-zA-Z]{2}(?:-[a-zA-Z]{2})?)\/(.+)\.json$/i);
 		if (match) {
 			const [, locale, namespace] = match;
 			store._registerLoader(locale.toLowerCase(), namespace, loader as LocaleLoader);
 		} else {
-			console.warn(`[i18n] Could not parse locale/namespace from path: ${path}`);
+			console.warn(`[i18n] Could not parse locale/namespace from path: ${modulePath}`);
 		}
 	}
 }

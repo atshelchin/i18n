@@ -72,12 +72,12 @@ describe('createServerT', () => {
 	describe('basic translation', () => {
 		it('should translate simple key', () => {
 			const t = createServerT(mockTranslations, { locale: 'en' });
-			expect(t('home.title')).toBe('Welcome');
+			expect(t('home.title' as never)).toBe('Welcome');
 		});
 
 		it('should translate with parameters', () => {
 			const t = createServerT(mockTranslations, { locale: 'en' });
-			expect(t('home.greeting', { name: 'World' })).toBe('Hello, World!');
+			expect(t('home.greeting' as never, { name: 'World' })).toBe('Hello, World!');
 		});
 
 		it('should return key if not found', () => {
@@ -94,41 +94,41 @@ describe('createServerT', () => {
 
 		it('should use current locale when available', () => {
 			const t = createServerT(mockTranslations, { locale: 'zh', defaultLocale: 'en' });
-			expect(t('home.title')).toBe('欢迎');
+			expect(t('home.title' as never)).toBe('欢迎');
 		});
 
 		it('should fallback with parameters', () => {
 			const t = createServerT(mockTranslations, { locale: 'fr', defaultLocale: 'en' });
-			expect(t('home.greeting', { name: 'Test' })).toBe('Hello, Test!');
+			expect(t('home.greeting' as never, { name: 'Test' })).toBe('Hello, Test!');
 		});
 	});
 
 	describe('pluralization', () => {
 		it('should handle zero count', () => {
 			const t = createServerT(mockTranslations, { locale: 'en' });
-			expect(t('home.items', { count: 0 })).toBe('No items');
+			expect(t('home.items' as never, { count: 0 })).toBe('No items');
 		});
 
 		it('should handle one count', () => {
 			const t = createServerT(mockTranslations, { locale: 'en' });
-			expect(t('home.items', { count: 1 })).toBe('1 item');
+			expect(t('home.items' as never, { count: 1 })).toBe('1 item');
 		});
 
 		it('should handle other count', () => {
 			const t = createServerT(mockTranslations, { locale: 'en' });
-			expect(t('home.items', { count: 5 })).toBe('5 items');
+			expect(t('home.items' as never, { count: 5 })).toBe('5 items');
 		});
 
 		it('should fallback plural from default locale', () => {
 			const t = createServerT(mockTranslations, { locale: 'zh', defaultLocale: 'en' });
-			expect(t('home.items', { count: 3 })).toBe('3 items');
+			expect(t('home.items' as never, { count: 3 })).toBe('3 items');
 		});
 	});
 
 	describe('t<string[]>()', () => {
 		it('should return array of strings', () => {
 			const t = createServerT(mockTranslations, { locale: 'en' });
-			expect(t<string[]>('home.features')).toEqual(['Feature 1', 'Feature 2', 'Feature 3']);
+			expect(t<string[]>('home.features' as never)).toEqual(['Feature 1', 'Feature 2', 'Feature 3']);
 		});
 
 		it('should return key if not found', () => {
@@ -138,7 +138,7 @@ describe('createServerT', () => {
 
 		it('should fallback array from default locale', () => {
 			const t = createServerT(mockTranslations, { locale: 'zh', defaultLocale: 'en' });
-			expect(t<string[]>('home.features')).toEqual(['Feature 1', 'Feature 2', 'Feature 3']);
+			expect(t<string[]>('home.features' as never)).toEqual(['Feature 1', 'Feature 2', 'Feature 3']);
 		});
 	});
 

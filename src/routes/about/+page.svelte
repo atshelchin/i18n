@@ -6,9 +6,9 @@
 </script>
 
 <div class="about-page">
-	<h1>{i18n.t('about.title')}</h1>
-	<p class="description">{i18n.t('about.description')}</p>
-	<p class="content">{i18n.t('about.content')}</p>
+	<h1>{i18n.t('routes/about.title')}</h1>
+	<p class="description">{i18n.t('routes/about.description')}</p>
+	<p class="content">{i18n.t('routes/about.content')}</p>
 
 	<div class="namespace-info">
 		<h3>Loaded Namespaces:</h3>
@@ -19,7 +19,7 @@
 		</div>
 	</div>
 
-	<a href={resolve('/')} class="back-link">{i18n.t('about.backHome')}</a>
+	<a href={resolve('/')} class="back-link">{i18n.t('routes/about.backHome')}</a>
 </div>
 
 <style>

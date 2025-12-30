@@ -18,9 +18,9 @@ export const load = async (event) => {
 		event,
 		defaultLocale: 'en'
 	});
-	console.log('Server t():', t('home.title')); // "Welcome to @shelchin/i18n"
-	console.log('Server t<string[]>():', t<string[]>('home.features')); // ["...", "...", "..."]
-	console.log('Server t<FAQ[]>():', t<FAQ[]>('home.faqs')); // ["...", "...", "..."]
+	console.log('Server t():', t('routes/home.title')); // "Welcome to @shelchin/i18n"
+	console.log('Server t<string[]>():', t<string[]>('routes/home.features')); // ["...", "...", "..."]
+	console.log('Server t<FAQ[]>():', t<FAQ[]>('routes/home.faqs')); // ["...", "...", "..."]
 
 	return {};
 };
