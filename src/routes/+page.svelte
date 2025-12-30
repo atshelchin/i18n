@@ -263,9 +263,8 @@ i18n.<span class="hl-func">t</span>(<span class="hl-string">'routes/home.greetin
 <span class="hl-comment"
 							>//       "items_other": "{'{'}<span class="hl-param">count</span>} items"</span
 						>
-i18n.<span class="hl-func">t</span>(<span class="hl-string">'routes/home.items'</span>, {'{'} count: <span
-							class="hl-number">{count}</span
-						> })</code
+i18n.<span class="hl-func">t</span>(<span class="hl-string">'routes/home.items'</span
+						>, {'{'} count: <span class="hl-number">{count}</span> })</code
 					></pre>
 			</div>
 			<div class="usage-demo">
@@ -307,7 +306,8 @@ i18n.<span class="hl-func">t</span>(<span class="hl-string">'routes/home.feature
 						>
 
 <span class="hl-comment">// Get full array (client &amp; server)</span>
-i18n.<span class="hl-func">t</span>&lt;string[]&gt;(<span class="hl-string">'routes/home.features'</span
+i18n.<span class="hl-func">t</span>&lt;string[]&gt;(<span class="hl-string"
+							>'routes/home.features'</span
 						>) <span class="hl-comment">// string[]</span></code
 					></pre>
 			</div>
@@ -341,9 +341,8 @@ i18n.<span class="hl-func">t</span>&lt;string[]&gt;(<span class="hl-string">'rou
 }
 
 <span class="hl-comment">// Get typed array</span>
-i18n.<span class="hl-func">t</span>&lt;FAQ[]&gt;(<span class="hl-string">'routes/home.faqs'</span>) <span
-							class="hl-comment">// FAQ[]</span
-						></code
+i18n.<span class="hl-func">t</span>&lt;FAQ[]&gt;(<span class="hl-string">'routes/home.faqs'</span
+						>) <span class="hl-comment">// FAQ[]</span></code
 					></pre>
 			</div>
 			<div class="usage-demo">

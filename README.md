@@ -180,12 +180,12 @@ export const load = (async (event) => {
 
 The server loader automatically detects which namespace to preload based on URL:
 
-| URL Path                          | Namespaces Loaded                                            |
-| --------------------------------- | ------------------------------------------------------------ |
-| `/`                               | `common` + `home`                                            |
-| `/about`                          | `common` + `about`                                           |
-| `/en/about`                       | `common` + `about`                                           |
-| `/zh/apps/chain-tools/tool`       | `common` + `apps` + `apps/chain-tools` + `apps/chain-tools/tool` |
+| URL Path                    | Namespaces Loaded                                                |
+| --------------------------- | ---------------------------------------------------------------- |
+| `/`                         | `common` + `home`                                                |
+| `/about`                    | `common` + `about`                                               |
+| `/en/about`                 | `common` + `about`                                               |
+| `/zh/apps/chain-tools/tool` | `common` + `apps` + `apps/chain-tools` + `apps/chain-tools/tool` |
 
 Only namespaces that exist in your locale files are preloaded. Unknown namespaces fall back to client-side lazy loading.
 
@@ -212,11 +212,11 @@ const { load: i18nLoad } = createServerLoader(modules, {
 });
 ```
 
-| URL Path        | Namespaces Loaded (with `namespacePrefix: 'routes'`)    |
-| --------------- | ------------------------------------------------------- |
-| `/`             | `common` + `routes/home`                                |
-| `/about`        | `common` + `routes/about`                               |
-| `/apps/tools`   | `common` + `routes/apps` + `routes/apps/tools`          |
+| URL Path      | Namespaces Loaded (with `namespacePrefix: 'routes'`) |
+| ------------- | ---------------------------------------------------- |
+| `/`           | `common` + `routes/home`                             |
+| `/about`      | `common` + `routes/about`                            |
+| `/apps/tools` | `common` + `routes/apps` + `routes/apps/tools`       |
 
 This keeps route translations separate from shared translations like `common`.
 

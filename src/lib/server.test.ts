@@ -128,7 +128,11 @@ describe('createServerT', () => {
 	describe('t<string[]>()', () => {
 		it('should return array of strings', () => {
 			const t = createServerT(mockTranslations, { locale: 'en' });
-			expect(t<string[]>('home.features' as never)).toEqual(['Feature 1', 'Feature 2', 'Feature 3']);
+			expect(t<string[]>('home.features' as never)).toEqual([
+				'Feature 1',
+				'Feature 2',
+				'Feature 3'
+			]);
 		});
 
 		it('should return key if not found', () => {
@@ -138,7 +142,11 @@ describe('createServerT', () => {
 
 		it('should fallback array from default locale', () => {
 			const t = createServerT(mockTranslations, { locale: 'zh', defaultLocale: 'en' });
-			expect(t<string[]>('home.features' as never)).toEqual(['Feature 1', 'Feature 2', 'Feature 3']);
+			expect(t<string[]>('home.features' as never)).toEqual([
+				'Feature 1',
+				'Feature 2',
+				'Feature 3'
+			]);
 		});
 	});
 
@@ -248,11 +256,7 @@ describe('getNamespaceFromPath', () => {
 	});
 
 	it('should extract multiple segments as hierarchical paths', () => {
-		expect(getNamespaceFromPath('/foo/bar/baz')).toEqual([
-			'foo',
-			'foo/bar',
-			'foo/bar/baz'
-		]);
+		expect(getNamespaceFromPath('/foo/bar/baz')).toEqual(['foo', 'foo/bar', 'foo/bar/baz']);
 	});
 
 	it('should strip locale prefix', () => {
@@ -274,15 +278,14 @@ describe('getNamespaceFromPath', () => {
 	});
 
 	it('should add namespace prefix to paths', () => {
-		expect(getNamespaceFromPath('/about', { namespacePrefix: 'routes' })).toEqual([
-			'routes/about'
-		]);
+		expect(getNamespaceFromPath('/about', { namespacePrefix: 'routes' })).toEqual(['routes/about']);
 	});
 
 	it('should add namespace prefix to hierarchical paths', () => {
-		expect(
-			getNamespaceFromPath('/zh/apps/chain-tools', { namespacePrefix: 'routes' })
-		).toEqual(['routes/apps', 'routes/apps/chain-tools']);
+		expect(getNamespaceFromPath('/zh/apps/chain-tools', { namespacePrefix: 'routes' })).toEqual([
+			'routes/apps',
+			'routes/apps/chain-tools'
+		]);
 	});
 });
 
@@ -316,10 +319,7 @@ describe('getNamespacesForPath', () => {
 			'apps/chain-tools',
 			'apps/chain-tools/tool'
 		]);
-		const result = getNamespacesForPath(
-			'/zh/apps/chain-tools/tool/uniswap',
-			hierarchicalAvailable
-		);
+		const result = getNamespacesForPath('/zh/apps/chain-tools/tool/uniswap', hierarchicalAvailable);
 		expect(result).toContain('common');
 		expect(result).toContain('apps');
 		expect(result).toContain('apps/chain-tools');
