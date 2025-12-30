@@ -35,21 +35,38 @@ src/
 │   │   ├── en/
 │   │   │   ├── common.json
 │   │   │   ├── home.json
-│   │   │   └── routes/        # Subdirectories for organization
-│   │   │       └── about.json
+│   │   │   └── about.json
 │   │   └── zh/
 │   │       ├── common.json
 │   │       ├── home.json
-│   │       └── routes/
-│   │           └── about.json
+│   │       └── about.json
 │   ├── +layout.svelte
 │   └── +page.svelte
 ```
 
-> **Note:** Subdirectories are for organization only. The namespace is derived from the filename:
->
-> - `en/common.json` → namespace: `common`
-> - `en/routes/about.json` → namespace: `about` (not `routes/about`)
+#### Hierarchical Namespaces (v2.5.1+)
+
+For complex apps with nested routes, use directory structure to create hierarchical namespaces:
+
+```
+locales/
+├── en/
+│   ├── common.json              # namespace: "common"
+│   ├── apps.json                # namespace: "apps"
+│   └── apps/
+│       ├── chain-tools.json     # namespace: "apps/chain-tools"
+│       └── chain-tools/
+│           └── tool.json        # namespace: "apps/chain-tools/tool"
+```
+
+When visiting `/zh/apps/chain-tools/tool/uniswap`, the following namespaces are automatically loaded:
+
+- `common` (base namespace)
+- `apps`
+- `apps/chain-tools`
+- `apps/chain-tools/tool`
+
+This allows modular translations that match your route structure
 
 Each JSON file contains translations for that namespace:
 
@@ -162,12 +179,12 @@ export const load = (async (event) => {
 
 The server loader automatically detects which namespace to preload based on URL:
 
-| URL Path         | Namespaces Loaded     |
-| ---------------- | --------------------- |
-| `/`              | `common` + `home`     |
-| `/about`         | `common` + `about`    |
-| `/products/list` | `common` + `products` |
-| `/en/about`      | `common` + `about`    |
+| URL Path                          | Namespaces Loaded                                            |
+| --------------------------------- | ------------------------------------------------------------ |
+| `/`                               | `common` + `home`                                            |
+| `/about`                          | `common` + `about`                                           |
+| `/en/about`                       | `common` + `about`                                           |
+| `/zh/apps/chain-tools/tool`       | `common` + `apps` + `apps/chain-tools` + `apps/chain-tools/tool` |
 
 Only namespaces that exist in your locale files are preloaded. Unknown namespaces fall back to client-side lazy loading.
 
@@ -537,26 +554,11 @@ export const reroute = ({ url }) => deLocalizeUrl(url).pathname;
 - **From v2.0.x to v2.1.0:** See [v2.0 to v2.1 Migration](#v20x-to-v210-migration) below
 - **From v2.1.x to v2.2.0:** See [v2.1 to v2.2 Migration](#v21x-to-v220-migration) below
 - **From v2.2.x to v2.3.0:** See [v2.2 to v2.3 Migration](#v22x-to-v230-migration) below
+- **From v2.5.0 to v2.5.1:** See [v2.5.0 to v2.5.1 Migration](#v250-to-v251-migration) below
 
 ### v2.0.x to v2.1.0 Migration
 
 v2.1.0 adds new features with full backward compatibility:
-
-#### New: Nested Directory Support
-
-You can now organize locale files in subdirectories:
-
-```
-locales/
-├── en/
-│   ├── common.json        # namespace: "common"
-│   ├── home.json          # namespace: "home"
-│   └── routes/            # subdirectory for organization
-│       ├── about.json     # namespace: "about"
-│       └── products.json  # namespace: "products"
-```
-
-No code changes required - subdirectories are for organization only.
 
 #### New: `createServerLoader` Helper
 
@@ -672,6 +674,59 @@ Currency is automatically detected from locale when not specified:
 ```
 
 No code changes required - all new features are additive.
+
+### v2.5.0 to v2.5.1 Migration
+
+v2.5.1 introduces hierarchical namespace loading with full backward compatibility.
+
+#### Breaking Change: Directory Structure Now Creates Namespace Paths
+
+**Before (v2.5.0):** Subdirectories were ignored, only filename was used as namespace:
+
+```
+locales/en/routes/about.json  →  namespace: "about"
+```
+
+**After (v2.5.1):** Full path is used as namespace:
+
+```
+locales/en/routes/about.json  →  namespace: "routes/about"
+```
+
+#### Migration Steps
+
+If you were using subdirectories for organization only, move files to flat structure:
+
+```bash
+# Before: locales/en/routes/about.json
+# After:  locales/en/about.json
+mv locales/*/routes/*.json locales/*/
+```
+
+Or update your translation keys to use the new namespace format:
+
+```typescript
+// Before
+i18n.t('about.title');
+
+// After
+i18n.t('routes/about.title');
+```
+
+#### New Feature: Hierarchical Namespace Loading
+
+Now you can create modular translations that match your route structure:
+
+```
+locales/en/
+├── apps.json                    # namespace: "apps"
+└── apps/
+    ├── chain-tools.json         # namespace: "apps/chain-tools"
+    └── chain-tools/
+        └── tool.json            # namespace: "apps/chain-tools/tool"
+```
+
+When visiting `/zh/apps/chain-tools/tool`, all parent namespaces are automatically loaded.
 
 ## License
 
