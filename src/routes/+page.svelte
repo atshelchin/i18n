@@ -430,7 +430,10 @@ i18n.format.<span class="hl-func">date</span>(<span class="hl-keyword">new</span
     {'{'}
       defaultLocale: <span class="hl-string">'en'</span>,
       baseNamespaces: [<span class="hl-string">'common'</span>],
-      homeNamespace: <span class="hl-string">'home'</span>
+      homeNamespace: <span class="hl-string">'home'</span>,
+      namespacePrefix: <span class="hl-string">'routes'</span> <span class="hl-comment"
+							>// optional</span
+						>
     }
   );
 
@@ -454,8 +457,12 @@ i18n.format.<span class="hl-func">date</span>(<span class="hl-keyword">new</span
 						<span class="ssr-desc">Namespace for "/" route</span>
 					</div>
 					<div class="ssr-item">
-						<span class="ssr-label">Auto-detect</span>
-						<span class="ssr-desc">/about → preloads "about" ns</span>
+						<span class="ssr-label">namespacePrefix</span>
+						<span class="ssr-desc">/about → "routes/about" ns</span>
+					</div>
+					<div class="ssr-item">
+						<span class="ssr-label">Hierarchical</span>
+						<span class="ssr-desc">/apps/tools → apps + apps/tools</span>
 					</div>
 				</div>
 			</div>
